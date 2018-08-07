@@ -1,0 +1,212 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "createdContracts",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "tokensLockPeriod",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "name": "contextStorage",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "name": "accountFieldName",
+        "type": "string"
+      },
+      {
+        "name": "key",
+        "type": "string"
+      }
+    ],
+    "name": "createProvisioningContract",
+    "outputs": [
+      {
+        "name": "createdContract",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "attributeName",
+        "type": "string"
+      },
+      {
+        "name": "communityTokenWallet",
+        "type": "uint8"
+      },
+      {
+        "name": "coOwner",
+        "type": "uint8"
+      },
+      {
+        "name": "kimlicWallet",
+        "type": "uint8"
+      },
+      {
+        "name": "account",
+        "type": "uint8"
+      }
+    ],
+    "name": "setInterestsPercent",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "lockPeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "setTokensLockPeriod",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "key",
+        "type": "string"
+      }
+    ],
+    "name": "getProvisioningContract",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "fieldName",
+        "type": "string"
+      }
+    ],
+    "name": "getCommunityTokenWalletInterestPercent",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "fieldName",
+        "type": "string"
+      }
+    ],
+    "name": "getKimlicWalletInterestPercent",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "fieldName",
+        "type": "string"
+      }
+    ],
+    "name": "getAccountInterestPercent",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "fieldName",
+        "type": "string"
+      }
+    ],
+    "name": "getCoOwnerInterestPercent",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

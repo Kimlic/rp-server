@@ -1,0 +1,47 @@
+version: "3"
+services:
+  db:
+    image: postgres:10.4
+    ports:
+      - "5432:5432"
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_HOST: db
+      POSTGRES_DB: rp_core
+      POSTGRES_USER: kimlic
+      POSTGRES_PASSWORD: kimlic
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    restart: always
+
+  rabbit:
+    image: "rabbitmq:3.7-management"
+    hostname: "rabbit"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      # RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "kimlic"
+      RABBITMQ_DEFAULT_PASS: "kimlic"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    labels:
+      NAME: "rabbitmq"
+    volumes:
+      - "./rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins"
+      - "./rabbitmq.config:/etc/rabbitmq/rabbitmq.config:ro"
+
+  rp_server:
+    image: rp_backend:latest
+    ports:
+      - "4000"
+      - "4001"
+    links:
+      - db
+    depends_on:
+      - db
+    restart: always
+    command: bash -c 'sh scripts/wait-for-postgres.sh db \
+      && sh _build/prod/rel/rp_server/bin/rp_server migrate \
+      && sh _build/prod/rel/rp_server/bin/rp_server seeds \
+      && RP_MOBILE_PORT=4000 RP_FRONT_PORT=4001 sh _build/prod/rel/rp_server/bin/rp_server foreground'

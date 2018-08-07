@@ -1,0 +1,54 @@
+# The directory Mix will write compiled artifacts to.
+_build
+
+# The directory Mix downloads your dependencies sources to.
+deps
+
+# If you run "mix test --cover", coverage assets end up here.
+cover
+
+# If the VM crashes, it generates a dump, let's ignore it too.
+erl_crash.dump
+
+# Ignore any node modules, as they should be fetched within container
+node_modules
+**/node_modules
+npm-debug.log
+
+# Ignore static files
+# priv/static/*
+
+# Ignore Phoenix uploads in dev env
+uploads/files/*
+
+log
+
+# Ignore git artifacts
+.git
+.gitignore
+
+# Ignore Docker artifacts
+Dockerfile
+Dockerfile-builder
+Dockerfile_old
+.dockerignore
+docker-compose.yml
+Dockerrun.aws.json
+
+# Ignore markdown description
+README.md
+LICENSE.md
+
+# Ignore MacOS garbage
+.DS_Store
+**/.DS_Store
+
+# Ignore mix lock
+mix.lock
+
+# Ignore EB files
+.elasticbeanstalk/*
+
+data
+pgdata
+_build
