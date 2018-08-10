@@ -7,6 +7,7 @@ defmodule RpQuorum do
   
   # def create_account do
   #   {:ok, address} = ContractServer.create_unlocked_account("password")
+  #   IO.inspect "NEW ADDRESS: #{inspect address}"
   #   address
   # end
 

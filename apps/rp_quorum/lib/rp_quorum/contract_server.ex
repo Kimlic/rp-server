@@ -35,7 +35,7 @@ defmodule RpQuorum.ContractServer do
   end 
 
   def transaction(contract_address, module, method, params \\ {}, attempt \\ 1) do
-    with {:ok, _address} <- unlock_account(account_address(), "password") do
+    # with {:ok, _address} <- unlock_account(account_address(), "password") do
       data = ContractLoader.hash_data(module, method, [params])
       eth_params = %{
         from: account_address(), 
@@ -57,7 +57,7 @@ defmodule RpQuorum.ContractServer do
               transaction(contract_address, module, method, params, attempt + 1)
           end
       end
-    end
+    # end
   end
 
   ##### Private #####
@@ -76,11 +76,11 @@ defmodule RpQuorum.ContractServer do
     end
   end
 
-  defp unlock_account(account_address, password) do
-    with {:ok, true} <- Ethereumex.HttpClient.request("personal_unlockAccount", [account_address, password], []) do
-      {:ok, account_address}
-    end
-  end
+  # defp unlock_account(account_address, password) do
+  #   with {:ok, true} <- Ethereumex.HttpClient.request("personal_unlockAccount", [account_address, password], []) do
+  #     {:ok, account_address}
+  #   end
+  # end
 
   defp env(param), do: Application.get_env(:rp_quorum, param)
 end
