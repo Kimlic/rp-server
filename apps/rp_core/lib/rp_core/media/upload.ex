@@ -7,10 +7,18 @@ defmodule RpCore.Media.Upload do
   
   ##### Public #####
 
-  @spec handle(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
-  def handle(user_address, doc_type, media_type, file, file_hash, session_tag) do
+  @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
+  def create_document(user_address, doc_type, media_type, file, file_hash, session_tag) do
     with {:ok, document} <- insert_doc(user_address, doc_type, session_tag),
-    {:ok, filename} <- store_image(file),
+    {:ok, url} <- proceed_document(document, media_type, file, file_hash) do
+      {:ok, url}
+    else
+      err -> err
+    end
+  end
+
+  def proceed_document(document, media_type, file, file_hash) do
+    with {:ok, filename} <- store_image(file),
     {:ok, url} <- file_url(filename),
     {:ok, photo} <- insert_photo(url, file_hash, media_type, document.id),
     {:ok, url} <- url_from_photo(photo) do
@@ -28,8 +36,8 @@ defmodule RpCore.Media.Upload do
   defp insert_doc(user_address, doc_type, session_tag) do
     params = %{
       user_address: user_address,
-      session_tag: session_tag,
-      type: doc_type
+      type: doc_type,
+      session_tag: session_tag
     }
 
     %Document{}

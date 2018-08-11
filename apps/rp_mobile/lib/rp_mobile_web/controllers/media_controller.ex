@@ -19,7 +19,7 @@ defmodule RpMobileWeb.MediaController do
     {:ok, doc} <- document(doc_str),
     {:ok, photo_type} <- photo_type(photo_type_str),
     user_address <- conn.assigns.account_address,
-    {:ok, path, session_tag} <- RpCore.store_media(user_address, doc, attestator, [{photo_type, file}]) do
+    {:ok, path} <- RpCore.store_media(user_address, doc, attestator, [{photo_type, file}]) do
       render(conn, "v1.create.json", media: path)
     else
       {:error, reason} -> send_resp(conn, :unprocessable_entity, reason)
