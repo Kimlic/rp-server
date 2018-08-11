@@ -35,7 +35,7 @@ defmodule RpQuorum.ContractServer do
   end 
 
   def transaction(contract_address, module, method, params \\ {}, attempt \\ 1) do
-    # with {:ok, _address} <- unlock_account(account_address(), "password") do
+    # with {:ok, _address} <- unlock_account(account_address(), "") do
       data = ContractLoader.hash_data(module, method, [params])
       eth_params = %{
         from: account_address(), 
@@ -49,6 +49,15 @@ defmodule RpQuorum.ContractServer do
 
       case Ethereumex.HttpClient.eth_send_transaction(eth_params, []) do
         {:ok, transaction_hash} -> receipt(transaction_hash)
+        
+        {:error, %{"code" => -32000, "message" => "authentication needed: password or unlock"}} ->
+          {__MODULE__, :transaction, [contract_address, module, method, params, attempt]}
+          |> unlock_account(account_address(), "")
+
+        {:error, %{"code" => -32000, "message" => "could not decrypt key with given passphrase"}} -> 
+          {__MODULE__, :transaction, [contract_address, module, method, params, attempt]}
+          |> unlock_account(account_address())
+          
         {:error, err} ->
           case attempt do
             3 -> {:error, err}
@@ -76,11 +85,11 @@ defmodule RpQuorum.ContractServer do
     end
   end
 
-  # defp unlock_account(account_address, password) do
-  #   with {:ok, true} <- Ethereumex.HttpClient.request("personal_unlockAccount", [account_address, password], []) do
-  #     {:ok, account_address}
-  #   end
-  # end
+  defp unlock_account({m, f, a}, account_address, password \\ "") do
+    with {:ok, true} <- Ethereumex.HttpClient.request("personal_unlockAccount", [account_address, password], []) do
+      apply(m, f, a)
+    end
+  end
 
   defp env(param), do: Application.get_env(:rp_quorum, param)
 end

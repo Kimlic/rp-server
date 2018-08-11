@@ -37,7 +37,8 @@ defmodule RpCore.MixProject do
       {:httpoison, "~> 1.2", override: true},
       {:hackney, "~> 1.13", override: true},
 
-      {:rp_quorum, in_umbrella: true}
+      {:rp_quorum, in_umbrella: true},
+      {:rp_kimcore, in_umbrella: true}
     ]
   end
 

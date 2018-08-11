@@ -14,32 +14,40 @@ defmodule RpMobileWeb.MediaController do
   ##### Public #####
 
   @spec create(Conn.t(), map) :: Conn.t()
-  def create(%{assigns: %{version: :v1}} = conn, %{"attestator" => attestator_str, "doc" => doc_str, "type" => type_str, "file" => file}) do
-    attestator = case attestator_str do
-      "Veriff.me" -> :veriff_me
-      _ -> send_resp(conn, :unprocessable_entity, "Unknown attestator")
+  def create(%{assigns: %{version: :v1}} = conn, %{"attestator" => attestator_str, "doc" => doc_str, "type" => photo_type_str, "file" => file}) do
+    with {:ok, attestator} <- attestator(attestator_str),
+    {:ok, doc} <- document(doc_str),
+    {:ok, photo_type} <- photo_type(photo_type_str),
+    user_address <- conn.assigns.account_address,
+    {:ok, path, session_tag} <- RpCore.store_media(user_address, doc, attestator, [{photo_type, file}]) do
+      render(conn, "v1.create.json", media: path)
+    else
+      {:error, reason} -> send_resp(conn, :unprocessable_entity, reason)
     end
-    
-    doc = case doc_str do
-      "ID_CARD" -> :id_card
-      _ -> send_resp(conn, :unprocessable_entity, "Unknown document")
-    end
+  end
 
-    type = case type_str do
-      "face" -> :face
-      "back" -> :back
-      "front" -> :front
-      _ -> send_resp(conn, :unprocessable_entity, "Unknown media type")
-    end
+  ##### Private #####
 
-    response = conn.assigns.account_address
-    |> RpCore.store_media(doc, attestator, [{type, file}])
-    
-    case response do
-      {:ok, path} -> render(conn, "v1.create.json", media: path)
-      {:error, _reason} -> 
-        IO.inspect "FINAL RESPONSE: #{inspect response}"
-        send_resp(conn, :unprocessable_entity, "Blockchain transaction rejected")
+  defp attestator(type) do
+    case type do
+      "Veriff.me" -> {:ok, :veriff_me}
+      _ -> {:error, "Unknown attestator"}
+    end
+  end
+
+  defp document(type) do
+    case type do
+      "ID_CARD" -> {:ok, :id_card}
+      _ -> {:error, "Unknown document"}
+    end
+  end
+
+  defp photo_type(type) do
+    case type do
+      "face" -> {:ok, :face}
+      "back" -> {:ok, :back}
+      "front" -> {:ok, :front}
+      _ -> {:error, "Unknown media type"}
     end
   end
 end

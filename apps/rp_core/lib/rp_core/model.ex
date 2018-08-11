@@ -7,6 +7,8 @@ defmodule RpCore.Model do
   
             import Ecto.Changeset
             import Ecto.Query
+
+            alias RpCore.Model.{Document, Photo}
         end
     end
 end
