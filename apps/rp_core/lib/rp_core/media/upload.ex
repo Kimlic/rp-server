@@ -7,12 +7,15 @@ defmodule RpCore.Media.Upload do
   
   ##### Public #####
 
-  @spec create_document(binary, binary, binary) :: {:ok, binary} | {:error, binary}
-  def create_document(user_address, doc_type, session_tag) do
+  @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
+  def create_document(user_address, doc_type, session_tag, first_name, last_name, country) do
     params = %{
       user_address: user_address,
       type: doc_type,
-      session_tag: session_tag
+      session_tag: session_tag,
+      first_name: first_name, 
+      last_name: last_name, 
+      country: country
     }
 
     %Document{}

@@ -13,14 +13,16 @@ defmodule RpCore do
 
   ##### Public #####
 
-  @spec store_media(binary, atom, atom, media_type) :: {:ok, binary} | {:error, binary}
-  def store_media(user_address, :id_card, :veriff_me, [{media_type, file}]) do
+  @spec store_media(binary, atom, atom, binary, binary, binary, media_type) :: {:ok, binary} | {:error, binary}
+  def store_media(user_address, :id_card, :veriff_me, first_name, last_name, country, [{media_type, file}]) do
     # RpQuorum.create_account
 
     hash = hash_file(file)
     media_type_str = photo_type(media_type)
     doc_type_str = @doc_veriff_id_card
     session_tag = UUID.uuid1
+
+    IO.inspect "FUN PARAMS: #{hash}   #{media_type_str}"
 
     with {:error, :not_found} <- Photo.find_one_by(hash),
     {:error, :not_found} <- Document.find_one_by(user_address, doc_type_str) do
@@ -29,14 +31,17 @@ defmodule RpCore do
       IO.inspect "PROVISIONING CONTRACT CREATED"
       {:ok, session_tag} = start_verification(user_address, doc_type_str, session_tag)
       IO.inspect "START VERIFICATION: #{inspect session_tag}"
-      {:ok, document} = Upload.create_document(user_address, doc_type_str, session_tag)
+      {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
       IO.inspect "CREATE DOCUMENT: #{inspect document}"
-      {:ok, pid} = MediaSupervisor.start_child(document: document)
-      IO.inspect "START SERVER: #{inspect pid}"
       {:ok, url} = document_found(document, media_type_str, file, hash)
       IO.inspect "URL: #{inspect url}"
-      res = create_verification_session(session_tag)
-      IO.inspect "RES: #{inspect res}"
+      {:ok, %{"data" => %{"session_id" => session_id}}} = create_verification_session(session_tag, first_name, last_name, "android", "dfPPl3RrZEk:APA91bGXIfSG0J_sX1Ts0e_3-WG1m6zpiirDkhJS7yo6gvWaF7yrteaTBdVt0cb8T9hxc1GbUVGdn7q6s3wwi8CtN2441Vi28mB1d4ptT0pwoMy-oz0Wo3jYqDO47aUA6YHu4vNNhSTQl-Cjn4M6eid_9Au6INMNXw")
+      IO.inspect "SESSION ID: #{inspect session_id}"
+
+      {:ok, pid} = MediaSupervisor.start_child(document: document, session_id: session_id)
+      IO.inspect "START SERVER: #{inspect pid}"
+
+      {:ok, %{"data" => %{"status" => "ok"}}} = RpAttestation.photo_upload(session_id, country, media_type_str, file)
 
       {:ok, url}
     else
@@ -44,12 +49,20 @@ defmodule RpCore do
       {:error, method, reason} -> {:error, "TX failed on #{inspect method}: #{inspect reason}"}
       {:error, reason} -> {:error, reason}
       
-      {:ok, document} -> 
-        IO.inspect "DOCUMENT EXISTS"
+      {:ok, %Photo{} = photo} -> 
+        IO.inspect "PHOTO EXISTS: #{inspect photo}"
+        {:ok, Photo.url(photo)}
+
+      {:ok, %Document{} = document} -> 
+        IO.inspect "DOCUMENT EXISTS: #{inspect document}"
         {:ok, url} = document_found(document, media_type_str, file, hash)
+        IO.inspect "ADDED PHOTO: #{inspect url}"
+        {:ok, session_id} = MediaServer.get_session_id(document.session_tag)
+        IO.inspect "SESSION ID: #{inspect session_id}"
+        {:ok, %{"data" => %{"status" => "ok"}}} = RpAttestation.photo_upload(session_id, country, media_type_str, file)
 
         {:ok, url}
-
+      
       err -> IO.inspect "ERR: #{inspect err}"
     end
   end
@@ -101,12 +114,12 @@ defmodule RpCore do
     end
   end
 
-  defp create_verification_session(session_tag) do
+  defp create_verification_session(session_tag, first_name, last_name, device, udid) do
     with {:ok, config} <- RpKimcore.config,
     {:ok, verification_contract_factory_address} <- config.context_contract |> RpQuorum.get_verification_contract_factory,
     {:ok, verification_contract_address} <- verification_contract_factory_address |> RpQuorum.get_verification_contract(session_tag) do
       IO.inspect "VERIF CONTRACT ADDR: #{verification_contract_address}"
-      RpAttestation.session_create("John", "Doe", "ID_CARD", verification_contract_address, "android", "123456")
+      RpAttestation.session_create(first_name, last_name, "ID_CARD", verification_contract_address, device, udid)
     else
       err -> IO.inspect err
     end

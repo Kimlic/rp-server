@@ -11,13 +11,16 @@ defmodule RpCore.Model.Document do
     field :user_address, :string, null: false
     field :session_tag, :string, null: false
     field :type, :string, null: false
+    field :first_name, :string, null: false
+    field :last_name, :string, null: false
+    field :country, :string, null: false
     
     has_many :photos, Photo, foreign_key: :document_id, on_delete: :delete_all
 
     timestamps()
   end
 
-  @required_params ~w(user_address session_tag type)a
+  @required_params ~w(user_address session_tag type first_name last_name country)a
   @optional_params ~w()a
 
   ##### Public #####

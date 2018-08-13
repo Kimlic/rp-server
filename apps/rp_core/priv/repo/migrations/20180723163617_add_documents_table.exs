@@ -7,6 +7,9 @@ defmodule RpCore.Repo.Migrations.AddDocumentsTable do
       add :user_address, :citext, null: false
       add :type, :citext, null: false
       add :session_tag, :string, null: false
+      add :first_name, :string, null: false
+      add :last_name, :string, null: false
+      add :country, :string, null: false
   
       timestamps()
     end

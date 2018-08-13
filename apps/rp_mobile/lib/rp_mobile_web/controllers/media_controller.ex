@@ -14,12 +14,12 @@ defmodule RpMobileWeb.MediaController do
   ##### Public #####
 
   @spec create(Conn.t(), map) :: Conn.t()
-  def create(%{assigns: %{version: :v1}} = conn, %{"attestator" => attestator_str, "doc" => doc_str, "type" => photo_type_str, "file" => file}) do
+  def create(%{assigns: %{version: :v1}} = conn, %{"attestator" => attestator_str, "doc" => doc_str, "type" => photo_type_str, "file" => file, "first_name" => first_name, "last_name" => last_name, "country" => country}) do
     with {:ok, attestator} <- attestator(attestator_str),
     {:ok, doc} <- document(doc_str),
     {:ok, photo_type} <- photo_type(photo_type_str),
     user_address <- conn.assigns.account_address,
-    {:ok, path} <- RpCore.store_media(user_address, doc, attestator, [{photo_type, file}]) do
+    {:ok, path} <- RpCore.store_media(user_address, doc, attestator, first_name, last_name, country, [{photo_type, file}]) do
       render(conn, "v1.create.json", media: path)
     else
       {:error, reason} -> send_resp(conn, :unprocessable_entity, reason)

@@ -17,7 +17,21 @@ defmodule RpAttestation do
       device_os: device_os, 
       device_token: device_token
     }
-    ap_session_create() |> post(params)
+    IO.inspect "AP SESSION PARAMS: #{inspect params}"
+    ap_session_create() 
+    |> post(params)
+  end
+
+  def photo_upload(session_id, country, media_type, file) do
+    params = %{
+      country: country,
+      context: media_type,
+      timestamp: "#{:os.system_time(:seconds)}",
+      content: file
+    }
+    
+    ap_media_upload(session_id)
+    |> post(params)
   end
 
   ##### Private #####
@@ -43,7 +57,7 @@ defmodule RpAttestation do
       "Content-Type" => "application/json"
     }
     req_body = Jason.encode!(params)
-    IO.inspect "PARAMS: #{inspect req_body}"
+
     case HTTPoison.post(req_url, req_body, req_headers, req_options) do
       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
       {:ok, %HTTPoison.Response{body: body}} -> 
@@ -59,6 +73,13 @@ defmodule RpAttestation do
   defp ap_vendors, do: :ap_vendors |> env
 
   defp ap_session_create, do: :ap_session_create |> env
+
+  defp ap_media_upload(session_id) do
+    :ap_session_create 
+    |> env
+    |> Kernel.<>(session_id)
+    |> Kernel.<>("/media")
+  end
 
   defp env(param), do: Application.get_env(:rp_attestation, param)
 end
