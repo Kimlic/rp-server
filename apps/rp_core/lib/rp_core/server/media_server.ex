@@ -7,8 +7,7 @@ defmodule RpCore.Server.MediaServer do
 
   ##### Public #####
 
-  def start_link(args_init, [document: document, session_id: session_id] = args) do
-    IO.inspect "MEDIA SERVER STARTING: #{inspect args_init}   #{inspect args}"
+  def start_link(_args_init, [document: document, session_id: _] = args) do
     GenServer.start_link(__MODULE__, args, name: via_tuple(document.session_tag))
   end
 
@@ -30,14 +29,12 @@ defmodule RpCore.Server.MediaServer do
   ##### Private #####
 
   def whereis(name: name) do
-    IO.inspect "WHEREIS: #{inspect name}"
     MediaRegistry.whereis_name({:media_server, name})
   end
 
   @impl true
   def init(document: document, session_id: session_id) do
     state = %{document: document, session_id: session_id, photos: []}
-    IO.inspect "SERVER INITED: #{inspect state}"
     {:ok, state}
   end
 
@@ -47,10 +44,8 @@ defmodule RpCore.Server.MediaServer do
 
   @impl true
   def handle_cast({:push_photo, photo: photo}, %{photos: photos} = state) do
-    IO.inspect "SERVER CURRENT STATE: #{inspect state}"
     new_photos = photos ++ [photo]
     new_state = %{state | photos: new_photos}
-    IO.inspect "SERVER NEW STATE: #{inspect new_state}"
 
     {:noreply, new_state}
   end

@@ -91,14 +91,7 @@ defmodule RpCore.Media.Upload do
   defp image_extension(binary), do: throw "Invalid image extension: #{binary}"
 
   defp unique_filename(extension), do: UUID.uuid4(:hex) <> extension
-
-  # defp url_from_photo(photo) do
-  #   url = {photo.file, photo}
-  #   |> File.url
-
-  #   {:ok, url}
-  # end
-
+  
   defp pretty_errors(changeset) do
     errors = for {_key, {message, _}} <- changeset.errors, do: "#{message}"
     {:error, errors}

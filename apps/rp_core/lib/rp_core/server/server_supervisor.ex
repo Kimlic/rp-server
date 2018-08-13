@@ -12,9 +12,7 @@ defmodule RpCore.Server.ServerSupervisor do
   ##### Private #####
 
   @impl true
-  def init(args) do
-    IO.inspect "SERVER SUP ARGS: #{inspect args}"
-
+  def init(_args) do
     children = [
       supervisor(MediaSupervisor, [[]]),
       worker(MediaRegistry, [[]])

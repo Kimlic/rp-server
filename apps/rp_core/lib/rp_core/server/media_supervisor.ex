@@ -9,8 +9,7 @@ defmodule RpCore.Server.MediaSupervisor do
 
   def start_link(args), do: Supervisor.start_link(__MODULE__, args, name: __MODULE__)
 
-  def start_child([document: _, session_id: session_id] = args) do
-    IO.inspect "START MEDIA CHILD ARGS: #{inspect args}"
+  def start_child([document: _, session_id: _] = args) do
     Supervisor.start_child(__MODULE__, [args])
   end
 
@@ -18,8 +17,6 @@ defmodule RpCore.Server.MediaSupervisor do
 
   @impl true
   def init(args) do
-    IO.inspect "MEDIA SUP ARGS: #{inspect args}"
-
     children = [
       worker(MediaServer, [args], restart: :temporary)
     ]

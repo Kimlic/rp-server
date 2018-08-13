@@ -36,8 +36,7 @@ defmodule RpCore.Server.MediaRegistry do
   ##### Callbacks #####
 
   @impl true
-  def init(args) do
-    IO.inspect "START MEDIA REGISTRY ARGS: #{inspect args}"
+  def init(_args) do
     :ets.new(__MODULE__, [:named_table, :protected, :set])
     {:ok, nil}
   end
