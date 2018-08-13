@@ -13,11 +13,10 @@ defmodule RpAttestation do
       lang: "en",
       document_type: document_type, 
       contract_address: contract_address, 
-      timestamp: :os.system_time(:seconds),
+      timestamp: "#{:os.system_time(:seconds)}",
       device_os: device_os, 
       device_token: device_token
     }
-    IO.inspect "PARAMS: #{inspect params}"
     ap_session_create() |> post(params)
   end
 
@@ -25,7 +24,7 @@ defmodule RpAttestation do
 
   defp get(endpoint) do
     req_url = ap_endpoint() <> endpoint
-    req_options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 500]
+    req_options = [ssl: [{:versions, [:'tlsv1.2']}], timeout: 30_000, recv_timeout: 30_000]
     req_headers = %{"account-address" => account_address()}
     
     case HTTPoison.get(req_url, req_headers, req_options) do
@@ -38,10 +37,14 @@ defmodule RpAttestation do
 
   defp post(endpoint, params) do
     req_url = ap_endpoint() <> endpoint
-    req_options = [ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 500]
-    req_headers = %{"account-address" => account_address()}
-    
-    case HTTPoison.post(req_url, params, req_headers, req_options) do
+    req_options = [ssl: [{:versions, [:'tlsv1.2']}], timeout: 30_000, recv_timeout: 30_000]
+    req_headers = %{
+      "account-address" => account_address(),
+      "Content-Type" => "application/json"
+    }
+    req_body = Jason.encode!(params)
+    IO.inspect "PARAMS: #{inspect req_body}"
+    case HTTPoison.post(req_url, req_body, req_headers, req_options) do
       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}
       {:ok, %HTTPoison.Response{body: body}} -> 
         json = Jason.decode!(body)
