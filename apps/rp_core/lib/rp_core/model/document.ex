@@ -29,7 +29,7 @@ defmodule RpCore.Model.Document do
     |> unique_constraint(:documents_user_address_type_index, name: :documents_user_address_type_index, message: "Document already exists")
   end
 
-  def find_by(user_address, type) do
+  def find_one_by(user_address, type) do
     query = from d in Document,
       where: d.user_address == ^user_address,
       where: d.type == ^type,
@@ -37,7 +37,7 @@ defmodule RpCore.Model.Document do
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
-      document -> {:ok, document}
+      document_id -> {:ok, document_id}
     end
   end
 end

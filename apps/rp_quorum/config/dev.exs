@@ -1,8 +1,8 @@
 use Mix.Config
 
 config :rp_quorum, 
-  account_address: "0x096e1ed43243df822e8f019004bb5b019e244144"
+  account_address: "0xadf761c1fe6d9a675fa616f14affd92f0f74c3a4"
 
-config :ethereumex, url: "http://51.140.240.168:22000"
+config :ethereumex, url: "http://51.141.120.215:22000"
 
 config :logger, level: :debug

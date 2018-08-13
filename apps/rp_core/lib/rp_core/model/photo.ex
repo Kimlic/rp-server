@@ -37,18 +37,42 @@ defmodule RpCore.Model.Photo do
     |> File.url
   end
 
-  def find_one_by(user_address, type, media_type, file_hash) do
+  def find_one_by(document_id, media_type, file_hash) do
     query = from p in Photo,
-      join: d in Document,
-      on: d.id == p.document_id,
-      where: d.user_address == ^user_address,
-      where: d.type == ^type,
       where: p.type == ^media_type,
-      or_where: p.file_hash == ^file_hash
+      where: p.document_id == ^document_id,
+      or_where: p.file_hash == ^file_hash,
+      limit: 1
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
       photo -> {:ok, photo}
     end
   end
+  
+  def find_one_by(file_hash) do
+    query = from p in Photo,
+      where: p.file_hash == ^file_hash,
+      limit: 1
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      photo -> {:ok, photo}
+    end
+  end
+
+  # def find_one_by(user_address, type, media_type, file_hash) do
+  #   query = from p in Photo,
+  #     join: d in Document,
+  #     on: d.id == p.document_id,
+  #     where: d.user_address == ^user_address,
+  #     where: d.type == ^type,
+  #     where: p.type == ^media_type,
+  #     or_where: p.file_hash == ^file_hash
+
+  #   case Repo.one(query) do
+  #     nil -> {:error, :not_found}
+  #     photo -> {:ok, photo}
+  #   end
+  # end
 end

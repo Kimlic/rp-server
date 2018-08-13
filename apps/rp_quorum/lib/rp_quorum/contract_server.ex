@@ -4,11 +4,10 @@ defmodule RpQuorum.ContractServer do
 
   ##### Public #####
 
-  # def create_unlocked_account(password) do
-  #   "personal_newAccount"
-  #   |> Ethereumex.HttpClient.request([password], [])
-  #   |> unlock_account(password)
-  # end
+  def create_account(password) do
+    "personal_newAccount"
+    |> Ethereumex.HttpClient.request([password], [])
+  end
 
   def account_address, do: :account_address |> env
 
@@ -29,13 +28,12 @@ defmodule RpQuorum.ContractServer do
           3 -> {:error, err}
           _ ->
             :timer.sleep(50)
-            call(contract_address, method, attempt + 1)
+            call(contract_address, module, method, params, attempt + 1)
         end
     end
   end 
 
   def transaction(contract_address, module, method, params \\ {}, attempt \\ 1) do
-    # with {:ok, _address} <- unlock_account(account_address(), "") do
       data = ContractLoader.hash_data(module, method, [params])
       eth_params = %{
         from: account_address(), 
@@ -66,7 +64,6 @@ defmodule RpQuorum.ContractServer do
               transaction(contract_address, module, method, params, attempt + 1)
           end
       end
-    # end
   end
 
   ##### Private #####

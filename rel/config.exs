@@ -32,7 +32,7 @@ release :rp_server do
   set applications: [
     :rp_attestation,
     :rp_core,
-    :rp_eventbus,
+    # :rp_eventbus,
     :rp_front,
     :rp_kimcore,
     :rp_mobile,

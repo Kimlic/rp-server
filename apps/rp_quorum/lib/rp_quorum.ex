@@ -5,11 +5,11 @@ defmodule RpQuorum do
 
   ##### Public #####
   
-  # def create_account do
-  #   {:ok, address} = ContractServer.create_unlocked_account("password")
-  #   IO.inspect "NEW ADDRESS: #{inspect address}"
-  #   address
-  # end
+  def create_account do
+    {:ok, address} = ContractServer.create_account("")
+    IO.inspect "NEW ADDRESS: #{inspect address}"
+    address
+  end
 
   @spec get_provisioning_contract_factory(binary) :: binary
   def get_provisioning_contract_factory(contract_address) do
@@ -48,10 +48,20 @@ defmodule RpQuorum do
 
   @spec get_verification_contract_factory(binary) :: binary
   def get_verification_contract_factory(contract_address) do
+    IO.inspect "get_verification_contract_factory: #{contract_address}"
     res = contract_address
     |> KimlicContractsContext.get_verification_contract_factory
 
     IO.inspect "get_verification_contract_factory: #{inspect res}"
+    res
+  end
+
+  def get_verification_contract(contract_address, session_tag) do
+    IO.inspect "get_verification_contract: #{contract_address}   #{session_tag}"
+    res = contract_address
+    |> VerificationContractFactory.get_verification_contract(session_tag)
+
+    IO.inspect "get_verification_contract: #{inspect res}"
     res
   end
 

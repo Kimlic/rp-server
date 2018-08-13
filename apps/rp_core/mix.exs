@@ -38,7 +38,8 @@ defmodule RpCore.MixProject do
       {:hackney, "~> 1.13", override: true},
 
       {:rp_quorum, in_umbrella: true},
-      {:rp_kimcore, in_umbrella: true}
+      {:rp_kimcore, in_umbrella: true},
+      {:rp_attestation, in_umbrella: true}
     ]
   end
 

@@ -45,8 +45,8 @@ defmodule RpMobileWeb.MediaController do
   defp photo_type(type) do
     case type do
       "face" -> {:ok, :face}
-      "back" -> {:ok, :back}
-      "front" -> {:ok, :front}
+      "document-back" -> {:ok, :back}
+      "document-front" -> {:ok, :front}
       _ -> {:error, "Unknown media type"}
     end
   end

@@ -7,33 +7,8 @@ defmodule RpCore.Media.Upload do
   
   ##### Public #####
 
-  @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
-  def create_document(user_address, doc_type, media_type, file, file_hash, session_tag) do
-    with {:ok, document} <- insert_doc(user_address, doc_type, session_tag),
-    {:ok, url} <- proceed_document(document, media_type, file, file_hash) do
-      {:ok, url}
-    else
-      err -> err
-    end
-  end
-
-  def proceed_document(document, media_type, file, file_hash) do
-    with {:ok, filename} <- store_image(file),
-    {:ok, url} <- file_url(filename),
-    {:ok, photo} <- insert_photo(url, file_hash, media_type, document.id),
-    {:ok, url} <- url_from_photo(photo) do
-      {:ok, url}
-    else
-      {:error, :not_found} -> {:error, "No photo uploaded"}
-      {:error, changeset} -> pretty_errors(changeset)
-      err -> IO.inspect "ERROR: #{err}"
-    end
-  end
-
-  ##### Private #####
-
-  # @spec insert_doc(binary, binary, binary) :: {:ok, } || {:error, }
-  defp insert_doc(user_address, doc_type, session_tag) do
+  @spec create_document(binary, binary, binary) :: {:ok, binary} | {:error, binary}
+  def create_document(user_address, doc_type, session_tag) do
     params = %{
       user_address: user_address,
       type: doc_type,
@@ -44,6 +19,20 @@ defmodule RpCore.Media.Upload do
     |> Document.changeset(params)
     |> Repo.insert
   end
+
+  def create_photo(document_id, media_type, file, file_hash) do
+    with {:ok, filename} <- store_image(file),
+    {:ok, url} <- file_url(filename),
+    {:ok, photo} <- insert_photo(url, file_hash, media_type, document_id) do
+      {:ok, photo}
+    else
+      {:error, :not_found} -> {:error, "No photo uploaded"}
+      {:error, changeset} -> pretty_errors(changeset)
+      err -> IO.inspect "ERROR: #{err}"
+    end
+  end
+
+  ##### Private #####
 
   # @spec store_image(binary) :: {:ok, binary} || {:error, }
   defp store_image(file) do
@@ -100,12 +89,12 @@ defmodule RpCore.Media.Upload do
 
   defp unique_filename(extension), do: UUID.uuid4(:hex) <> extension
 
-  defp url_from_photo(photo) do
-    url = {photo.file, photo}
-    |> File.url
+  # defp url_from_photo(photo) do
+  #   url = {photo.file, photo}
+  #   |> File.url
 
-    {:ok, url}
-  end
+  #   {:ok, url}
+  # end
 
   defp pretty_errors(changeset) do
     errors = for {_key, {message, _}} <- changeset.errors, do: "#{message}"

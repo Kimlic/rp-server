@@ -39,7 +39,7 @@ defmodule RpMobile.Mixfile do
 
       {:rp_core, in_umbrella: true},
       {:rp_attestation, in_umbrella: true},
-      {:rp_eventbus, in_umbrella: true},
+      # {:rp_eventbus, in_umbrella: true},
       {:rp_uaf, in_umbrella: true}
     ]
   end
