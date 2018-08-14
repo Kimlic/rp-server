@@ -29,7 +29,7 @@ defmodule RpCore.Server.MediaRegistry do
     end
   end
 
-  defp unregister_name(key) do
+  def unregister_name({:media_server, key}) do
     GenServer.cast(__MODULE__, {:unregister_name, key})
   end
 
@@ -54,7 +54,7 @@ defmodule RpCore.Server.MediaRegistry do
   end
 
   @impl true
-  def handle_cast({:unregister_name, key}, state) do
+  def handle_cast({:unregister_name, [media_server: key], []}, state) do
     :ets.match_delete(__MODULE__, key)
     {:noreply, state}
   end

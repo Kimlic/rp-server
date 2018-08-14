@@ -19,8 +19,8 @@ defmodule RpMobileWeb.MediaController do
     {:ok, doc} <- document(doc_str),
     {:ok, photo_type} <- photo_type(photo_type_str),
     user_address <- conn.assigns.account_address,
-    {:ok, path} <- RpCore.store_media(user_address, doc, attestator, first_name, last_name, country, device, udid, [{photo_type, file}]) do
-      render(conn, "v1.create.json", media: path)
+    {:ok, :created} <- RpCore.store_media(user_address, doc, attestator, first_name, last_name, country, device, udid, [{photo_type, file}]) do
+      render(conn, "v1.create.json", media: "created")
     else
       {:error, reason} -> send_resp(conn, :unprocessable_entity, reason)
     end
@@ -38,6 +38,9 @@ defmodule RpMobileWeb.MediaController do
   defp document(type) do
     case type do
       "ID_CARD" -> {:ok, :id_card}
+      "PASSPORT" -> {:ok, :passport}
+      "DRIVERS_LICENSE" -> {:ok, :driver_license}
+      "RESIDENCE_PERMIT_CARD" -> {:ok, :residence_permit_card}
       _ -> {:error, "Unknown document"}
     end
   end

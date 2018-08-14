@@ -17,9 +17,12 @@ defmodule RpAttestation do
       device_os: device_os, 
       device_token: device_token
     }
-    IO.inspect "AP SESSION PARAMS: #{inspect params}"
-    ap_session_create() 
+  
+    res = ap_session_create() 
     |> post(params)
+
+    IO.inspect "AP SESSION CREATE: #{inspect res}"
+    res
   end
 
   def photo_upload(session_id, country, media_type, file) do
@@ -30,8 +33,11 @@ defmodule RpAttestation do
       content: file
     }
     
-    ap_media_upload(session_id)
+    res = ap_media_upload(session_id)
     |> post(params)
+
+    IO.inspect "AP SESSION UPLOAD: #{inspect res}"
+    res
   end
 
   ##### Private #####

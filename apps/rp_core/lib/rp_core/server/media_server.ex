@@ -4,16 +4,21 @@ defmodule RpCore.Server.MediaServer do
   use GenServer
 
   alias RpCore.Server.MediaRegistry
+  alias RpCore.Model.{Document, Photo}
+  alias RpCore.Media.Upload
+
+  @not_verified "0x0000000000000000000000000000000000000000000000000000000000000000"
 
   ##### Public #####
 
-  def start_link(_args_init, [document: document, session_id: _] = args) do
-    GenServer.start_link(__MODULE__, args, name: via_tuple(document.session_tag))
+  def start_link(_args_init, args) do
+    session_tag = args[:session_tag]
+    GenServer.start_link(__MODULE__, args, name: via_tuple(session_tag))
   end
 
-  def push_photo(session_tag, photo) do
+  def push_photo(session_tag, media_type, file, hash) do
     via_tuple(session_tag)
-    |> GenServer.cast({:push_photo, photo: photo})
+    |> GenServer.call({:push_photo, media_type: media_type, file: file, hash: hash}, 60_000)
   end
 
   def get_state(session_tag) do
@@ -21,9 +26,19 @@ defmodule RpCore.Server.MediaServer do
     |> GenServer.call(:get_state)
   end
 
+  def get_document(session_tag) do
+    via_tuple(session_tag)
+    |> GenServer.call(:get_document)
+  end
+
   def get_session_id(session_tag) do
     via_tuple(session_tag)
     |> GenServer.call(:get_session_id)
+  end
+
+  def get_verification_status(session_tag) do
+    via_tuple(session_tag)
+    |> GenServer.call(:get_verification_status)
   end
 
   ##### Private #####
@@ -33,22 +48,95 @@ defmodule RpCore.Server.MediaServer do
   end
 
   @impl true
-  def init(document: document, session_id: session_id) do
-    state = %{document: document, session_id: session_id, photos: []}
+  def init(user_address: user_address, doc_type_str: doc_type_str, session_tag: session_tag, first_name: first_name, last_name: last_name, device: device, udid: udid, country: country) do
+    # vendors = RpAttestation.vendors()
+    # IO.inspect "VENDORS: #{inspect vendors}"
+    vendors = []
+
+    {:ok, session_id} = start_verification(user_address, doc_type_str, session_tag, first_name, last_name, device, udid)
+    {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)\
+
+    state = %{document: document, session_id: session_id, photos: [], vendors: vendors}
+
     {:ok, state}
   end
 
   @impl true
   def handle_call(:get_state, _from, state), do: {:reply, {:ok, state}, state}
   def handle_call(:get_session_id, _from, state), do: {:reply, {:ok, state[:session_id]}, state}
+  def handle_call(:get_document, _from, state), do: {:reply, {:ok, state[:document]}, state}
+  def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id} = state) do
+    with {:ok, photo} <- upload_photo(document.id, media_type, file, hash, document.country, session_id) do
+      new_photos = photos ++ [photo]
+      new_state = %{state | photos: new_photos}
 
-  @impl true
-  def handle_cast({:push_photo, photo: photo}, %{photos: photos} = state) do
-    new_photos = photos ++ [photo]
-    new_state = %{state | photos: new_photos}
-
-    {:noreply, new_state}
+      {:reply, {:ok, :created}, new_state}
+    else
+      {:error, reason} -> {:reply, {:error, reason}, state}
+    end
+  end
+  def handle_call(:get_verification_status, _from, %{document: document} = state) do
+    with {:ok, config} <- RpKimcore.config,
+    {:ok, provisioning_contract_factory_address} <- config.context_contract |> RpQuorum.get_provisioning_contract_factory,
+    {:ok, provisioning_contract_address} <- provisioning_contract_factory_address |> RpQuorum.get_provisioning_contract(document.session_tag),
+    {:ok, @not_verified} <- provisioning_contract_address |> RpQuorum.is_verification_finished do
+      {:reply, {:ok, :not_verified}, state}
+    else
+      {:error, reason} -> {:reply, {:error, reason}, state}
+    end
   end
 
   defp via_tuple(name), do: {:via, MediaRegistry, {:media_server, name}}
+
+  @spec start_verification(binary, binary, UUID, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
+  defp start_verification(user_address, doc_type, session_tag, first_name, last_name, device, udid) do
+    veriff_doc = document_type_veriff(doc_type)
+  
+    with {:ok, config} <- RpKimcore.config,
+    {:ok, provisioning_contract_factory_address} <- config.context_contract |> RpQuorum.get_provisioning_contract_factory,
+    {:ok, _method, _tx_hash} <- provisioning_contract_factory_address |> RpQuorum.create_provisioning_contract(user_address, doc_type, session_tag),
+    {:ok, verification_contract_factory_address} <- config.context_contract |> RpQuorum.get_verification_contract_factory,
+    {:ok, _method, _tx_hash} <- verification_contract_factory_address |> RpQuorum.create_base_verification_contract(user_address, Enum.fetch!(config.attestation_parties, 0).address, doc_type, session_tag),
+    {:ok, verification_contract_address} <- verification_contract_factory_address |> RpQuorum.get_verification_contract(session_tag),
+    {:ok, %{"data" => %{"session_id" => session_id}}} <- RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
+      {:ok, session_id}
+    else
+      err -> err
+    end
+  end
+
+  defp upload_photo(document_id, media_type, file, hash, country, session_id) do
+    media_type_str = photo_type(media_type)
+
+    with {:error, :not_found} <- Photo.find_one_by(document_id, media_type_str, hash),
+    {:ok, photo} = Upload.create_photo(document_id, media_type_str, file, hash) do
+      with {:ok, %{"data" => %{"status" => "ok"}}} <- RpAttestation.photo_upload(session_id, country, media_type_str, file) do
+        {:ok, photo}
+      else
+        {:ok, %{"error" => %{"invalid" => [%{"rules" => [%{"description" => reason}]}]}}} -> {:error, reason}
+      end      
+    else
+      {:ok, photo} -> {:ok, photo}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp photo_type(type) do
+    case type do
+      :face -> "face"
+      :back -> "document-back"
+      :front -> "document-front"
+      _ -> {:error, "Unknown media type"}
+    end
+  end
+
+  defp document_type_veriff(type) do
+    case type do
+      "documents.id_card" -> "ID_CARD"
+      "documents.passport" -> "PASSPORT"
+      "documents.drivers_license" -> "DRIVERS_LICENSE"
+      "documents.residence_permit_card" -> "RESIDENCE_PERMIT_CARD"
+      _ -> {:error, "Unknown veriff document"}
+    end
+  end
 end
