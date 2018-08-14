@@ -4,11 +4,6 @@ defmodule RpQuorum.ContractServer do
 
   ##### Public #####
 
-  def create_account(password) do
-    "personal_newAccount"
-    |> Ethereumex.HttpClient.request([password], [])
-  end
-
   def account_address, do: :account_address |> env
 
   def call(contract_address, module, method, params \\ {}, attempt \\ 1) do

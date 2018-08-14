@@ -6,9 +6,15 @@ defmodule RpQuorum do
   ##### Public #####
   
   def create_account do
-    {:ok, address} = ContractServer.create_account("")
-    IO.inspect "NEW ADDRESS: #{inspect address}"
+    {:ok, address} = "personal_newAccount"
+    |> Ethereumex.HttpClient.request([""], [])
+
+    Ethereumex.HttpClient.request("personal_unlockAccount", [address, ""], [])
     address
+  end
+
+  def unlock(account_address) do
+    Ethereumex.HttpClient.request("personal_unlockAccount", [account_address, ""], [])
   end
 
   @spec get_provisioning_contract_factory(binary) :: binary
