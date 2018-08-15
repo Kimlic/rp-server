@@ -53,13 +53,28 @@ defmodule RpCore.Server.MediaServer do
     # IO.inspect "VENDORS: #{inspect vendors}"
     vendors = []
 
-    {:ok, session_id} = start_verification(user_address, doc_type_str, session_tag, first_name, last_name, device, udid)
-    {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)\
+    with {:ok, session_id} <- start_verification(user_address, doc_type_str, session_tag, first_name, last_name, device, udid),
+    {:ok, %Document{} = document} <- Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country) do
+      state = %{
+        document: document, 
+        session_id: session_id, 
+        photos: [], 
+        vendors: vendors,
+        verified: false
+      }
 
-    state = %{document: document, session_id: session_id, photos: [], vendors: vendors}
+      res = check_verification_status()
+      IO.inspect "AAA RES: #{inspect res}"
+  
+      {:ok, state}
+    else
+      {:error, method, tx} -> {:stop, "Unable to start media server: #{inspect method}, #{inspect tx}"}
+      {:error, reason} -> {:stop, "Unable to start media server: #{inspect reason}"}
+    end
 
-    {:ok, state}
+    
   end
+  def init(args), do: {:error, args}
 
   @impl true
   def handle_call(:get_state, _from, state), do: {:reply, {:ok, state}, state}
@@ -75,16 +90,33 @@ defmodule RpCore.Server.MediaServer do
       {:error, reason} -> {:reply, {:error, reason}, state}
     end
   end
-  def handle_call(:get_verification_status, _from, %{document: document} = state) do
+  def handle_call(message, _from, state), do: {:reply, {:error, message}, state}
+
+  @impl true
+  def handle_info(:check_verification_status, %{document: document, session_id: session_id, verified: false} = state) do
+    IO.inspect "Start verification check for: #{inspect document.session_tag}   #{inspect session_id}"
+
     with {:ok, config} <- RpKimcore.config,
     {:ok, provisioning_contract_factory_address} <- config.context_contract |> RpQuorum.get_provisioning_contract_factory,
     {:ok, provisioning_contract_address} <- provisioning_contract_factory_address |> RpQuorum.get_provisioning_contract(document.session_tag),
     {:ok, @not_verified} <- provisioning_contract_address |> RpQuorum.is_verification_finished do
-      {:reply, {:ok, :not_verified}, state}
+      IO.inspect "Not verified: #{inspect document.session_tag}   #{inspect session_id}"
+      check_verification_status()
+
+      {:noreply, state}
     else
-      {:error, reason} -> {:reply, {:error, reason}, state}
+      {:error, reason} -> 
+        IO.inspect "Error: #{inspect reason}   #{inspect document.session_tag}   #{inspect session_id}"
+        {:noreply, state}
+
+      answer -> 
+        IO.inspect "Some answer: #{answer}   #{inspect document.session_tag}   #{inspect session_id}"
+        {:noreply, %{state | verified: true}}
     end
+
+    {:noreply, state}
   end
+  def handle_info(_, state), do: {:noreply, state}
 
   defp via_tuple(name), do: {:via, MediaRegistry, {:media_server, name}}
 
@@ -120,6 +152,8 @@ defmodule RpCore.Server.MediaServer do
       {:error, reason} -> {:error, reason}
     end
   end
+
+  defp check_verification_status, do: Process.send_after(self(), :check_verification_status, 30 * 1_000)
 
   defp photo_type(type) do
     case type do

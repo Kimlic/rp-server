@@ -18,7 +18,7 @@ defmodule RpCore.Server.MediaSupervisor do
   @impl true
   def init(args) do
     children = [
-      worker(MediaServer, [args], restart: :temporary)
+      worker(MediaServer, [args], restart: :transient)
     ]
     supervise(children, strategy: :simple_one_for_one)
   end

@@ -17,8 +17,11 @@ defmodule RpCore do
     with {:error, :not_found} <- find_document(user_address, doc_type_str, hash) do
       session_tag = UUID.uuid1
       params = [user_address: user_address, doc_type_str: doc_type_str, session_tag: session_tag, first_name: first_name, last_name: last_name, device: device, udid: udid, country: country]
-      {:ok, _pid} = MediaSupervisor.start_child(params)
-      MediaServer.push_photo(session_tag, media_type, file, hash)
+      
+      case MediaSupervisor.start_child(params) do
+        {:ok, _pid} -> MediaServer.push_photo(session_tag, media_type, file, hash)
+        {:error, reason} -> {:error, reason}
+      end
     else
       {:error, method, %{"status" => "0x0"} = tx_receipt} -> {:error, "TX failed on #{inspect method}: #{inspect tx_receipt}"}
       {:error, method, reason} -> {:error, "TX failed on #{inspect method}: #{inspect reason}"}

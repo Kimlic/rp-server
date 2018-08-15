@@ -14,8 +14,8 @@ defmodule RpCore.Server.ServerSupervisor do
   @impl true
   def init(_args) do
     children = [
-      supervisor(MediaSupervisor, [[]]),
-      worker(MediaRegistry, [[]])
+      supervisor(MediaSupervisor, [[]], restart: :permanent),
+      worker(MediaRegistry, [[]], restart: :permanent)
     ]
     supervise(children, strategy: :rest_for_one)
   end

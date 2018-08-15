@@ -22,7 +22,7 @@ defmodule RpMobileWeb.Plug.RequestValidator do
 
       %Changeset{valid?: false} = changeset ->
         err_handler = fetch_error_handler(opts)
-
+        IO.inspect "CHANGESET: #{inspect changeset}"
         conn
         |> err_handler.call(changeset)
         |> halt()

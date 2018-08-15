@@ -9,9 +9,7 @@ defmodule RpCore.Server.MediaRegistry do
 
   def start_link(args), do: GenServer.start_link(__MODULE__, args, name: __MODULE__)
 
-  def register_name(key, pid) do
-    GenServer.call(__MODULE__, {:register_name, key, pid})
-  end
+  def register_name(key, pid), do: GenServer.call(__MODULE__, {:register_name, key, pid})
 
   def whereis_name(key) do
     case :ets.lookup(__MODULE__, key) do
@@ -29,9 +27,7 @@ defmodule RpCore.Server.MediaRegistry do
     end
   end
 
-  def unregister_name({:media_server, key}) do
-    GenServer.cast(__MODULE__, {:unregister_name, key})
-  end
+  def unregister_name({:media_server, key}), do: GenServer.cast(__MODULE__, {:unregister_name, key})
 
   ##### Callbacks #####
 
@@ -52,19 +48,19 @@ defmodule RpCore.Server.MediaRegistry do
       _ -> {:reply, :no, state}
     end
   end
+  def handle_call(_, _, state), do: {:reply, nil, state}
 
   @impl true
-  def handle_cast({:unregister_name, [media_server: key], []}, state) do
+  def handle_cast({:unregister_name, key}, state) do
     :ets.match_delete(__MODULE__, key)
     {:noreply, state}
   end
+  def handle_cast(_, state), do: {:noreply, state}
 
   @impl true
   def handle_info({:DOWN, _, :process, pid_to_remove, _}, state) do
     :ets.match_delete(__MODULE__, {:_, pid_to_remove})
     {:noreply, state}
   end
-
-  @impl true
   def handle_info(_, state), do: {:noreply, state}
 end
