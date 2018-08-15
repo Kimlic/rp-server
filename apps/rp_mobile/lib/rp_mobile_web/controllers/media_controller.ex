@@ -40,7 +40,7 @@ defmodule RpMobileWeb.MediaController do
     case type do
       "ID_CARD" -> {:ok, :id_card}
       "PASSPORT" -> {:ok, :passport}
-      "DRIVERS_LICENSE" -> {:ok, :driver_license}
+      "DRIVERS_LICENSE" -> {:ok, :drivers_license}
       "RESIDENCE_PERMIT_CARD" -> {:ok, :residence_permit_card}
       _ -> {:error, "Unknown document"}
     end

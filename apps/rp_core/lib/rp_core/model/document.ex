@@ -43,4 +43,13 @@ defmodule RpCore.Model.Document do
       document_id -> {:ok, document_id}
     end
   end
+
+  def delete!(session_tag) do
+    query = from d in Document,
+      where: d.session_tag == ^session_tag,
+      limit: 1
+      
+    Repo.one!(query)
+    |> Repo.delete!
+  end 
 end

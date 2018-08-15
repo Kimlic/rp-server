@@ -55,6 +55,8 @@ defmodule RpCore.Server.MediaServer do
 
     with {:ok, session_id} <- start_verification(user_address, doc_type_str, session_tag, first_name, last_name, device, udid),
     {:ok, %Document{} = document} <- Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country) do
+      check_verification_status()
+
       state = %{
         document: document, 
         session_id: session_id, 
@@ -63,16 +65,11 @@ defmodule RpCore.Server.MediaServer do
         verified: false
       }
 
-      res = check_verification_status()
-      IO.inspect "AAA RES: #{inspect res}"
-  
       {:ok, state}
     else
       {:error, method, tx} -> {:stop, "Unable to start media server: #{inspect method}, #{inspect tx}"}
       {:error, reason} -> {:stop, "Unable to start media server: #{inspect reason}"}
-    end
-
-    
+    end    
   end
   def init(args), do: {:error, args}
 
@@ -93,25 +90,21 @@ defmodule RpCore.Server.MediaServer do
   def handle_call(message, _from, state), do: {:reply, {:error, message}, state}
 
   @impl true
-  def handle_info(:check_verification_status, %{document: document, session_id: session_id, verified: false} = state) do
-    IO.inspect "Start verification check for: #{inspect document.session_tag}   #{inspect session_id}"
+  def handle_info({:check_verification, attempt}, %{document: document, verified: false} = state) do
+    if attempt < 1 do
+      Document.delete!(document.session_tag)
+      Process.exit(self(), :normal)
+    end
 
     with {:ok, config} <- RpKimcore.config,
     {:ok, provisioning_contract_factory_address} <- config.context_contract |> RpQuorum.get_provisioning_contract_factory,
     {:ok, provisioning_contract_address} <- provisioning_contract_factory_address |> RpQuorum.get_provisioning_contract(document.session_tag),
     {:ok, @not_verified} <- provisioning_contract_address |> RpQuorum.is_verification_finished do
-      IO.inspect "Not verified: #{inspect document.session_tag}   #{inspect session_id}"
-      check_verification_status()
-
+      check_verification_status(attempt - 1)
       {:noreply, state}
     else
-      {:error, reason} -> 
-        IO.inspect "Error: #{inspect reason}   #{inspect document.session_tag}   #{inspect session_id}"
-        {:noreply, state}
-
-      answer -> 
-        IO.inspect "Some answer: #{answer}   #{inspect document.session_tag}   #{inspect session_id}"
-        {:noreply, %{state | verified: true}}
+      {:error, _reason} -> {:noreply, state}
+      _answer -> {:noreply, %{state | verified: true}}
     end
 
     {:noreply, state}
@@ -151,7 +144,7 @@ defmodule RpCore.Server.MediaServer do
     end
   end
 
-  defp check_verification_status, do: Process.send_after(self(), :check_verification_status, 30 * 1_000)
+  defp check_verification_status(attempt \\ 5), do: Process.send_after(self(), {:check_verification, attempt}, 5 * 60 * 1_000)
 
   defp photo_type(type) do
     case type do
@@ -166,7 +159,7 @@ defmodule RpCore.Server.MediaServer do
     case type do
       "documents.id_card" -> "ID_CARD"
       "documents.passport" -> "PASSPORT"
-      "documents.drivers_license" -> "DRIVERS_LICENSE"
+      "documents.driver_license" -> "DRIVERS_LICENSE"
       "documents.residence_permit_card" -> "RESIDENCE_PERMIT_CARD"
       _ -> {:error, "Unknown veriff document"}
     end

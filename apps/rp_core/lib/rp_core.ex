@@ -50,7 +50,7 @@ defmodule RpCore do
     case type do
       :id_card -> "documents.id_card"
       :passport -> "documents.passport"
-      :driver_license -> "documents.drivers_license"
+      :drivers_license -> "documents.driver_license"
       :residence_permit_card -> "documents.residence_permit_card"
       _ -> {:error, "Unknown blockchain document"}
     end

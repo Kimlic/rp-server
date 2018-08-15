@@ -45,7 +45,10 @@ defmodule RpAttestation do
   defp get(endpoint) do
     req_url = ap_endpoint() <> endpoint
     req_options = [ssl: [{:versions, [:'tlsv1.2']}], timeout: 30_000, recv_timeout: 30_000]
-    req_headers = %{"account-address" => account_address()}
+    req_headers = %{
+      "account-address" => account_address(),
+      "Content-Type" => "application/json"
+    }
     
     case HTTPoison.get(req_url, req_headers, req_options) do
       {:error, %HTTPoison.Error{reason: reason}} -> {:error, reason}

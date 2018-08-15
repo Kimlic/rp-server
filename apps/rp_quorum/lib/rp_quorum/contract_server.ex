@@ -22,7 +22,7 @@ defmodule RpQuorum.ContractServer do
         case attempt do
           3 -> {:error, err}
           _ ->
-            :timer.sleep(50)
+            :timer.sleep(200)
             call(contract_address, module, method, params, attempt + 1)
         end
     end
@@ -55,7 +55,7 @@ defmodule RpQuorum.ContractServer do
           case attempt do
             3 -> {:error, err}
             _ ->
-              :timer.sleep(100)
+              :timer.sleep(200)
               transaction(contract_address, module, method, params, attempt + 1)
           end
       end
@@ -64,7 +64,7 @@ defmodule RpQuorum.ContractServer do
   ##### Private #####
 
   defp receipt(tx_hash, attempt \\ 1) do
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     case Ethereumex.HttpClient.eth_get_transaction_receipt(tx_hash, []) do
       {:ok, %{"status" => "0x1"}} -> {:ok, tx_hash}
