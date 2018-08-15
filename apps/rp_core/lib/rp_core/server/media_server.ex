@@ -141,14 +141,12 @@ defmodule RpCore.Server.MediaServer do
     media_type_str = photo_type(media_type)
 
     with {:error, :not_found} <- Photo.find_one_by(document_id, media_type_str, hash),
+    {:ok, %{"data" => %{"status" => "ok"}}} <- RpAttestation.photo_upload(session_id, country, media_type_str, file),
     {:ok, photo} = Upload.create_photo(document_id, media_type_str, file, hash) do
-      with {:ok, %{"data" => %{"status" => "ok"}}} <- RpAttestation.photo_upload(session_id, country, media_type_str, file) do
-        {:ok, photo}
-      else
-        {:ok, %{"error" => %{"invalid" => [%{"rules" => [%{"description" => reason}]}]}}} -> {:error, reason}
-      end      
+      {:ok, photo}   
     else
       {:ok, photo} -> {:ok, photo}
+      {:ok, %{"error" => %{"invalid" => [%{"rules" => [%{"description" => reason}]}]}}} -> {:error, reason}
       {:error, reason} -> {:error, reason}
     end
   end

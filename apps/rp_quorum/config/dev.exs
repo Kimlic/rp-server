@@ -1,7 +1,7 @@
 use Mix.Config
 
 config :rp_quorum, 
-  account_address: "0xadf761c1fe6d9a675fa616f14affd92f0f74c3a4"
+  account_address: "0x5add720a23742196dfffc05ae5503bfa020ec59a"
 
 config :ethereumex, url: "http://51.141.120.215:22000"
 
