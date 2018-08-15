@@ -31,6 +31,7 @@ defmodule RpMobile.Mixfile do
   defp deps do
     [
       {:phoenix, github: "Kimlic/phoenix", override: true},
+      {:phoenix_html, "~> 2.12"},
       {:plug, github: "Kimlic/plug", override: true},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 2.4", [github: "Kimlic/cowboy", override: true, manager: :rebar3]},

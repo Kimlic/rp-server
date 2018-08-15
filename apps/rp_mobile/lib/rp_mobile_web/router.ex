@@ -8,6 +8,9 @@ defmodule RpMobileWeb.Router do
 
   require Logger
 
+  pipeline :browser do
+  end
+
   pipeline :api do
     plug :accepts, [:v1]
     plug ApiVersion
@@ -36,8 +39,13 @@ defmodule RpMobileWeb.Router do
     get("/uaf/is_registered", FidoController, :is_registered)
     head("/uaf/is_registered", FidoController, :is_registered)
 
-    post("/qr", QrController, :create)
     get("/qr_callback", QrController, :callback)
+  end
+
+  scope "/", RpMobileWeb do
+    pipe_through :browser
+
+    get("/qr", QrController, :show)
   end
 
   defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stacktrace}) do

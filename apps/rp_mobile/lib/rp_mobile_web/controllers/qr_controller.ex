@@ -7,18 +7,19 @@ defmodule RpMobileWeb.QrController do
 
   ##### Public #####
   
-  def create(conn, _) do
+  def show(conn, _) do
     {:ok, scope_request} = RpUaf.create_scope_request()
-    response = Qr.generate_qr_code(scope_request)
+    qr = Qr.generate_qr_code(scope_request)
+    render(conn, "show.html", %{qr: qr})
 
-    conn
-    |> put_resp_content_type("image/png")
-    |> send_resp(:created, response)
+    # conn
+    # |> put_resp_content_type("image/png")
+    # |> send_resp(:created, response)
   end
 
   def callback(conn, %{"scope_request" => id}) do
     with account_address <- conn.assigns.account_address,
-    {:ok, %{scope_request: res, fido: _} = resp} <- RpUaf.process_scope_request(id, account_address) do
+    {:ok, %{scope_request: _, fido: _} = resp} <- RpUaf.process_scope_request(id, account_address) do
       json(conn, resp)
     else
       {:error, :scope_request_already_processed} -> json(conn, %{error: "Scope request already processed"})
