@@ -1,9 +1,7 @@
 defmodule RpMobileWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :rp_mobile
 
-  if code_reloading? do
-    plug Phoenix.CodeReloader
-  end
+  if code_reloading?, do: plug Phoenix.CodeReloader
 
   plug Plug.RequestId
   plug Plug.Logger, level: Logger.level()
@@ -15,7 +13,7 @@ defmodule RpMobileWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  
+
   plug RpMobileWeb.Router
 
   def init(_key, config) do

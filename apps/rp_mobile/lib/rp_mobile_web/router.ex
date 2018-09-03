@@ -1,5 +1,7 @@
 defmodule RpMobileWeb.Router do
   use RpMobileWeb, :router
+
+  if Mix.env == :dev, do: use Plug.Debugger
   use Plug.ErrorHandler
 
   alias RpMobileWeb.Plug.AccountAddress
@@ -7,6 +9,8 @@ defmodule RpMobileWeb.Router do
   alias Plug.LoggerJSON
 
   require Logger
+
+  ##### Router #####
 
   pipeline :browser do
   end
@@ -49,7 +53,7 @@ defmodule RpMobileWeb.Router do
     get("/qr", QrController, :show)
   end
 
-  ##### ERRORS #####
+  ##### Plug.ErrorHandler #####
 
   defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stack}) do
     LoggerJSON.log_error(kind, reason, stack)
