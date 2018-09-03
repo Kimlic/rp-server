@@ -3,7 +3,7 @@ defmodule RpMobileWeb.MediaController do
 
   use RpMobileWeb, :controller
 
-  alias RpMobileWeb.FallbackController
+  # alias RpMobileWeb.FallbackController
   alias RpMobileWeb.Plug.RequestValidator
   alias RpCore.Validator.UploadMediaValidator
 

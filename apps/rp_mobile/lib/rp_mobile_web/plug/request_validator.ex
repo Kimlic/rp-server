@@ -9,6 +9,8 @@ defmodule RpMobileWeb.Plug.RequestValidator do
   alias Ecto.Changeset
   alias Plug.Conn
 
+  ##### Public #####
+
   @spec init(Plug.opts()) :: Plug.opts()
   def init(opts), do: opts
 
@@ -17,18 +19,21 @@ defmodule RpMobileWeb.Plug.RequestValidator do
     validator = fetch_validator!(opts)
 
     case validator.changeset(params) do
-      %Changeset{valid?: true} = changeset ->
-        assign(conn, :validated_params, Changeset.apply_changes(changeset))
-
-      %Changeset{valid?: false} = changeset ->
-        err_handler = fetch_error_handler(opts)
-        IO.inspect "CHANGESET: #{inspect changeset}"
-        conn
-        |> err_handler.call(changeset)
-        |> halt()
-
+      %Changeset{valid?: true} = changeset -> assign(conn, :validated_params, Changeset.apply_changes(changeset))
+      %Changeset{valid?: false} = changeset -> error_conn(conn, opts, changeset)
       result -> raise("Expected validator #{validator}.changeset/1 return %Ecto.Changeset{}, #{inspect(result)} given")
     end
+  end
+
+  ##### Private #####
+
+  @spec error_conn(Conn.t(), Plug.opts(), Changeset.t()) :: Conn.t()
+  defp error_conn(conn, opts, changeset) do
+    err_handler = fetch_error_handler(opts)
+
+    conn
+    |> err_handler.call(changeset)
+    |> halt()
   end
 
   @spec fetch_validator!(Plug.opts()) :: module

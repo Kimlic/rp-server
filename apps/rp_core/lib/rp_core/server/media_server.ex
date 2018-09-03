@@ -116,18 +116,34 @@ defmodule RpCore.Server.MediaServer do
   @spec start_verification(binary, binary, UUID, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
   defp start_verification(user_address, doc_type, session_tag, first_name, last_name, device, udid) do
     veriff_doc = document_type_veriff(doc_type)
+
+    {:ok, config} = RpKimcore.config
+    IO.puts "1: #{inspect config}"
+    {:ok, provisioning_contract_factory_address} = config.context_contract |> RpQuorum.get_provisioning_contract_factory
+    IO.puts "2: #{inspect provisioning_contract_factory_address}"
+    {:ok, method, tx_hash} = provisioning_contract_factory_address |> RpQuorum.create_provisioning_contract(user_address, doc_type, session_tag)
+    IO.puts "3: #{inspect method}   #{tx_hash}"
+    {:ok, verification_contract_factory_address} = config.context_contract |> RpQuorum.get_verification_contract_factory
+    IO.puts "4: #{inspect verification_contract_factory_address}"
+    {:ok, method, tx_hash} = verification_contract_factory_address |> RpQuorum.create_base_verification_contract(user_address, Enum.fetch!(config.attestation_parties, 0).address, doc_type, session_tag)
+    IO.puts "5: #{inspect method}   #{tx_hash}"
+    {:ok, verification_contract_address} = verification_contract_factory_address |> RpQuorum.get_verification_contract(session_tag)
+    IO.puts "6: #{inspect verification_contract_address}"
+    {:ok, %{"data" => %{"session_id" => session_id}}} = RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid)
+    IO.puts "7: #{inspect session_id}"
+    {:ok, session_id}
   
-    with {:ok, config} <- RpKimcore.config,
-    {:ok, provisioning_contract_factory_address} <- config.context_contract |> RpQuorum.get_provisioning_contract_factory,
-    {:ok, _method, _tx_hash} <- provisioning_contract_factory_address |> RpQuorum.create_provisioning_contract(user_address, doc_type, session_tag),
-    {:ok, verification_contract_factory_address} <- config.context_contract |> RpQuorum.get_verification_contract_factory,
-    {:ok, _method, _tx_hash} <- verification_contract_factory_address |> RpQuorum.create_base_verification_contract(user_address, Enum.fetch!(config.attestation_parties, 0).address, doc_type, session_tag),
-    {:ok, verification_contract_address} <- verification_contract_factory_address |> RpQuorum.get_verification_contract(session_tag),
-    {:ok, %{"data" => %{"session_id" => session_id}}} <- RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
-      {:ok, session_id}
-    else
-      err -> err
-    end
+    # with {:ok, config} <- RpKimcore.config,
+    # {:ok, provisioning_contract_factory_address} <- config.context_contract |> RpQuorum.get_provisioning_contract_factory,
+    # {:ok, _method, _tx_hash} <- provisioning_contract_factory_address |> RpQuorum.create_provisioning_contract(user_address, doc_type, session_tag),
+    # {:ok, verification_contract_factory_address} <- config.context_contract |> RpQuorum.get_verification_contract_factory,
+    # {:ok, _method, _tx_hash} <- verification_contract_factory_address |> RpQuorum.create_base_verification_contract(user_address, Enum.fetch!(config.attestation_parties, 0).address, doc_type, session_tag),
+    # {:ok, verification_contract_address} <- verification_contract_factory_address |> RpQuorum.get_verification_contract(session_tag),
+    # {:ok, %{"data" => %{"session_id" => session_id}}} <- RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
+    #   {:ok, session_id}
+    # else
+    #   err -> err
+    # end
   end
 
   defp upload_photo(document_id, media_type, file, hash, country, session_id) do

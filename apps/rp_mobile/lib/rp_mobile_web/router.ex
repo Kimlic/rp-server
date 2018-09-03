@@ -15,6 +15,7 @@ defmodule RpMobileWeb.Router do
     plug :accepts, [:v1]
     plug ApiVersion
     plug AccountAddress
+    plug :put_resp_content_type, MIME.type("json")
   end
 
   scope "/api", RpMobileWeb do
@@ -22,7 +23,7 @@ defmodule RpMobileWeb.Router do
 
     ##### demo #####
 
-    post "/rabbit_job", PingController, :rabbit_job
+    # post "/rabbit_job", PingController, :rabbit_job
 
     ##### API v1 #####
 
@@ -33,11 +34,11 @@ defmodule RpMobileWeb.Router do
 
     # get("/uaf/facets", FidoController, :facets)
     # get("/uaf/reg_request", FidoController, :reg_request)
-    post("/uaf/reg_response", FidoController, :reg_response)
+    # post("/uaf/reg_response", FidoController, :reg_response)
     # get("/uaf/auth_request", FidoController, :auth_request)
-    post("/uaf/auth_response", FidoController, :auth_response)
-    get("/uaf/is_registered", FidoController, :is_registered)
-    head("/uaf/is_registered", FidoController, :is_registered)
+    # post("/uaf/auth_response", FidoController, :auth_response)
+    # get("/uaf/is_registered", FidoController, :is_registered)
+    # head("/uaf/is_registered", FidoController, :is_registered)
 
     get("/qr_callback", QrController, :callback)
   end
@@ -48,8 +49,10 @@ defmodule RpMobileWeb.Router do
     get("/qr", QrController, :show)
   end
 
-  defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stacktrace}) do
-    LoggerJSON.log_error(kind, reason, stacktrace)
+  ##### ERRORS #####
+
+  defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stack}) do
+    LoggerJSON.log_error(kind, reason, stack)
 
     Logger.log(:info, fn ->
       Jason.encode!(%{
@@ -59,7 +62,22 @@ defmodule RpMobileWeb.Router do
       })
     end)
 
-    send_resp(conn, 500, Jason.encode!(%{errors: %{detail: "Internal server error"}}))
+    send_resp(conn, 500, "")
   end
-  defp handle_errors(_, _), do: nil
+
+  defp handle_errors(%Plug.Conn{status: 406} = conn, %{kind: kind, reason: reason, stack: stack}) do
+    LoggerJSON.log_error(kind, reason, stack)
+
+    Logger.log(:info, fn ->
+      Jason.encode!(%{
+        "log_type" => "error",
+        "request_params" => conn.params,
+        "request_id" => Logger.metadata()[:request_id]
+      })
+    end)
+
+    send_resp(conn, 406, "")
+  end
+
+  defp handle_errors(conn, _), do: conn
 end

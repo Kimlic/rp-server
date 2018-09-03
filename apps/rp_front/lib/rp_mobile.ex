@@ -1,2 +1,0 @@
-defmodule RpFront do
-end

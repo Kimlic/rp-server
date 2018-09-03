@@ -10,6 +10,7 @@ config :rp_mobile, RpMobileWeb.Endpoint,
     port: 443
   ],
   debug_errors: false,
+  catch_errors: true,
   code_reloader: false
 
 config :logger, level: :info
