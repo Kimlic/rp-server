@@ -3,6 +3,7 @@ defmodule RpQuorum.ABI.Parser do
 
   alias RpQuorum.ABI.FunctionSelector
 
+  @doc false
   @spec parse!(binary, nil | [{atom, term}] | map) :: term
   def parse!(str, opts \\ []) do
     {:ok, tokens, _} = str |> String.to_charlist() |> :ethereum_abi_lexer.string()

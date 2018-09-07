@@ -6,6 +6,7 @@ defmodule RpAttestation do
   @spec vendors() :: {:ok, map} | {:error, binary}
   def vendors, do: ap_vendors() |> get
 
+  @spec session_create(binary, binary, binary, binary, binary, binary) :: {:ok, binary}
   def session_create(first_name, last_name, document_type, contract_address, device_os, device_token) do
     params = %{
       first_name: first_name, 
@@ -22,7 +23,10 @@ defmodule RpAttestation do
     |> post(params)
 
     IO.inspect "AP SESSION CREATE: #{inspect res}"
-    res
+
+    case res do
+      {:ok, %{"data" => %{"session_id" => session_id}}} -> {:ok, session_id}
+    end
   end
 
   def photo_upload(session_id, country, media_type, file) do
@@ -36,8 +40,11 @@ defmodule RpAttestation do
     res = ap_media_upload(session_id)
     |> post(params)
 
-    IO.inspect "AP SESSION UPLOAD: #{inspect res}"
-    res
+    case res do
+      {:ok, %{"data" => %{"status" => "ok"}}} -> :ok
+      {:ok, %{"error" => %{"invalid" => [%{"rules" => [%{"description" => reason}]}]}}} -> {:error, reason}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   ##### Private #####

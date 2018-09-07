@@ -37,7 +37,7 @@ defmodule RpMobileWeb.Plug.ApiVersion do
     end
   end
 
-  @spec validate_format(Map.t()) :: {:ok, binary} | {:error, binary}
+  @spec validate_format(map) :: {:ok, binary} | {:error, binary}
   defp validate_format(header) do
     case Map.fetch(@versions, header) do
       {:ok, [version]} -> {:ok, version}

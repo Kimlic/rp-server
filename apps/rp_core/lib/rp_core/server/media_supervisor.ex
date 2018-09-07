@@ -9,9 +9,7 @@ defmodule RpCore.Server.MediaSupervisor do
 
   def start_link(args), do: Supervisor.start_link(__MODULE__, args, name: __MODULE__)
 
-  def start_child(args) do
-    Supervisor.start_child(__MODULE__, [args])
-  end
+  def start_child(args), do: Supervisor.start_child(__MODULE__, [args])
 
   ##### Private #####
 

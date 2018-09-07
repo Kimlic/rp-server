@@ -32,6 +32,12 @@ defmodule RpCore do
     end
   end
 
+  def get_verification_info(session_tag) do
+    info = MediaServer.verification_info(session_tag)
+    IO.puts "VERIFICATION INFO: #{inspect info}"
+    info
+  end
+
   ##### Private #####
 
   def find_document(user_address, doc_type_str, hash) do
