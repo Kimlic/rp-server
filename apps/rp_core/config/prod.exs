@@ -16,5 +16,3 @@ config :arc_azure,
 config :ex_azure,
     account: System.get_env("AZURE_ACCOUNT"),
     access_key: System.get_env("AZURE_KEY")
-
-config :logger, level: :info   

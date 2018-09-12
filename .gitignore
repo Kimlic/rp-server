@@ -23,10 +23,14 @@ Logs
 /log
 **/log
 
+debug.log
+error.log
+
 # Don't commit benchmark snapshots
 bench/snapshots
 
 # Don't commit editor configs
+.vscode
 .idea
 
 # Elastic Beanstalk Files

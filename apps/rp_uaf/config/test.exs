@@ -8,5 +8,3 @@ config :rp_uaf, RpUaf.Repo,
     hostname: "localhost",
     port: "5432",
     pool_size: 10
-
-config :logger, level: :debug 

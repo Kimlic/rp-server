@@ -44,4 +44,4 @@ services:
     command: bash -c 'sh scripts/wait-for-postgres.sh db \
       && sh _build/prod/rel/rp_server/bin/rp_server migrate \
       && sh _build/prod/rel/rp_server/bin/rp_server seeds \
-      && RP_MOBILE_PORT=4000 RP_FRONT_PORT=4001 sh _build/prod/rel/rp_server/bin/rp_server foreground'
+      && RP_MOBILE_PORT=4000 RP_DASHBOARD_PORT=4001 sh _build/prod/rel/rp_server/bin/rp_server foreground'

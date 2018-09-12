@@ -21,7 +21,7 @@ defmodule RpMobile.Mixfile do
   def application do
     [
       mod: {RpMobile.Application, []},
-      extra_applications: [:logger, :runtime_tools, :jsx, :parse_trans]
+      extra_applications: [:sasl, :logger, :runtime_tools, :jsx, :parse_trans]
     ]
   end
 
@@ -30,12 +30,12 @@ defmodule RpMobile.Mixfile do
 
   defp deps do
     [
-      {:phoenix, github: "Kimlic/phoenix", override: true},
+      {:phoenix, github: "PharosProduction/phoenix", override: true},
+      {:plug, github: "PharosProduction/plug", override: true},
       {:phoenix_html, "~> 2.12"},
-      {:plug, github: "Kimlic/plug", override: true},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 2.4", [github: "Kimlic/cowboy", override: true, manager: :rebar3]},
-      {:jason, "~> 1.0"},
+      {:jason, "~> 1.1"},
       {:plug_logger_json, "~> 0.6"},
 
       {:rp_core, in_umbrella: true},

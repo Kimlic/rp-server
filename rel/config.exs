@@ -33,7 +33,7 @@ release :rp_server do
     :rp_attestation,
     :rp_core,
     # :rp_eventbus,
-    # :rp_front,
+    :rp_dashboard,
     :rp_kimcore,
     :rp_mobile,
     :rp_quorum,

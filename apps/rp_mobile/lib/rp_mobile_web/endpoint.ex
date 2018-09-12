@@ -4,7 +4,7 @@ defmodule RpMobileWeb.Endpoint do
   if code_reloading?, do: plug Phoenix.CodeReloader
 
   plug Plug.RequestId
-  plug Plug.Logger, level: Logger.level()
+  plug Plug.Logger#, level: Logger.level()
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],

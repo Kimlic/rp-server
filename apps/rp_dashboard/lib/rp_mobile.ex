@@ -1,0 +1,2 @@
+defmodule RpDashboard do
+end

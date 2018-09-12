@@ -17,7 +17,7 @@ defmodule RpKimcore.MixProject do
 
   def application do
     [
-      extra_applications: [:logger, :runtime_tools],
+      extra_applications: [:sasl, :logger, :runtime_tools],
       mod: {RpKimcore.Application, []}
     ]
   end

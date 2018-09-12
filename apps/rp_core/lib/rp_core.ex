@@ -7,7 +7,7 @@ defmodule RpCore do
 
   @type media_type :: {:face, String.t} | {:front, String.t} | {:back, String.t}
 
-  ##### Public #####
+  ##### Mobile #####
 
   @spec store_media(binary, atom, atom, binary, binary, binary, binary, binary, media_type) :: {:ok, binary} | {:error, binary}
   def store_media(user_address, doc_type, _attestator, first_name, last_name, country, device, udid, [{media_type, file}]) do
@@ -36,6 +36,13 @@ defmodule RpCore do
     info = MediaServer.verification_info(session_tag)
     IO.puts "VERIFICATION INFO: #{inspect info}"
     info
+  end
+
+  ##### Dashboard #####
+
+  @spec documents() :: list(Document.t())
+  def documents do
+    Document.all()
   end
 
   ##### Private #####

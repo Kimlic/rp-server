@@ -14,5 +14,3 @@ config :rp_uaf,
 
 config :rp_uaf, RpUaf.Fido.Client,
   url: System.get_env("FIDO_ENDPOINT")
-
-config :logger, level: :info   

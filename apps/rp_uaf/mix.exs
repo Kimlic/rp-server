@@ -18,14 +18,14 @@ defmodule RpUaf.Mixfile do
 
   def application do
     [
-      extra_applications: [:logger, :runtime_tools],
+      extra_applications: [:sasl, :logger, :runtime_tools],
       mod: {RpUaf.Application, []}
     ]
   end
 
   defp deps do
     [
-      {:jason, "~> 1.0"},
+      {:jason, "~> 1.1"},
       {:httpoison, "~> 1.2", override: true},
       {:hackney, "~> 1.13", override: true},
       {:ecto, "~> 2.2"},

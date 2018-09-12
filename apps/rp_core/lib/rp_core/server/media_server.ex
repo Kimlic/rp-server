@@ -105,6 +105,15 @@ defmodule RpCore.Server.MediaServer do
   end
   def init(args), do: {:error, args}
 
+  # def handle_cast({:something, 1}, state) do
+  #   IO.puts "This executes first"
+  #   {:stop, "This is my reason for stopping", state}
+  # end
+
+  # def terminate(reason, state)
+  #   IO.puts "Then this executes"
+  # end
+
   @impl true
   def handle_call(:verification_info, _from, state), do: {:reply, {:ok, state[:verification_info]}, state}
   def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id, verification_info: verification_info} = state) do
