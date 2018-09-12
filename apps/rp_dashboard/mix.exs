@@ -39,7 +39,8 @@ defmodule RpDashboard.Mixfile do
       {:absinthe, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
       
-      {:rp_core, in_umbrella: true}
+      {:rp_core, in_umbrella: true},
+      {:rp_uaf, in_umbrella: true}
     ]
   end
 end
