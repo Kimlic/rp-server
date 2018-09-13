@@ -6,8 +6,8 @@ config :rp_uaf, RpUaf.Repo,
   username: System.get_env("DB_USERNAME"),
   password: System.get_env("DB_PASSWORD"),
   hostname: System.get_env("DB_HOSTNAME"),
-  port: System.get_env("DB_PORT"),
-  pool_size: Integer.parse(System.get_env("DB_POOL"))
+  port: "5432",
+  pool_size: System.get_env("DB_POOL") |> Integer.parse
 
 config :rp_uaf, 
   callback_url: System.get_env("RELAYING_CALLBACK_URL")

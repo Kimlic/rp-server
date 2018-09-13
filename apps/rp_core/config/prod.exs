@@ -6,7 +6,7 @@ config :rp_core, RpCore.Repo,
     username: System.get_env("DB_USERNAME"),
     password: System.get_env("DB_PASSWORD"),
     hostname: System.get_env("DB_HOSTNAME"),
-    port: System.get_env("DB_PORT"),
+    port: "5432",
     pool_size: Integer.parse(System.get_env("DB_POOL"))
 
 config :arc_azure,
