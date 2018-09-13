@@ -79,24 +79,28 @@ defmodule RpCore.Server.MediaServer do
       {:ok, :unverified} ->
         ap_address = Enum.fetch!(config.attestation_parties, 0).address
         {:ok, verification_contract_address} = create_verification(config.context_contract, user_address, ap_address, doc_type_str, session_tag)
-        {:ok, session_id} = RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid)
-        {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
+        IO.puts "VERIFICATION CREATED: #{inspect verification_contract_address}"
 
-        check_verification_attempt(@max_check_polls)
+        case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
+          {:error, reason} -> {:error, reason}
+          {:ok, session_id} ->
+            {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
 
-        state = %{
-          document: document, 
-          photos: [], 
-          vendors: vendors,
-          session_id: session_id, 
-          verification_info: nil,
-          contracts: %{
-            provisioning_contract_address: provisioning_contract_address,
-            verification_contract_address: verification_contract_address
-          }
-        }
-        {:ok, state}
+            check_verification_attempt(@max_check_polls)
 
+            state = %{
+              document: document, 
+              photos: [], 
+              vendors: vendors,
+              session_id: session_id, 
+              verification_info: nil,
+              contracts: %{
+                provisioning_contract_address: provisioning_contract_address,
+                verification_contract_address: verification_contract_address
+              }
+            }
+            {:ok, state}
+        end
       err -> throw err
     end
 

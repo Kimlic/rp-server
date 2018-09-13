@@ -2,8 +2,8 @@ use Mix.Config
 
 config :rp_mobile, RpMobileWeb.Endpoint,
   secret_key_base: "TaRwP6iMHBxzDxN3A3nhQ649q86wLxR2tw4oKOTpJpIDdKNbmnDcg4WvQCcC79yY",
-  url: [host: "localhost", port: 4000],
-  http: [port: 4000],
+  url: [host: "localhost", port: 4002],
+  http: [port: 4002],
   debug_errors: true,
   catch_errors: false,
   code_reloader: true,

@@ -2,6 +2,10 @@ use Mix.Config
 
 config :rp_core, RpCore.Repo,
   adapter: Ecto.Adapters.Postgres,
+  # database: "rp_server",
+  # username: "kimlic@rp3",
+  # password: "LU6dME4NzQ",
+  # hostname: "rp3.postgres.database.azure.com",
   database: "rp_server",
   username: "kimlic",
   password: "kimlic",
