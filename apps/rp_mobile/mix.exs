@@ -30,8 +30,8 @@ defmodule RpMobile.Mixfile do
 
   defp deps do
     [
-      {:phoenix, github: "PharosProduction/phoenix", override: true},
-      {:plug, github: "PharosProduction/plug", override: true},
+      {:phoenix, github: "Kimlic/phoenix", override: true},
+      {:plug, github: "Kimlic/plug", override: true},
       {:phoenix_html, "~> 2.12"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 2.4", [github: "Kimlic/cowboy", override: true, manager: :rebar3]},
