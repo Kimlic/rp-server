@@ -21,6 +21,18 @@ config :logger,
   utc_log: true,
   backends: backends
 
+config :logger, :console,
+  level: :debug,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id, :application, :module, :function, :crash_reason],
+  handle_otp_reports: false,
+  handle_sasl_reports: false
+
+# config :logger,
+#   format: "[$date] [$time] [$level] $metadata $message\n",
+#   utc_log: true,
+#   backends: backends
+
 # config :uberlog, :slack,
 #   url: "https://hooks.slack.com/services/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"
 
@@ -52,13 +64,13 @@ config :logger,
 #   handle_otp_reports: false,
 #   handle_sasl_reports: false
 
-config :logger, :console,
-  level: :debug,
-  format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id, :application, :module, :function, :crash_reason],
-  colors: [enable: true, debug: :green],
-  handle_otp_reports: false,
-  handle_sasl_reports: false
+# config :logger, :console,
+#   level: :debug,
+#   format: "$time $metadata[$level] $message\n",
+#   metadata: [:request_id, :application, :module, :function, :crash_reason],
+#   colors: [enable: true, debug: :green],
+#   handle_otp_reports: false,
+#   handle_sasl_reports: false
 
 # config :logger, :error,
 #   level: :error,
