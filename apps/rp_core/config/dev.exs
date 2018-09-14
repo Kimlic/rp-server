@@ -1,7 +1,6 @@
 use Mix.Config
 
 config :rp_core, RpCore.Repo,
-  adapter: Ecto.Adapters.Postgres,
   # database: "rp_server",
   # username: "kimlic@rp3",
   # password: "LU6dME4NzQ",
@@ -10,12 +9,7 @@ config :rp_core, RpCore.Repo,
   username: "kimlic",
   password: "kimlic",
   hostname: "localhost",
-  port: "5432",
-  timeout: 15_000,
-  pool_timeout: 15_000,
-  ownership_timeout: 15_000,
-  pool_size: 10,
-  parameters: [application_name: "RpCore", statement_timeout: "5000"]
+  pool_size: 10
 
 config :arc_azure,
   container: "rp-blob",
