@@ -8,7 +8,7 @@ defmodule RpCore.Server.MediaServer do
   alias RpCore.Media.Upload
   alias RpCore.Mapper
 
-  @max_check_polls 5
+  @max_check_polls 12 * 24
   @poll_time 5 * 60 * 1_000
   @timeout 60_000
 
