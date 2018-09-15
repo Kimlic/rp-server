@@ -2,6 +2,8 @@ defmodule RpQuorum.ContractServer do
 
   alias RpQuorum.ContractLoader
 
+  @transaction_delay Application.get_env(:rp_quorum, :transaction_delay)
+
   ##### Public #####
 
   def account_address, do: :account_address |> env
@@ -22,7 +24,7 @@ defmodule RpQuorum.ContractServer do
         case attempt do
           3 -> {:error, err}
           _ ->
-            :timer.sleep(200)
+            :timer.sleep(@transaction_delay)
             call(contract_address, module, method, params, attempt + 1)
         end
     end
@@ -55,7 +57,7 @@ defmodule RpQuorum.ContractServer do
           case attempt do
             3 -> {:error, err}
             _ ->
-              :timer.sleep(200)
+              :timer.sleep(@transaction_delay)
               transaction(contract_address, module, method, params, attempt + 1)
           end
       end
@@ -64,7 +66,7 @@ defmodule RpQuorum.ContractServer do
   ##### Private #####
 
   defp receipt(tx_hash, attempt \\ 1) do
-    :timer.sleep(200)
+    :timer.sleep(@transaction_delay)
 
     case Ethereumex.HttpClient.eth_get_transaction_receipt(tx_hash, []) do
       {:ok, %{"status" => "0x1"}} -> {:ok, tx_hash}
