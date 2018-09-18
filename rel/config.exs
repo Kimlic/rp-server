@@ -19,6 +19,14 @@ environment :dev do
   set cookie: erlang_cookie
 end
 
+environment :stage do
+  set dev_mode: false
+  set include_erts: true
+  set include_system_libs: true
+  set include_src: false
+  set cookie: erlang_cookie
+end
+
 environment :prod do
   set dev_mode: false
   set include_erts: true
