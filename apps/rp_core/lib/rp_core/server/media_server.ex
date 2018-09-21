@@ -10,7 +10,7 @@ defmodule RpCore.Server.MediaServer do
 
   @max_check_polls 12 * 24
   @poll_time 5 * 60 * 1_000
-  @timeout 60_000
+  @timeout 180_000
 
   ##### Public #####
 
