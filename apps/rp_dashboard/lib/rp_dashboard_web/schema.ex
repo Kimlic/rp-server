@@ -16,9 +16,9 @@ defmodule RpDashboardWeb.Schema do
       resolve &DocumentResolver.documents/3
     end
 
-    # @desc "Company details"
-    # field :company_details, non_null(:company_details) do
-    #   resolve &CompanyResolver.company_details/3
-    # end
+    @desc "Company details"
+    field :company_details, non_null(:company_details) do
+      resolve &CompanyResolver.company_details/3
+    end
   end
 end

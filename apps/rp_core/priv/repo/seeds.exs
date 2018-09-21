@@ -1,18 +1,27 @@
-# import Logger
-# import Ecto.Query
+require Logger
 
-# alias RpCore.{ Repo, PingPong }
+alias RpCore.{ Repo }
+alias RpCore.Model.Company
 
-# # # Cleanup
+# Cleanup
 
-# Repo.delete_all(PingPong)
+Repo.delete_all(Company)
 
-# # Create
+# Create
 
-# %PingPong{}
-# |> PingPong.changeset()
-# |> Repo.insert
+params = %{
+  name: "Kimlic Relying Party",
+  email: "dmytro@kimlic.com",
+  website: "http://www.kimlic.com",
+  phone: "+380997762791",
+  address: "Konovaltsa 44B, 201, Kyiv 01133, Ukraine",
+  details: "Demo relying party. For test purposes only."
+}
 
-# # Total
+%Company{}
+|> Company.changeset(params)
+|> Repo.insert
 
-# Logger.warn "Seed PingPong: #{ Repo.aggregate(PingPong, :count, :id) }"
+# Total
+
+Logger.warn "Seed Company: #{ Repo.aggregate(Company, :count, :id) }"

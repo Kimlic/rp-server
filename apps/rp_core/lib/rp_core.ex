@@ -1,7 +1,7 @@
 defmodule RpCore do
   @moduledoc false
 
-  alias RpCore.Model.{Document, Photo}
+  alias RpCore.Model.{Document, Photo, Company}
   alias RpCore.Server.MediaSupervisor
   alias RpCore.Server.MediaServer
 
@@ -43,6 +43,11 @@ defmodule RpCore do
   @spec documents() :: list(Document.t())
   def documents do
     Document.all()
+  end
+
+  @spec documents() :: list(Document.t())
+  def company do
+    Company.company()
   end
 
   ##### Private #####
