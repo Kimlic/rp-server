@@ -17,7 +17,13 @@ defmodule RpDashboardWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  
+
+  plug Corsica, 
+    max_age: 600, 
+    origins: "*", 
+    allow_headers: ~w(accept x-auth-token content-type origin authorization), 
+    allow_credentials: true
+
   plug RpDashboardWeb.Router
 
   def init(_key, config) do

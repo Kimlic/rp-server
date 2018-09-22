@@ -41,14 +41,13 @@ defmodule RpCore do
   ##### Dashboard #####
 
   @spec documents() :: list(Document.t())
-  def documents do
-    Document.all()
-  end
+  def documents, do: Document.all()
 
-  @spec documents() :: list(Document.t())
-  def company do
-    Company.company()
-  end
+  @spec company() :: Company.t()
+  def company, do: Company.company()
+
+  @spec companyUpdate(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
+  def companyUpdate(id, params), do: Company.update(id, params)
 
   ##### Private #####
 

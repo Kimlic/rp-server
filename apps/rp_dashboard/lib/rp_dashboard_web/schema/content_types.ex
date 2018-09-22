@@ -13,7 +13,7 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :type, non_null(:string)
   end
 
-  object :company_details do
+  object :company do
     field :id, non_null(:id)
     field :name, non_null(:string)
     field :email, non_null(:string)

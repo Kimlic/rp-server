@@ -17,8 +17,26 @@ defmodule RpDashboardWeb.Schema do
     end
 
     @desc "Company details"
-    field :company_details, non_null(:company_details) do
-      resolve &CompanyResolver.company_details/3
+    field :company, non_null(:company) do
+      resolve &CompanyResolver.company/3
+    end
+  end
+
+  input_object :company_params do
+    field :name, non_null(:string)
+    field :email, non_null(:string)
+    field :website, :string
+    field :phone, :string
+    field :address, :string
+    field :details, :string
+  end
+
+  mutation do
+    field :company_update, type: :company do
+      arg :id, non_null(:id)
+      arg :company, non_null(:company_params)
+
+      resolve &CompanyResolver.update/2
     end
   end
 end

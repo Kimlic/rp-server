@@ -1,8 +1,8 @@
-defmodule RpCore.Repo.Migrations.AddCompanyTable do
+defmodule RpCore.Repo.Migrations.AddCompanysTable do
   use Ecto.Migration
 
   def change do
-    create table :company, primary_key: false, prefix: "rp_core" do
+    create table :companys, primary_key: false, prefix: "rp_core" do
       add :id, :uuid, primary_key: true
       add :name, :string, null: false
       add :email, :string, null: false

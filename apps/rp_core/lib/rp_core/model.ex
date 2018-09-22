@@ -9,7 +9,7 @@ defmodule RpCore.Model do
             import Ecto.Query
 
             alias RpCore.Repo
-            alias RpCore.Model.{Document, Photo}
+            alias RpCore.Model.{Document, Photo, Company, Role, User, Logo}
         end
     end
 end

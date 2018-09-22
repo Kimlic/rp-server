@@ -38,6 +38,7 @@ defmodule RpDashboard.Mixfile do
       {:plug_logger_json, "~> 0.6"},
       {:absinthe, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
+      {:corsica, "~> 1.1"},
       
       {:rp_core, in_umbrella: true},
       {:rp_uaf, in_umbrella: true}

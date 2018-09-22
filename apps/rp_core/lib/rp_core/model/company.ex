@@ -9,7 +9,7 @@ defmodule RpCore.Model.Company do
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
-  schema "company" do
+  schema "companys" do
     field :name, :string, null: false
     field :email, :string, null: false
     field :website, :string
@@ -39,5 +39,18 @@ defmodule RpCore.Model.Company do
       nil -> {:error, :not_found}
       company -> {:ok, company}
     end
+  end
+
+  def companyById(id) do
+    Repo.one from c in Company,
+      where: c.id == ^id,
+      limit: 1
+  end
+
+  @spec update(UUID, map) :: {:ok, Company} | {:error, Changeset.t()}
+  def update(id, params) do
+    companyById(id)
+    |> changeset(params)
+    |> Repo.update
   end
 end
