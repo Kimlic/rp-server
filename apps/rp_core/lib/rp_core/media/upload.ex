@@ -3,7 +3,7 @@ defmodule RpCore.Media.Upload do
 
   alias RpCore.Repo
   alias RpCore.Uploader.File
-  alias RpCore.Model.{Document, Photo}
+  alias RpCore.Model.{Document, Photo, Logo}
   
   ##### Public #####
 
@@ -31,7 +31,21 @@ defmodule RpCore.Media.Upload do
     else
       {:error, :not_found} -> {:error, "No photo uploaded"}
       {:error, changeset} -> pretty_errors(changeset)
-      err -> IO.inspect "ERROR: #{err}"
+      err -> IO.puts "ERROR: #{inspect err}"
+    end
+  end
+
+  def create_logo(company_id, file) do
+    Logo.delete_all()
+
+    with {:ok, filename} <- File.store(file),
+    {:ok, url} <- file_url(filename),
+    {:ok, logo} <- insert_logo(url, company_id) do
+      {:ok, logo}
+    else
+      {:error, :not_found} -> {:error, "No logo uploaded"}
+      {:error, changeset} -> pretty_errors(changeset)
+      err -> IO.puts "ERROR: #{inspect err}"
     end
   end
 
@@ -66,6 +80,17 @@ defmodule RpCore.Media.Upload do
     |> Repo.insert
   end
 
+  defp insert_logo(file_url, company_id) do
+    params = %{
+      file: file_url,
+      company_id: company_id
+    }
+    
+    %Logo{}
+    |> Logo.changeset(params)
+    |> Repo.insert
+  end
+
   defp decode_image(file) do
     case Base.decode64(file) do
       {:ok, binary} -> binary
@@ -82,7 +107,7 @@ defmodule RpCore.Media.Upload do
 
       %{filename: name, binary: binary}
     rescue
-      e in RuntimeException -> IO.inspect e
+      e in RuntimeException -> IO.puts "Exception: #{inspect e}"
     end
   end
   

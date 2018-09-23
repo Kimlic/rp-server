@@ -12,8 +12,8 @@ config :rp_core, RpCore.Repo,
 
 config :arc_azure,
   container: "rp-blob",
-  cdn_url: "https://blobpharos.blob.core.windows.net"
+  cdn_url: "https://stagerpblob.blob.core.windows.net"
 
 config :ex_azure,
-  account: "blobpharos",
-  access_key: "nlXVNa5YkfiYa9UdqMPRb4WdfjqfB5u4KWh0mWLoPxAkxMlSxxUDyqrG3mGrUcQHdTUboG8JTUjGL0BJwwvdDA=="
+  account: "stagerpblob",
+  access_key: "65tC8WoorHTSrbp90h/hJf7OXQJtdQMWDVJMoE1Ra5U5L+wLNT2F46o5G4hDMgtYKyP1U5YdRvXqIigKvbohHg=="

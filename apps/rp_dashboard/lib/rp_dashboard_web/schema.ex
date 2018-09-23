@@ -2,6 +2,7 @@ defmodule RpDashboardWeb.Schema do
   use Absinthe.Schema
 
   import_types RpDashboardWeb.Schema.ContentTypes
+  import_types Absinthe.Plug.Types
 
   alias RpDashboardWeb.Resolvers.{DocumentResolver, QrResolver, CompanyResolver}
   
@@ -20,6 +21,11 @@ defmodule RpDashboardWeb.Schema do
     field :company, non_null(:company) do
       resolve &CompanyResolver.company/3
     end
+
+    @desc "Get logo"
+    field :logo, non_null(:logo) do
+      resolve &CompanyResolver.logo/3
+    end
   end
 
   input_object :company_params do
@@ -37,6 +43,13 @@ defmodule RpDashboardWeb.Schema do
       arg :company, non_null(:company_params)
 
       resolve &CompanyResolver.update/2
+    end
+
+    field :logo_update, type: :logo do
+      arg :file, non_null(:upload)
+      arg :company_id, non_null(:string)
+
+      resolve &CompanyResolver.logo_update/2
     end
   end
 end

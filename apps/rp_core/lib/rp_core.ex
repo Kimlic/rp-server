@@ -1,7 +1,8 @@
 defmodule RpCore do
   @moduledoc false
 
-  alias RpCore.Model.{Document, Photo, Company}
+  alias RpCore.Model.{Document, Photo, Company, Logo}
+  alias RpCore.Media.Upload
   alias RpCore.Server.MediaSupervisor
   alias RpCore.Server.MediaServer
 
@@ -33,9 +34,7 @@ defmodule RpCore do
   end
 
   def get_verification_info(session_tag) do
-    info = MediaServer.verification_info(session_tag)
-    IO.puts "VERIFICATION INFO: #{inspect info}"
-    info
+    MediaServer.verification_info(session_tag)
   end
 
   ##### Dashboard #####
@@ -46,8 +45,15 @@ defmodule RpCore do
   @spec company() :: Company.t()
   def company, do: Company.company()
 
-  @spec companyUpdate(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
-  def companyUpdate(id, params), do: Company.update(id, params)
+  @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
+  def company_update(id, params), do: Company.update(id, params)
+
+  def logo_url, do: Logo.logo_url()
+
+  def logo_update(company_id, file) do
+    {:ok, %Logo{} = logo} = Upload.create_logo(company_id, file)
+    {:ok, Logo.url(logo)}
+  end
 
   ##### Private #####
 

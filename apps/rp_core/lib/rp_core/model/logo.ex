@@ -4,6 +4,8 @@ defmodule RpCore.Model.Logo do
   use RpCore.Model
   use RpCore.Uploader
 
+  alias __MODULE__
+
   ##### Schema #####
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
@@ -33,4 +35,16 @@ defmodule RpCore.Model.Logo do
     {model.file, model}
     |> File.url
   end
+
+  def logo_url do
+    query = from l in Logo,
+      limit: 1
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      logo -> {:ok, Logo.url(logo)}
+    end
+  end
+
+  def delete_all, do: Repo.delete_all(Logo)
 end

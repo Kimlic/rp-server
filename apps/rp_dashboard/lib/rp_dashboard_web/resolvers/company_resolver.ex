@@ -12,8 +12,19 @@ defmodule RpDashboardWeb.Resolvers.CompanyResolver do
       website: params[:company][:website],
       details: params[:company][:details]
     }
-    RpCore.companyUpdate(params[:id], params[:company])
+    RpCore.company_update(params[:id], params[:company])
 
     {:ok, out}
+  end
+
+  def logo(_, _, _) do
+    {:ok, url} = RpCore.logo_url()
+    IO.puts "AAAA: #{inspect url}"
+    {:ok, %{url: url}}
+  end
+
+  def logo_update(params, _info) do
+    {:ok, url} = RpCore.logo_update(params[:company_id], params[:file])
+    {:ok, %{url: url}}
   end
 end
