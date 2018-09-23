@@ -19,7 +19,6 @@ defmodule RpDashboardWeb.Resolvers.CompanyResolver do
 
   def logo(_, _, _) do
     {:ok, url} = RpCore.logo_url()
-    IO.puts "AAAA: #{inspect url}"
     {:ok, %{url: url}}
   end
 

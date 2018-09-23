@@ -3,7 +3,7 @@ require Logger
 import Ecto.Query
 
 alias RpCore.{ Repo }
-alias RpCore.Model.{ Role, User, Company }
+alias RpCore.Model.{ Role, User, Company, Document }
 
 # Cleanup
 
@@ -52,8 +52,34 @@ params_company = %{
 |> Company.changeset(params_company)
 |> Repo.insert!
 
+# Document
+
+[
+  %{
+    user_address: "asdfklaskdf9as0dfk09adj9f0jas09fj",
+    session_tag: "as09djf09jsa90fj09adsjf90jas09dfj",
+    type: "passport",
+    first_name: "John",
+    last_name: "Doe",
+    country: "Ukraine"
+  },
+  %{
+    user_address: "asd0fk0-dskf0aks-d0fka0sdf",
+    session_tag: "asd-0fi-0asidf-0ias-0dif-0sdif",
+    type: "id_card",
+    first_name: "John",
+    last_name: "Smith",
+    country: "UK"
+  }
+] |> Enum.map(fn param ->
+  %Document{}
+  |> Document.changeset(param)
+  |> Repo.insert!
+end)
+
 # Total
 
 Logger.warn "Seed Roles: #{ Repo.aggregate(Role, :count, :id) }"
 Logger.warn "Seed Users: #{ Repo.aggregate(User, :count, :id) }"
 Logger.warn "Seed Company: #{ Repo.aggregate(Company, :count, :id) }"
+Logger.warn "Seed Documents: #{ Repo.aggregate(Document, :count, :id) }"
