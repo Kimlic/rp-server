@@ -18,8 +18,10 @@ defmodule RpDashboardWeb.Resolvers.CompanyResolver do
   end
 
   def logo(_, _, _) do
-    {:ok, url} = RpCore.logo_url()
-    {:ok, %{url: url}}
+    case RpCore.logo_url() do
+      {:ok, url} -> {:ok, %{url: url}}
+      {:error, :not_found} -> {:ok, %{url: nil, errors: 'Not Found'}}
+    end
   end
 
   def logo_update(params, _info) do

@@ -1,5 +1,5 @@
 use Mix.Config
-
+  
 config :rp_core, RpCore.Repo,
   #username: "kimlic@stage-postgres-pr2", # System.get_env("DB_USERNAME"),
   username: "kimlic", # System.get_env("DB_USERNAME"),
