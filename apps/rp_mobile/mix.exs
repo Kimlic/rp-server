@@ -33,10 +33,9 @@ defmodule RpMobile.Mixfile do
       {:phoenix, github: "Kimlic/phoenix", override: true},
       {:plug, github: "Kimlic/plug", override: true},
       {:phoenix_html, "~> 2.12"},
-      {:gettext, "~> 0.11"},
+      {:gettext, "~> 0.16"},
       {:cowboy, "~> 2.4", [github: "Kimlic/cowboy", override: true, manager: :rebar3]},
       {:jason, "~> 1.1"},
-      {:plug_logger_json, "~> 0.6"},
 
       {:rp_core, in_umbrella: true},
       {:rp_attestation, in_umbrella: true},

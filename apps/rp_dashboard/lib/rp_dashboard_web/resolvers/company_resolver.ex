@@ -25,7 +25,16 @@ defmodule RpDashboardWeb.Resolvers.CompanyResolver do
   end
 
   def logo_update(params, _info) do
-    {:ok, url} = RpCore.logo_update(params[:company_id], params[:file])
+    ext = params[:file].filename
+    |> Path.extname
+    |> String.downcase
+
+    file = case ext do
+    ".svg" -> Map.put(params[:file], :content_type, "image/svg+xml")
+    _ -> params[:file]
+    end
+
+    {:ok, url} = RpCore.logo_update(params[:company_id], file)
     {:ok, %{url: url}}
   end
 end

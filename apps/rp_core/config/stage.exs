@@ -6,11 +6,11 @@ config :rp_core, RpCore.Repo,
   password: "LU6dME4NzQ", # System.get_env("DB_PASSWORD"),
   #hostname: "stage-postgres-pr2.postgres.database.azure.com", # System.get_env("DB_HOSTNAME"),
   hostname: "stage-postgresql.eastus.cloudapp.azure.com", # System.get_env("DB_HOSTNAME"),
-  pool_size: 20 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
+  pool_size: 5 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
 
-config :arc_azure,
-  container: "rp-blob", # System.get_env("AZURE_CONTAINER"),
-  cdn_url: "https://stagerp2blob.blob.core.windows.net" # System.get_env("AZURE_CDN_URL")
+config :rp_core,
+  azure_container: "rp-blob", # System.get_env("AZURE_CONTAINER"),
+  azure_cdn_url: "https://stagerp2blob.blob.core.windows.net" # System.get_env("AZURE_CDN_URL")
 
 config :ex_azure,
   account: "stagerp2blob", # System.get_env("AZURE_ACCOUNT"),

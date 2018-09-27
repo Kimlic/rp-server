@@ -38,9 +38,7 @@ defmodule RpCore.Media.Upload do
   def create_logo(company_id, file) do
     Logo.delete_all()
 
-    with {:ok, filename} <- File.store(file),
-    {:ok, url} <- file_url(filename),
-    {:ok, logo} <- insert_logo(url, company_id) do
+    with {:ok, logo} <- insert_logo(file, company_id) do
       {:ok, logo}
     else
       {:error, :not_found} -> {:error, "No logo uploaded"}
@@ -80,9 +78,9 @@ defmodule RpCore.Media.Upload do
     |> Repo.insert
   end
 
-  defp insert_logo(file_url, company_id) do
+  defp insert_logo(file, company_id) do
     params = %{
-      file: file_url,
+      file: file,
       company_id: company_id
     }
     

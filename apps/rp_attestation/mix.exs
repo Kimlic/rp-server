@@ -24,8 +24,8 @@ defmodule RpAttestation.MixProject do
 
   defp deps do
     [
-      {:httpoison, "~> 1.2", override: true},
-      {:hackney, "~> 1.13", override: true},
+      {:httpoison, "~> 1.3", override: true},
+      {:hackney, "~> 1.14", override: true},
       {:jason, "~> 1.1"}
     ]
   end

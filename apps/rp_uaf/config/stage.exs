@@ -6,7 +6,7 @@ config :rp_uaf, RpUaf.Repo,
   password: "LU6dME4NzQ", # System.get_env("DB_PASSWORD"),
   #hostname: "stage-postgres-pr2.postgres.database.azure.com", # System.get_env("DB_HOSTNAME"),
   hostname: "stage-postgresql.eastus.cloudapp.azure.com", # System.get_env("DB_HOSTNAME"),
-  pool_size: 20 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
+  pool_size: 5 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
 
 config :rp_uaf, 
   callback_url: "http://168.62.55.56:4002/api/qr_callback" # System.get_env("RELAYING_CALLBACK_URL")

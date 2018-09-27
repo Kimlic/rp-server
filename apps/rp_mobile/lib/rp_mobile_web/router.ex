@@ -6,7 +6,6 @@ defmodule RpMobileWeb.Router do
 
   alias RpMobileWeb.Plug.AccountAddress
   alias RpMobileWeb.Plug.ApiVersion
-  alias Plug.LoggerJSON
 
   require Logger
 
@@ -56,8 +55,6 @@ defmodule RpMobileWeb.Router do
   ##### Plug.ErrorHandler #####
 
   defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stack}) do
-    LoggerJSON.log_error(kind, reason, stack)
-
     Logger.log(:info, fn ->
       Jason.encode!(%{
         "log_type" => "error",
@@ -70,8 +67,6 @@ defmodule RpMobileWeb.Router do
   end
 
   defp handle_errors(%Plug.Conn{status: 406} = conn, %{kind: kind, reason: reason, stack: stack}) do
-    LoggerJSON.log_error(kind, reason, stack)
-
     Logger.log(:info, fn ->
       Jason.encode!(%{
         "log_type" => "error",

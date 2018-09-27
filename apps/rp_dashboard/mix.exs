@@ -31,11 +31,10 @@ defmodule RpDashboard.Mixfile do
     [
       {:phoenix, github: "Kimlic/phoenix", override: true},
       {:plug, github: "Kimlic/plug", override: true},
-      {:phoenix_pubsub, "~> 1.0"},
-      {:gettext, "~> 0.11"},
+      {:phoenix_pubsub, "~> 1.1"},
+      {:gettext, "~> 0.16"},
       {:cowboy, "~> 2.4", [github: "Kimlic/cowboy", override: true, manager: :rebar3]},
       {:jason, "~> 1.1"},
-      {:plug_logger_json, "~> 0.6"},
       {:absinthe, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
       {:corsica, "~> 1.1"},

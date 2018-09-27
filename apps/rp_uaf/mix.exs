@@ -26,8 +26,8 @@ defmodule RpUaf.Mixfile do
   defp deps do
     [
       {:jason, "~> 1.1"},
-      {:httpoison, "~> 1.2", override: true},
-      {:hackney, "~> 1.13", override: true},
+      {:httpoison, "~> 1.3", override: true},
+      {:hackney, "~> 1.14", override: true},
       {:ecto, "~> 2.2"},
       {:postgrex, "~> 0.13"},
       {:qrcode, "~> 0.1"}
