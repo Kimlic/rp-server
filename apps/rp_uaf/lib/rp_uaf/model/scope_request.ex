@@ -5,8 +5,6 @@ defmodule RpUaf.Model.ScopeRequest do
 
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, except: [:__meta__]}
-
   @status_new "NEW"
 
   @required ~w(status scopes)a
@@ -14,6 +12,7 @@ defmodule RpUaf.Model.ScopeRequest do
 
   ##### Scheme #####
 
+  @derive {Jason.Encoder, except: [:__meta__]}
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "scope_requests" do
     field :status, :string, null: false, default: @status_new

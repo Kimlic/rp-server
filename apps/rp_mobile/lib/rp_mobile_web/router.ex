@@ -24,14 +24,11 @@ defmodule RpMobileWeb.Router do
   scope "/api", RpMobileWeb do
     pipe_through :api
 
-    ##### demo #####
-
-    # post "/rabbit_job", PingController, :rabbit_job
-
     ##### API v1 #####
 
     get "/vendors", ApController, :index
     post "/medias", MediaController, :create
+    get "/company", CompanyController, :show
 
     ##### UAF #####
 

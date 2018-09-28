@@ -8,6 +8,7 @@ defmodule RpCore.Model.Logo do
 
   ##### Schema #####
 
+  @derive {Jason.Encoder, except: [:__meta__, :company]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
   schema "logos" do

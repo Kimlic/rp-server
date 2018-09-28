@@ -7,6 +7,7 @@ defmodule RpCore.Model.Company do
 
   ##### Schema #####
 
+  @derive {Jason.Encoder, except: [:__meta__, :id, :inserted_at, :updated_at]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
   schema "companys" do
@@ -16,6 +17,8 @@ defmodule RpCore.Model.Company do
     field :phone, :string
     field :address, :string
     field :details, :string
+
+    has_one :logo, Logo, foreign_key: :company_id, on_delete: :delete_all
 
     timestamps()
   end
@@ -38,6 +41,22 @@ defmodule RpCore.Model.Company do
     case Repo.one(query) do
       nil -> {:error, :not_found}
       company -> {:ok, company}
+    end
+  end
+
+  def company_details do
+    query = from c in Company,
+      left_join: logo in assoc(c, :logo),
+      preload: [:logo],
+      limit: 1
+  
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      company -> 
+        url = company.logo
+        |> Logo.url
+
+        {:ok, %{company | logo: url}}
     end
   end
 

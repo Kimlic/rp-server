@@ -48,6 +48,9 @@ defmodule RpCore do
   @spec company() :: Company.t()
   def company, do: Company.company()
 
+  @spec company_details() :: Company.t()
+  def company_details, do: Company.company_details()
+
   @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
   def company_update(id, params), do: Company.update(id, params)
 
