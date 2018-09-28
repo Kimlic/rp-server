@@ -19,7 +19,7 @@ defmodule RpCore.MixProject do
   def application do
     [
       mod: {RpCore.Application, []},
-      extra_applications: [:sasl, :logger, :runtime_tools]
+      extra_applications: [:sasl, :logger, :erlazure, :runtime_tools]
     ]
   end
 

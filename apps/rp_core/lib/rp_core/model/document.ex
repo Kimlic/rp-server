@@ -3,6 +3,8 @@ defmodule RpCore.Model.Document do
   
   use RpCore.Model
 
+  alias RpCore.Mapper.Veriff
+
   ##### Schema #####
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
@@ -14,6 +16,8 @@ defmodule RpCore.Model.Document do
     field :first_name, :string, null: false
     field :last_name, :string, null: false
     field :country, :string, null: false
+    field :verified_at, Timex.Ecto.DateTime, usec: false
+    field :verified, :boolean, null: false, default: true
     
     has_many :photos, Photo, foreign_key: :document_id, on_delete: :delete_all
 
@@ -21,7 +25,7 @@ defmodule RpCore.Model.Document do
   end
 
   @required_params ~w(user_address session_tag type first_name last_name country)a
-  @optional_params ~w()a
+  @optional_params ~w(verified_at verified)a
 
   ##### Public #####
 
@@ -33,7 +37,13 @@ defmodule RpCore.Model.Document do
   end
 
   def all do
-    Repo.all(Document)
+    query = from d in Document,
+      order_by: [desc: d.inserted_at]
+    
+    Repo.all(query)
+    |> Enum.map(fn doc -> 
+      %Document{doc | type: Veriff.document_quorum_to_human(doc.type)}
+    end)
   end
 
   def find_one_by(user_address, type) do

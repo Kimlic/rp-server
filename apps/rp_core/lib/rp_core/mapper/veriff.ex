@@ -17,7 +17,18 @@ defmodule RpCore.Mapper.Veriff do
       "documents.passport" -> "PASSPORT"
       "documents.driver_license" -> "DRIVERS_LICENSE"
       "documents.residence_permit_card" -> "RESIDENCE_PERMIT_CARD"
-      _ -> throw "Unknown veriff document"
+      _ -> throw "Unknown document"
+    end
+  end
+
+  @spec document_quorum_to_human(binary) :: binary
+  def document_quorum_to_human(type) do
+    case type do
+      "documents.id_card" -> "ID Card"
+      "documents.passport" -> "Passport"
+      "documents.driver_license" -> "Drivers License"
+      "documents.residence_permit_card" -> "Residence Permit Card"
+      _ -> throw "Unknown document"
     end
   end
 end
