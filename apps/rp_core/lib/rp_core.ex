@@ -42,6 +42,9 @@ defmodule RpCore do
   @spec documents() :: list(Document.t())
   def documents, do: Document.all()
 
+  @spec documents() :: list(Document.t())
+  def count_documents, do: Document.count_documents()
+
   @spec company() :: Company.t()
   def company, do: Company.company()
 

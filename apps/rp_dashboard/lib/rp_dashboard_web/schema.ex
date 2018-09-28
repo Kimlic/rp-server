@@ -17,6 +17,10 @@ defmodule RpDashboardWeb.Schema do
       resolve &DocumentResolver.documents/3
     end
 
+    field :count_documents, list_of(:documents_counter) do
+      resolve &DocumentResolver.count_documents/3
+    end
+
     @desc "Company details"
     field :company, non_null(:company) do
       resolve &CompanyResolver.company/3

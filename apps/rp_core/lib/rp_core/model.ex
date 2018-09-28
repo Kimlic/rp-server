@@ -1,16 +1,16 @@
 defmodule RpCore.Model do
-    @moduledoc false
+  @moduledoc false
 
-    defmacro __using__(_) do
-        quote do
-            use RpCore.Schema
+  defmacro __using__(_) do
+    quote do
+      use RpCore.Schema
   
-            import Ecto.Changeset
-            import Ecto.Query
+      import Ecto.Changeset
+      import Ecto.Query
 
-            alias RpCore.Repo
-            alias RpCore.Model.{Document, Photo, Company, Role, User, Logo}
-        end
+      alias RpCore.Repo
+      alias RpCore.Model.{Document, Photo, Company, Role, User, Logo}
     end
+  end
 end
   

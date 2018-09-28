@@ -46,6 +46,47 @@ defmodule RpCore.Model.Document do
     end)
   end
 
+  def count_documents do
+    query = "
+      select t1.date_at, coalesce(t2.verified, 0) as verified, coalesce(t3.unverified, 0) as unverified from (
+        select date(d.inserted_at) as date_at
+        from rp_core.documents as d
+        group by date(d.inserted_at)
+      ) as t1
+      left join (
+        select count(d.id) as verified, date(d.inserted_at) as date_at
+        from rp_core.documents as d
+        where not d.verified
+        group by date(d.inserted_at)
+      ) as t2
+      on t2.date_at = t1.date_at
+      left join (
+        select count(d.id) as unverified, date(d.inserted_at) as date_at
+        from rp_core.documents as d
+        where d.verified
+        group by date(d.inserted_at)
+      ) as t3
+      on t3.date_at = t1.date_at
+      order by date_at;
+    "
+    res = Ecto.Adapters.SQL.query!(Repo, query, [])
+    cols = Enum.map res.columns, &(String.to_atom(&1))
+    roles = Enum.map res.rows, fn(row) ->
+      date = row
+      |> Enum.at(0)
+      |> Date.from_erl
+      |> elem(1)
+
+      %{
+        date_at: date, 
+        verified: Enum.at(row, 1), 
+        unverified: Enum.at(row, 2)
+      }
+    end
+
+    roles
+  end
+
   def find_one_by(user_address, type) do
     query = from d in Document,
       where: d.user_address == ^user_address,
