@@ -7,7 +7,7 @@ defmodule RpCore.Model.Company do
 
   ##### Schema #####
 
-  @derive {Jason.Encoder, except: [:__meta__, :id, :inserted_at, :updated_at]}
+  @derive {Jason.Encoder, except: [:__meta__, :inserted_at, :updated_at]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
   schema "companys" do
