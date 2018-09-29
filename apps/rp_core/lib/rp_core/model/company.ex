@@ -18,7 +18,7 @@ defmodule RpCore.Model.Company do
     field :address, :string
     field :details, :string
 
-    has_one :logo, Logo, foreign_key: :company_id, on_delete: :delete_all
+    has_one :logo, LogosCompany, foreign_key: :company_id, on_delete: :delete_all
 
     timestamps()
   end
@@ -54,7 +54,7 @@ defmodule RpCore.Model.Company do
       nil -> {:error, :not_found}
       company -> 
         url = company.logo
-        |> Logo.url
+        |> LogosCompany.url
 
         {:ok, %{company | logo: url}}
     end

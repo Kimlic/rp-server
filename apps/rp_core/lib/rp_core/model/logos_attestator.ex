@@ -1,4 +1,4 @@
-defmodule RpCore.Model.Logo do
+defmodule RpCore.Model.LogosAttestator do
   @moduledoc false
   
   use RpCore.Model
@@ -11,15 +11,15 @@ defmodule RpCore.Model.Logo do
   @derive {Jason.Encoder, except: [:__meta__, :company]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
-  schema "logos" do
+  schema "logos_attestators" do
     field :file, File.Type, null: false
 
-    belongs_to :company, Company
+    belongs_to :attestator, Attestator
 
     timestamps()
   end
 
-  @required_params ~w(file company_id)a
+  @required_params ~w(file attestator_id)a
   @optional_params ~w()a
 
   ##### Public #####
@@ -38,14 +38,14 @@ defmodule RpCore.Model.Logo do
   end
 
   def logo_url do
-    query = from l in Logo,
+    query = from l in LogosAttestator,
       limit: 1
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
-      logo -> {:ok, Logo.url(logo)}
+      logo -> {:ok, LogosAttestator.url(logo)}
     end
   end
 
-  def delete_all, do: Repo.delete_all(Logo)
+  def delete_all, do: Repo.delete_all(LogosAttestator)
 end

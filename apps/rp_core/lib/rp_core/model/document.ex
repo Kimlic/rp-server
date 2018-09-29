@@ -70,7 +70,6 @@ defmodule RpCore.Model.Document do
       order by date_at;
     "
     res = Ecto.Adapters.SQL.query!(Repo, query, [])
-    cols = Enum.map res.columns, &(String.to_atom(&1))
     roles = Enum.map res.rows, fn(row) ->
       date = row
       |> Enum.at(0)

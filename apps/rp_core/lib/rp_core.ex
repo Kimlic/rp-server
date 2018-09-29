@@ -1,7 +1,7 @@
 defmodule RpCore do
   @moduledoc false
 
-  alias RpCore.Model.{Document, Photo, Company, Logo}
+  alias RpCore.Model.{Document, Photo, Company, LogosCompany, Attestator}
   alias RpCore.Media.Upload
   alias RpCore.Server.MediaSupervisor
   alias RpCore.Server.MediaServer
@@ -54,12 +54,15 @@ defmodule RpCore do
   @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
   def company_update(id, params), do: Company.update(id, params)
 
-  def logo_url, do: Logo.logo_url()
+  def logo_url, do: LogosCompany.logo_url()
 
   def logo_update(company_id, file) do
-    {:ok, %Logo{} = logo} = Upload.create_logo(company_id, file)
-    {:ok, Logo.url(logo)}
+    {:ok, %LogosCompany{} = logo} = Upload.create_logo(company_id, file)
+    {:ok, LogosCompany.url(logo)}
   end
+
+  @spec attestators() :: list(Attestator.t())
+  def attestators, do: Attestator.attestators()
 
   ##### Private #####
 

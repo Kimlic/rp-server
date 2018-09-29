@@ -3,7 +3,7 @@ defmodule RpCore.Media.Upload do
 
   alias RpCore.Repo
   alias RpCore.Uploader.File
-  alias RpCore.Model.{Document, Photo, Logo}
+  alias RpCore.Model.{Document, Photo, LogosCompany}
   
   ##### Public #####
 
@@ -36,7 +36,7 @@ defmodule RpCore.Media.Upload do
   end
 
   def create_logo(company_id, file) do
-    Logo.delete_all()
+    LogosCompany.delete_all()
 
     with {:ok, logo} <- insert_logo(file, company_id) do
       {:ok, logo}
@@ -84,8 +84,8 @@ defmodule RpCore.Media.Upload do
       company_id: company_id
     }
     
-    %Logo{}
-    |> Logo.changeset(params)
+    %LogosCompany{}
+    |> LogosCompany.changeset(params)
     |> Repo.insert
   end
 

@@ -7,9 +7,19 @@ defmodule RpCore.Model do
   
       import Ecto.Changeset
       import Ecto.Query
+      import Ecto.Interval
 
       alias RpCore.Repo
-      alias RpCore.Model.{Document, Photo, Company, Role, User, Logo}
+      alias RpCore.Model.{
+        Document, 
+        Photo, 
+        Company, 
+        Role, 
+        User, 
+        LogosCompany, 
+        Attestator,
+        LogosAttestator
+      }
     end
   end
 end

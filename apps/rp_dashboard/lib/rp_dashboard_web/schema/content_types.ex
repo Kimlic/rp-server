@@ -41,4 +41,15 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :address, :string
     field :details, :string
   end
+
+  object :attestator do
+    field :id, non_null(:id)
+    field :name, non_null(:string)
+    field :cost_per_user, :string
+    field :compliance, :string
+    field :response, :string
+    field :rating, :string
+    field :status, non_null(:boolean)
+    field :logo, :string
+  end
 end

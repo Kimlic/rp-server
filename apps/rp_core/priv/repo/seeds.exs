@@ -3,13 +3,22 @@ require Logger
 import Ecto.Query
 
 alias RpCore.{ Repo }
-alias RpCore.Model.{ Role, User, Company, Document }
+alias RpCore.Uploader.File
+alias RpCore.Model.{ 
+  Role, 
+  User, 
+  Company, 
+  # Document, 
+  Attestator,
+  LogosAttestator
+}
 
 # Cleanup
 
 Repo.delete_all(Role)
 Repo.delete_all(User)
 Repo.delete_all(Company)
+Repo.delete_all(Attestator)
 
 # Create Roles
 
@@ -52,6 +61,34 @@ params_company = %{
 |> Company.changeset(params_company)
 |> Repo.insert!
 
+# Create Attestator
+
+{:ok, response} = Ecto.Interval.cast(%{"months" => "0", "days" => "1", "secs" => "0"})
+params_attestator = %{
+  name: "Veriff",
+  cost_per_user: 0.0000145,
+  compliance: ["KYC", "AML"],
+  response: response,
+  rating: 4,
+  status: true
+}
+
+attestator = %Attestator{}
+|> Attestator.changeset(params_attestator)
+|> Repo.insert!
+
+{:ok, path} = Path.relative("/apps/rp_core/priv/repo/assets/veriff_logo.jpg")
+|> File.store
+
+params_logo_attestator = %{
+  file: File.url(path),
+  attestator_id: attestator.id
+}
+
+%LogosAttestator{}
+|> LogosAttestator.changeset(params_logo_attestator)
+|> Repo.insert!
+
 # Document
 
 # [
@@ -81,5 +118,7 @@ params_company = %{
 
 Logger.warn "Seed Roles: #{ Repo.aggregate(Role, :count, :id) }"
 Logger.warn "Seed Users: #{ Repo.aggregate(User, :count, :id) }"
-Logger.warn "Seed Company: #{ Repo.aggregate(Company, :count, :id) }"
+Logger.warn "Seed Companies: #{ Repo.aggregate(Company, :count, :id) }"
+Logger.warn "Seed Attesttors: #{ Repo.aggregate(Attestator, :count, :id) }"
+Logger.warn "Seed LogosAttestator: #{ Repo.aggregate(LogosAttestator, :count, :id) }"
 # Logger.warn "Seed Documents: #{ Repo.aggregate(Document, :count, :id) }"

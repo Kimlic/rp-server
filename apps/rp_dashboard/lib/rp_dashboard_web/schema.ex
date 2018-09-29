@@ -4,7 +4,12 @@ defmodule RpDashboardWeb.Schema do
   import_types RpDashboardWeb.Schema.ContentTypes
   import_types Absinthe.Plug.Types
 
-  alias RpDashboardWeb.Resolvers.{DocumentResolver, QrResolver, CompanyResolver}
+  alias RpDashboardWeb.Resolvers.{
+    DocumentResolver, 
+    QrResolver, 
+    CompanyResolver, 
+    AttestatorResolver
+  }
   
   query do
     @desc "Get QR"
@@ -29,6 +34,11 @@ defmodule RpDashboardWeb.Schema do
     @desc "Get logo"
     field :logo, non_null(:logo) do
       resolve &CompanyResolver.logo/3
+    end
+
+    @desc "Get attestators"
+    field :attestators, list_of(:attestator) do
+      resolve &AttestatorResolver.attestators/3
     end
   end
 
