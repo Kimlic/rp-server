@@ -79,7 +79,6 @@ defmodule RpCore.Server.MediaServer do
       {:ok, :unverified} ->
         ap_address = Enum.fetch!(config.attestation_parties, 0).address
         {:ok, verification_contract_address} = create_verification(config.context_contract, user_address, ap_address, doc_type_str, session_tag)
-        IO.puts "VERIFICATION CREATED: #{inspect verification_contract_address}"
 
         case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
           {:error, reason} -> {:error, reason}
@@ -121,7 +120,6 @@ defmodule RpCore.Server.MediaServer do
   @impl true
   def handle_call(:verification_info, _from, state), do: {:reply, {:ok, state[:verification_info]}, state}
   def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id, verification_info: verification_info} = state) do
-    IO.puts "PUSH PHOTO"
     with {:ok, photo} <- upload_photo(document.id, media_type, file, hash) do
       if is_nil(verification_info) do
         media_type_str = Mapper.Veriff.photo_atom_to_veriff(media_type)
@@ -140,9 +138,8 @@ defmodule RpCore.Server.MediaServer do
 
   @impl true
   def handle_info({:check_verification_attempt, attempt}, %{document: document, contracts: %{provisioning_contract_address: provisioning_contract_address}} = state) do
-    IO.puts "VERIFICATION ATTEMPT: #{attempt}"
     if attempt < 1 do
-      Document.delete!(document.session_tag)
+      # Document.delete!(document.session_tag)
 
       RpQuorum.tokens_unlock_at(provisioning_contract_address)
       RpQuorum.withdraw(provisioning_contract_address)
@@ -150,7 +147,10 @@ defmodule RpCore.Server.MediaServer do
       Process.exit(self(), :normal)
     else
       case get_verification_info(provisioning_contract_address) do
-        {:ok, :verified, verification_info} -> {:noreply, %{state | verification_info: verification_info}}
+        {:ok, :verified, verification_info} -> 
+          Document.verified(document)
+          {:noreply, %{state | verification_info: verification_info}}
+
         {:ok, :unverified} -> 
           check_verification_attempt(attempt - 1)
           {:noreply, state}

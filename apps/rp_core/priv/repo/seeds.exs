@@ -15,36 +15,36 @@ alias RpCore.Model.{
 
 # Cleanup
 
-Repo.delete_all(Role)
-Repo.delete_all(User)
+# Repo.delete_all(Role)
+# Repo.delete_all(User)
 Repo.delete_all(Company)
 Repo.delete_all(Attestator)
 
 # Create Roles
 
-[
-  %{name: "admin"},
-  %{name: "member"}
-] |> Enum.map(fn param ->
-  %Role{}
-  |> Role.changeset(param)
-  |> Repo.insert!
-end)
+# [
+#   %{name: "admin"},
+#   %{name: "member"}
+# ] |> Enum.map(fn param ->
+#   %Role{}
+#   |> Role.changeset(param)
+#   |> Repo.insert!
+# end)
 
 # Create Users
 
-role = Repo.one! from r in Role,
-  where: r.name == "admin"
+# role = Repo.one! from r in Role,
+#   where: r.name == "admin"
 
-params_admin = %{
-  first_name: "John",
-  last_name: "Doe"
-}
+# params_admin = %{
+#   first_name: "John",
+#   last_name: "Doe"
+# }
 
-role
-|> Ecto.build_assoc(:users)
-|> User.changeset(params_admin)
-|> Repo.insert!
+# role
+# |> Ecto.build_assoc(:users)
+# |> User.changeset(params_admin)
+# |> Repo.insert!
 
 # Create Company
 

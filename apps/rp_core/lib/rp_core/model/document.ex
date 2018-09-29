@@ -56,14 +56,14 @@ defmodule RpCore.Model.Document do
       left join (
         select count(d.id) as verified, date(d.inserted_at) as date_at
         from rp_core.documents as d
-        where not d.verified
+        where d.verified
         group by date(d.inserted_at)
       ) as t2
       on t2.date_at = t1.date_at
       left join (
         select count(d.id) as unverified, date(d.inserted_at) as date_at
         from rp_core.documents as d
-        where d.verified
+        where not d.verified
         group by date(d.inserted_at)
       ) as t3
       on t3.date_at = t1.date_at
@@ -96,6 +96,12 @@ defmodule RpCore.Model.Document do
       nil -> {:error, :not_found}
       document_id -> {:ok, document_id}
     end
+  end
+
+  def verified(document) do
+    document
+    |> Ecto.Changeset.change(verified: true)
+    |> Repo.update!
   end
 
   def delete!(session_tag) do
