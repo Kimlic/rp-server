@@ -7,6 +7,7 @@ defmodule RpCore.Model.Document do
 
   ##### Schema #####
 
+  @derive {Jason.Encoder, only: [:first_name, :last_name, :verified_at, :type, :country]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
   schema "documents" do
@@ -44,6 +45,22 @@ defmodule RpCore.Model.Document do
     |> Enum.map(fn doc -> 
       %Document{doc | type: Veriff.document_quorum_to_human(doc.type)}
     end)
+  end
+
+  def documents_verified(user_address) do
+    query = from d in Document,
+      where: d.user_address == ^user_address,
+      where: d.verified
+
+    case Repo.all(query) do
+      nil -> {:error, :not_found}
+      documents -> 
+        documents = documents
+        |> Enum.map(fn doc -> 
+          %Document{doc | type: Veriff.document_quorum_to_human(doc.type)}
+        end)
+        {:ok, documents}
+    end
   end
 
   def count_documents do

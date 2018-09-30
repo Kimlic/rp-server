@@ -6,6 +6,7 @@ defmodule RpCore.Model.Photo do
 
   ##### Schema #####
 
+  @derive {Jason.Encoder, except: [:__meta__]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
   schema "photos" do
