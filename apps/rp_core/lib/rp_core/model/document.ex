@@ -21,12 +21,13 @@ defmodule RpCore.Model.Document do
     field :verified, :boolean, null: false, default: true
     
     has_many :photos, Photo, foreign_key: :document_id, on_delete: :delete_all
+    belongs_to :attestator, Attestator
 
     timestamps()
   end
 
   @required_params ~w(user_address session_tag type first_name last_name country)a
-  @optional_params ~w(verified_at verified)a
+  @optional_params ~w(verified_at verified attestator_id)a
 
   ##### Public #####
 
@@ -35,6 +36,7 @@ defmodule RpCore.Model.Document do
     |> cast(params, @required_params ++ @optional_params)
     |> validate_required(@required_params)
     |> unique_constraint(:documents_user_address_type_index, name: :documents_user_address_type_index, message: "Document already exists")
+    # |> foreign_key_constraint(:document_id, message: "Should reference a document")
   end
 
   def all do

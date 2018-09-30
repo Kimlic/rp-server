@@ -17,6 +17,7 @@ defmodule RpCore.Model.Attestator do
     field :status, :boolean, null: false, default: true
 
     has_one :logo, LogosAttestator, foreign_key: :attestator_id, on_delete: :delete_all
+    has_many :documents, Document, foreign_key: :attestator_id, on_delete: :nothing
 
     timestamps()
   end

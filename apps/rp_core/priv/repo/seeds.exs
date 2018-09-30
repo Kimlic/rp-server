@@ -1,24 +1,24 @@
-require Logger
+# require Logger
 
-import Ecto.Query
+# import Ecto.Query
 
-alias RpCore.{ Repo }
-alias RpCore.Uploader.File
-alias RpCore.Model.{ 
-  Role, 
-  User, 
-  Company, 
-  # Document, 
-  Attestator,
-  LogosAttestator
-}
+# alias RpCore.{ Repo }
+# alias RpCore.Uploader.File
+# alias RpCore.Model.{ 
+#   Role, 
+#   User, 
+#   Company, 
+#   # Document, 
+#   Attestator,
+#   LogosAttestator
+# }
 
 # Cleanup
 
 # Repo.delete_all(Role)
 # Repo.delete_all(User)
-Repo.delete_all(Company)
-Repo.delete_all(Attestator)
+# Repo.delete_all(Company)
+# Repo.delete_all(Attestator)
 
 # Create Roles
 
@@ -48,46 +48,46 @@ Repo.delete_all(Attestator)
 
 # Create Company
 
-params_company = %{
-  name: "Kimlic Relying Party",
-  email: "dmytro@kimlic.com",
-  website: "http://www.kimlic.com",
-  phone: "+380997762791",
-  address: "Konovaltsa 44B, 201, Kyiv 01133, Ukraine",
-  details: "Demo relying party. For test purposes only."
-}
+# params_company = %{
+#   name: "Kimlic Relying Party",
+#   email: "dmytro@kimlic.com",
+#   website: "http://www.kimlic.com",
+#   phone: "+380997762791",
+#   address: "Konovaltsa 44B, 201, Kyiv 01133, Ukraine",
+#   details: "Demo relying party. For test purposes only."
+# }
 
-%Company{}
-|> Company.changeset(params_company)
-|> Repo.insert!
+# %Company{}
+# |> Company.changeset(params_company)
+# |> Repo.insert!
 
 # Create Attestator
 
-{:ok, response} = Ecto.Interval.cast(%{"months" => "0", "days" => "1", "secs" => "0"})
-params_attestator = %{
-  name: "Veriff",
-  cost_per_user: 0.0000145,
-  compliance: ["KYC", "AML"],
-  response: response,
-  rating: 4,
-  status: true
-}
+# {:ok, response} = Ecto.Interval.cast(%{"months" => "0", "days" => "1", "secs" => "0"})
+# params_attestator = %{
+#   name: "veriff",
+#   cost_per_user: 0.0000145,
+#   compliance: ["kyc", "aml"],
+#   response: response,
+#   rating: 4,
+#   status: true
+# }
 
-attestator = %Attestator{}
-|> Attestator.changeset(params_attestator)
-|> Repo.insert!
+# attestator = %Attestator{}
+# |> Attestator.changeset(params_attestator)
+# |> Repo.insert!
 
-{:ok, path} = Path.relative("/apps/rp_core/priv/repo/assets/veriff_logo.jpg")
-|> File.store
+# {:ok, path} = Path.relative("/apps/rp_core/priv/repo/assets/veriff_logo.jpg")
+# |> File.store
 
-params_logo_attestator = %{
-  file: File.url(path),
-  attestator_id: attestator.id
-}
+# params_logo_attestator = %{
+#   file: File.url(path),
+#   attestator_id: attestator.id
+# }
 
-%LogosAttestator{}
-|> LogosAttestator.changeset(params_logo_attestator)
-|> Repo.insert!
+# %LogosAttestator{}
+# |> LogosAttestator.changeset(params_logo_attestator)
+# |> Repo.insert!
 
 # Document
 
@@ -116,9 +116,9 @@ params_logo_attestator = %{
 
 # Total
 
-Logger.warn "Seed Roles: #{ Repo.aggregate(Role, :count, :id) }"
-Logger.warn "Seed Users: #{ Repo.aggregate(User, :count, :id) }"
-Logger.warn "Seed Companies: #{ Repo.aggregate(Company, :count, :id) }"
-Logger.warn "Seed Attesttors: #{ Repo.aggregate(Attestator, :count, :id) }"
-Logger.warn "Seed LogosAttestator: #{ Repo.aggregate(LogosAttestator, :count, :id) }"
+# Logger.warn "Seed Roles: #{ Repo.aggregate(Role, :count, :id) }"
+# Logger.warn "Seed Users: #{ Repo.aggregate(User, :count, :id) }"
+# Logger.warn "Seed Companies: #{ Repo.aggregate(Company, :count, :id) }"
+# Logger.warn "Seed Attesttors: #{ Repo.aggregate(Attestator, :count, :id) }"
+# Logger.warn "Seed LogosAttestator: #{ Repo.aggregate(LogosAttestator, :count, :id) }"
 # Logger.warn "Seed Documents: #{ Repo.aggregate(Document, :count, :id) }"
