@@ -26,8 +26,8 @@ defmodule RpCore.Model.Document do
     timestamps()
   end
 
-  @required_params ~w(user_address session_tag type first_name last_name country)a
-  @optional_params ~w(verified_at verified attestator_id)a
+  @required_params ~w(user_address session_tag type first_name last_name country attestator_id)a
+  @optional_params ~w(verified_at verified)a
 
   ##### Public #####
 
@@ -36,7 +36,7 @@ defmodule RpCore.Model.Document do
     |> cast(params, @required_params ++ @optional_params)
     |> validate_required(@required_params)
     |> unique_constraint(:documents_user_address_type_index, name: :documents_user_address_type_index, message: "Document already exists")
-    # |> foreign_key_constraint(:document_id, message: "Should reference a document")
+    |> foreign_key_constraint(:attestator_id, message: "Should reference an attestator")
   end
 
   def all do
