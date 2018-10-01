@@ -1,17 +1,17 @@
-# require Logger
+require Logger
 
-# import Ecto.Query
+import Ecto.Query
 
-# alias RpCore.{ Repo }
-# alias RpCore.Uploader.File
-# alias RpCore.Model.{ 
-#   Role, 
-#   User, 
-#   Company, 
-#   # Document, 
-#   Attestator,
-#   LogosAttestator
-# }
+alias RpCore.{ Repo }
+alias RpCore.Uploader.File
+alias RpCore.Model.{ 
+  Role, 
+  User, 
+  Company, 
+  # Document, 
+  Attestator,
+  LogosAttestator
+}
 
 # Cleanup
 
@@ -63,31 +63,31 @@
 
 # Create Attestator
 
-# {:ok, response} = Ecto.Interval.cast(%{"months" => "0", "days" => "1", "secs" => "0"})
-# params_attestator = %{
-#   name: "veriff",
-#   cost_per_user: 0.0000145,
-#   compliance: ["kyc", "aml"],
-#   response: response,
-#   rating: 4,
-#   status: true
-# }
+{:ok, response} = Ecto.Interval.cast(%{"months" => "0", "days" => "1", "secs" => "0"})
+params_attestator = %{
+  name: "veriff",
+  cost_per_user: 0.0000145,
+  compliance: ["kyc", "aml"],
+  response: response,
+  rating: 4,
+  status: true
+}
 
-# attestator = %Attestator{}
-# |> Attestator.changeset(params_attestator)
-# |> Repo.insert!
+attestator = %Attestator{}
+|> Attestator.changeset(params_attestator)
+|> Repo.insert!
 
-# {:ok, path} = Path.relative("/apps/rp_core/priv/repo/assets/veriff_logo.jpg")
-# |> File.store
+{:ok, path} = Path.relative("/apps/rp_core/priv/repo/assets/veriff_logo.jpg")
+|> File.store
 
-# params_logo_attestator = %{
-#   file: File.url(path),
-#   attestator_id: attestator.id
-# }
+params_logo_attestator = %{
+  file: File.url(path),
+  attestator_id: attestator.id
+}
 
-# %LogosAttestator{}
-# |> LogosAttestator.changeset(params_logo_attestator)
-# |> Repo.insert!
+%LogosAttestator{}
+|> LogosAttestator.changeset(params_logo_attestator)
+|> Repo.insert!
 
 # Document
 

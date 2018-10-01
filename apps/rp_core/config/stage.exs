@@ -5,8 +5,8 @@ config :rp_core, RpCore.Repo,
   username: "kimlic", # System.get_env("DB_USERNAME"),
   password: "LU6dME4NzQ", # System.get_env("DB_PASSWORD"),
   #hostname: "stage-postgres-pr2.postgres.database.azure.com", # System.get_env("DB_HOSTNAME"),
-  hostname: "stage-postgresql-rp1.eastus.cloudapp.azure.com", # System.get_env("DB_HOSTNAME"),
-  pool_size: 5 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
+  hostname: "stage-postgresql.eastus.cloudapp.azure.com", # System.get_env("DB_HOSTNAME"),
+  pool_size: 10 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
 
 config :rp_core,
   azure_container: "rp-blob", # System.get_env("AZURE_CONTAINER"),
