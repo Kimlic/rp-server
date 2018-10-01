@@ -48,6 +48,20 @@ defmodule RpAttestation do
     end
   end
 
+  def verification_info(session_tag) do
+    params = %{
+      session_tag: session_tag,
+    }
+
+    res = ap_verification_info(session_tag)
+    |> get
+
+    case res do
+      {:ok, result} -> {:ok, result}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   ##### Private #####
 
   defp get(endpoint) do
@@ -96,6 +110,12 @@ defmodule RpAttestation do
     |> env
     |> Kernel.<>(session_id)
     |> Kernel.<>("/media")
+  end
+
+  defp ap_verification_info(session_tag) do
+    :ap_verification_info 
+    |> env
+    |> Kernel.<>("/#{session_tag}")
   end
 
   defp env(param), do: Application.get_env(:rp_attestation, param)

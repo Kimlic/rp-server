@@ -117,10 +117,28 @@ defmodule RpCore.Model.Document do
     end
   end
 
-  def verified(document) do
-    document
-    |> Ecto.Changeset.change(verified: true)
+  def verified_info(document, info) do
+    %{
+      "document" => %{
+        "country" => country
+      },
+      "person" => %{
+        "firstName" => first_name,
+        "lastName" => last_name
+      }
+    } = info
+    
+    params = %{
+      first_name: first_name,
+      last_name: last_name,
+      country: country
+    }
+    IO.puts "PARAMS: #{inspect params}"
+    res = document
+    |> Document.changeset(params)
     |> Repo.update!
+    IO.puts "RES: #{inspect res}"
+    res
   end
 
   def delete!(session_tag) do

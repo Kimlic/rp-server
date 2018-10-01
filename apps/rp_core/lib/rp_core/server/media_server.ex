@@ -148,7 +148,8 @@ defmodule RpCore.Server.MediaServer do
     else
       case get_verification_info(provisioning_contract_address) do
         {:ok, :verified, verification_info} -> 
-          Document.verified(document)
+          {:ok, info} = RpAttestation.verification_info(document.session_tag)
+          Document.verified_info(document, info)
           {:noreply, %{state | verification_info: verification_info}}
 
         {:ok, :unverified} -> 
