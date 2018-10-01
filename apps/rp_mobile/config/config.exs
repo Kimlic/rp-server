@@ -8,7 +8,7 @@ config :rp_mobile, RpMobileWeb.Endpoint,
   http: [port: 4002],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [view: RpMobileWeb.ErrorView, accepts: ~w(json)],
-  http: [protocol_options: [max_request_line_length: 8192, max_header_value_length: 8192]],
+  # http: [protocol_options: [max_request_line_length: 8192, max_header_value_length: 8192]],
   server: true,
   watchers: []
 

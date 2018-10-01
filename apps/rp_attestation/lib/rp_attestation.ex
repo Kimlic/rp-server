@@ -21,9 +21,11 @@ defmodule RpAttestation do
     
     res = ap_session_create() 
     |> post(params)
-    IO.puts "session_create: #{inspect res}"
+    
     case res do
-      {:ok, %{"data" => %{"session_id" => session_id}}} -> {:ok, session_id}
+      {:ok, %{"data" => %{"session_id" => session_id}}} -> 
+        IO.puts "session_create: #{inspect res}"
+        {:ok, session_id}
       {:ok, %{"error" => %{"message" => reason}}} -> 
         IO.puts "ERROR: #{inspect reason}"
         {:error, reason}

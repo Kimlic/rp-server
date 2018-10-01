@@ -43,6 +43,17 @@ defmodule RpCore.Model.Attestator do
     |> Enum.map(&prepare_attestator/1)
   end
 
+  def veriff do
+    query = from a in Attestator,
+      where: a.name == "veriff",
+      limit: 1
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      attestator -> {:ok, attestator}
+    end
+  end
+
   ##### Private #####
 
   defp prepare_attestator(attestator) do

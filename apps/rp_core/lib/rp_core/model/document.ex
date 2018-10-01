@@ -133,12 +133,10 @@ defmodule RpCore.Model.Document do
       last_name: last_name,
       country: country
     }
-    IO.puts "PARAMS: #{inspect params}"
+
     res = document
     |> Document.changeset(params)
     |> Repo.update!
-    IO.puts "RES: #{inspect res}"
-    res
   end
 
   def delete!(session_tag) do

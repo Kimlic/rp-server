@@ -3,24 +3,29 @@ defmodule RpCore.Media.Upload do
 
   alias RpCore.Repo
   alias RpCore.Uploader.File
-  alias RpCore.Model.{Document, Photo, LogosCompany}
+  alias RpCore.Model.{Document, Photo, LogosCompany, Attestator}
   
   ##### Public #####
 
   @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
   def create_document(user_address, doc_type, session_tag, first_name, last_name, country) do
+    {:ok, veriff} = Attestator.veriff()
+
     params = %{
       user_address: user_address,
       type: doc_type,
       session_tag: session_tag,
       first_name: first_name, 
       last_name: last_name, 
-      country: country
+      country: country,
+      attestator_id: veriff.id
     }
-
-    %Document{}
+    IO.puts "PARAMS DOC: #{inspect params}"
+    res = %Document{}
     |> Document.changeset(params)
     |> Repo.insert
+    IO.puts "INSERT DOC: #{inspect res}"
+    res
   end
 
   def create_photo(document_id, media_type, file, file_hash) do

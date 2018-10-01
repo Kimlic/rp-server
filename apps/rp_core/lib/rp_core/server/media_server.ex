@@ -83,8 +83,9 @@ defmodule RpCore.Server.MediaServer do
         case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
           {:error, reason} -> {:error, reason}
           {:ok, session_id} ->
+            IO.puts "session_id: #{inspect session_id}"
             {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
-
+            IO.puts "document: #{inspect document}"
             check_verification_attempt(@max_check_polls)
 
             state = %{
