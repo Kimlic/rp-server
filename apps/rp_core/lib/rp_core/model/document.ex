@@ -51,7 +51,7 @@ defmodule RpCore.Model.Document do
 
   def documents_verified(user_address) do
     query = from d in Document,
-      where: d.user_address == ^user_address,
+      where: ilike(d.user_address, ^user_address),
       where: d.verified
 
     case Repo.all(query) do
