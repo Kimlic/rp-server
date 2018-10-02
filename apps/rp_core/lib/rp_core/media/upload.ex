@@ -1,7 +1,6 @@
 defmodule RpCore.Media.Upload do
   @moduledoc false
-
-  alias RpCore.Repo
+ 
   alias RpCore.Uploader.File
   alias RpCore.Media.Image
   alias RpCore.Model.{Document, Photo, LogosCompany, Attestator}
@@ -11,7 +10,7 @@ defmodule RpCore.Media.Upload do
   @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
   def create_document(user_address, doc_type, session_tag, first_name, last_name, country) do
     with {:ok, veriff} <- Attestator.veriff(),
-    {:ok, document} <- Document.create(user_address, doc_type, session_tag, first_name, last_name, country, veriff.id) do
+    {:ok, document} <- Document.create(user_address, doc_type, session_tag, first_name, last_name, country, veriff) do
       {:ok, document}
     else
       {:error, changeset} -> pretty_errors(changeset)
