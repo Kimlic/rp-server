@@ -137,7 +137,7 @@ defmodule RpCore.Server.MediaServer do
   def handle_call(message, _from, state), do: {:reply, {:error, message}, state}
 
   @impl true
-  def handle_info({:check_verification_attempt, attempt}, %{document: document, contracts: %{provisioning_contract_address: provisioning_contract_address}} = state) do
+  def handle_info({:check_verification_attempt, attempt}, %{document: document, session_id: session_id, contracts: %{provisioning_contract_address: provisioning_contract_address}} = state) do
     if attempt < 1 do
       RpQuorum.tokens_unlock_at(provisioning_contract_address)
       RpQuorum.withdraw(provisioning_contract_address)
@@ -146,8 +146,14 @@ defmodule RpCore.Server.MediaServer do
     else
       case get_verification_info(provisioning_contract_address) do
         {:ok, :verified, verification_info} -> 
-          {:ok, info} = RpAttestation.verification_info(document.session_tag)
-          Document.verified_info(document, info)
+          IO.puts "SESSION TAG: #{inspect document.session_tag}"
+          IO.puts "SESSION ID: #{inspect session_id}"
+          with {:ok, info} <- RpAttestation.verification_info(session_id) do
+            Document.verified_info(document, info)
+          else
+            {:ok, %{"status" => "not_found"}} -> throw "Unable to fetch document: #{inspect document}, session id: #{inspect session_id}"
+          end
+        
           {:noreply, %{state | verification_info: verification_info}}
 
         {:ok, :unverified} -> 
