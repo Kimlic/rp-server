@@ -20,12 +20,10 @@ defmodule RpCore.Media.Upload do
       country: country,
       attestator_id: veriff.id
     }
-    IO.puts "PARAMS DOC: #{inspect params}"
-    res = %Document{}
+
+    %Document{}
     |> Document.changeset(params)
     |> Repo.insert
-    IO.puts "INSERT DOC: #{inspect res}"
-    res
   end
 
   def create_photo(document_id, media_type, file, file_hash) do

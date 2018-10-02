@@ -2,6 +2,7 @@ defmodule RpCore.Model.Document do
   @moduledoc false
   
   use RpCore.Model
+  use Timex
 
   alias RpCore.Mapper.Veriff
 
@@ -18,7 +19,7 @@ defmodule RpCore.Model.Document do
     field :last_name, :string, null: false
     field :country, :string, null: false
     field :verified_at, Timex.Ecto.DateTime, usec: false
-    field :verified, :boolean, null: false, default: true
+    field :verified, :boolean, null: false, default: false
     
     has_many :photos, Photo, foreign_key: :document_id, on_delete: :delete_all
     belongs_to :attestator, Attestator
@@ -131,7 +132,9 @@ defmodule RpCore.Model.Document do
     params = %{
       first_name: first_name,
       last_name: last_name,
-      country: country
+      country: country,
+      verified: true,
+      verified_at: Timex.now()
     }
 
     res = document
