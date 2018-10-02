@@ -60,7 +60,7 @@ defmodule RpCore do
   def logo_url, do: LogosCompany.logo_url()
 
   def logo_update(company_id, file) do
-    {:ok, %LogosCompany{} = logo} = Upload.create_logo(company_id, file)
+    {:ok, %LogosCompany{} = logo} = Upload.replace_logo(company_id, file)
     {:ok, LogosCompany.url(logo)}
   end
 

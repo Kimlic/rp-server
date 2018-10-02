@@ -47,5 +47,16 @@ defmodule RpCore.Model.LogosCompany do
     end
   end
 
+  def create_logo(file, company_id) do
+    params = %{
+      file: file,
+      company_id: company_id
+    }
+    
+    %LogosCompany{}
+    |> LogosCompany.changeset(params)
+    |> Repo.insert
+  end
+
   def delete_all, do: Repo.delete_all(LogosCompany)
 end

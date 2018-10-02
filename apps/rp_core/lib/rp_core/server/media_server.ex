@@ -139,8 +139,6 @@ defmodule RpCore.Server.MediaServer do
   @impl true
   def handle_info({:check_verification_attempt, attempt}, %{document: document, contracts: %{provisioning_contract_address: provisioning_contract_address}} = state) do
     if attempt < 1 do
-      # Document.delete!(document.session_tag)
-
       RpQuorum.tokens_unlock_at(provisioning_contract_address)
       RpQuorum.withdraw(provisioning_contract_address)
 
@@ -159,22 +157,6 @@ defmodule RpCore.Server.MediaServer do
         err -> throw "Unhandled exception: #{inspect err}"
       end
     end
-
-      # {provisioning_contract_address, {:ok, @unverified}} ->
-      #   check_verification_attempt(attempt - 1, provisioning_contract_address)
-      #   {:noreply, state}
-
-      # {provisioning_contract_address, {:error, reason}} ->
-      #   IO.puts "ERROR: #{inspect reason}"
-      #   RpQuorum.tokens_unlock_at(provisioning_contract_address)
-      #   RpQuorum.withdraw(provisioning_contract_address)
-          
-      #   {:noreply, state}
-
-      # {:error, reason} -> 
-      #   IO.puts "ERROR: #{inspect reason}"
-      #   {:noreply, state}
-    # end
   end
   def handle_info(args, state), do: throw "Unhandled info: #{inspect args}   STATE: #{inspect state}"
 
@@ -212,11 +194,9 @@ defmodule RpCore.Server.MediaServer do
   defp upload_photo(document_id, media_type, file, hash) do
     media_type_str = Mapper.Veriff.photo_atom_to_veriff(media_type)
 
-    with {:error, :not_found} <- Photo.find_one_by(document_id, media_type_str, hash),
-    {:ok, %Photo{} = photo} = Upload.create_photo(document_id, media_type_str, file, hash) do
+    with {:ok, %Photo{} = photo} <- Upload.create_photo(document_id, media_type_str, file, hash) do
       {:ok, photo}   
     else
-      {:ok, %Photo{} = photo} -> {:ok, photo}
       {:error, reason} -> {:error, reason}
     end
   end

@@ -61,4 +61,17 @@ defmodule RpCore.Model.Photo do
       photo -> {:ok, photo}
     end
   end
+
+  def create_photo(file_url, file_hash, media_type, document_id) do
+    params = %{
+      file: file_url,
+      file_hash: file_hash,
+      type: media_type,
+      document_id: document_id
+    }
+
+    %Photo{}
+    |> Photo.changeset(params)
+    |> Repo.insert
+  end
 end

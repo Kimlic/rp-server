@@ -118,17 +118,23 @@ defmodule RpCore.Model.Document do
     end
   end
 
-  def verified_info(document, info) do
-    %{
-      "document" => %{
-        "country" => country
-      },
-      "person" => %{
-        "firstName" => first_name,
-        "lastName" => last_name
-      }
-    } = info
-    
+  def create(user_address, doc_type, session_tag, first_name, last_name, country, attestator) do
+    params = %{
+      user_address: user_address,
+      type: doc_type,
+      session_tag: session_tag,
+      first_name: first_name, 
+      last_name: last_name, 
+      country: country,
+      attestator_id: attestator.id
+    }
+
+    %Document{}
+    |> Document.changeset(params)
+    |> Repo.insert
+  end
+
+  def verified_info(document, %{"person" => %{"firstName" => first_name, "lastName" => last_name}, "document" => %{"country" => country}}) do
     params = %{
       first_name: first_name,
       last_name: last_name,
@@ -137,9 +143,13 @@ defmodule RpCore.Model.Document do
       verified_at: Timex.now()
     }
 
-    res = document
+    document
     |> Document.changeset(params)
     |> Repo.update!
+  end
+  def verified_info(document, info) do
+    IO.puts "VERIFIED DOC: #{inspect document}"
+    IO.puts "VERIFIED INFO: #{inspect info}"
   end
 
   def delete!(session_tag) do
