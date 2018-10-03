@@ -64,7 +64,16 @@ defmodule RpAttestation do
 
   defp get(endpoint) do
     req_url = ap_endpoint() <> endpoint
-    req_options = [ssl: [{:versions, [:'tlsv1.2']}], timeout: 30_000, recv_timeout: 30_000]
+    req_options = [
+      hackney: [
+        {:follow_redirect, true}
+      ], 
+      ssl: [
+        {:versions, [:'tlsv1.2']}
+      ], 
+      timeout: 30_000, 
+      recv_timeout: 30_000
+    ]
     req_headers = %{
       "account-address" => account_address(),
       "Content-Type" => "application/json"
@@ -77,10 +86,19 @@ defmodule RpAttestation do
         {:ok, json}
     end
   end
-
+ 
   defp post(endpoint, params) do
     req_url = ap_endpoint() <> endpoint
-    req_options = [ssl: [{:versions, [:'tlsv1.2']}], timeout: 30_000, recv_timeout: 30_000]
+    req_options = [
+      hackney: [
+        {:follow_redirect, true}
+      ], 
+      ssl: [
+        {:versions, [:'tlsv1.2']}
+      ], 
+      timeout: 30_000, 
+      recv_timeout: 30_000
+    ]
     req_headers = %{
       "account-address" => account_address(),
       "Content-Type" => "application/json"
