@@ -24,10 +24,9 @@ defmodule RpKimcore.MixProject do
 
   defp deps do
     [
-      {:httpoison, "~> 1.3", override: true},
-      {:hackney, "~> 1.14", override: true},
-      {:jason, "~> 1.1"},
-      {:ecto, "~> 2.2"}
+      {:ecto, "~> 2.2"},
+
+      {:rp_http, in_umbrella: true}
     ]
   end
 end

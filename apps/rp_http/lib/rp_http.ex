@@ -4,20 +4,19 @@ defmodule RpHttp do
   @content_type "application/json"
   @accept "application/json; charset=utf-8"
   @recv_timeout 30_000
+  @pools [:kim_pool, :ap_pool]
   
-  ##### Public #####
-
-  def get(req_url) do
+  def get(req_url, pool) when pool in @pools do
     req_url
-    |> HTTPoison.get(req_headers(), req_options())
+    |> HTTPoison.get(req_headers(), req_options(pool))
     |> response
   end
 
-  def post(req_url, params) do
+  def post(req_url, params, pool) when pool in @pools do
     req_body = Jason.encode!(params)
     
     req_url
-    |> HTTPoison.post(req_body, req_headers(), req_options())
+    |> HTTPoison.post(req_body, req_headers(), req_options(pool))
     |> response
   end
 
@@ -31,11 +30,11 @@ defmodule RpHttp do
     }
   end
 
-  defp req_options do
+  defp req_options(pool) do
     [
       hackney: [
         follow_redirect: true,
-        pool: :ap_server
+        pool: pool
       ], 
       ssl: [versions: [:'tlsv1.2']], 
       recv_timeout: @recv_timeout

@@ -7,13 +7,13 @@ defmodule RpKimcore.Schemes.Attestator do
 
   @primary_key false
   embedded_schema do
-    field :name, :string
-    field :address, :string
+    field :name, :string, null: false
+    field :address, :string, null: false
   end
 
   ##### Public #####
 
-  def changeset(%Attestator{} = struct, attrs) do
+  def changeset(%__MODULE__{} = struct, attrs) do
     fields = __MODULE__.__schema__(:fields)
 
     struct

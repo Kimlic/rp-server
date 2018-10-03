@@ -40,8 +40,6 @@ defmodule RpQuorum.ContractServer do
         gas: "0x4612388"
       }
 
-      IO.inspect "TX PARAMS: #{inspect eth_params}"
-
       case Ethereumex.HttpClient.eth_send_transaction(eth_params, []) do
         {:ok, transaction_hash} -> receipt(transaction_hash)
         

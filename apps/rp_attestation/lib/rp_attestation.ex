@@ -1,6 +1,8 @@
 defmodule RpAttestation do
   @moduledoc false
 
+  @pool :ap_pool
+
   ##### Public #####
 
   @spec vendors() :: {:ok, map} | {:error, binary}
@@ -68,20 +70,22 @@ defmodule RpAttestation do
   defp get(endpoint) do
     ap_endpoint()
     |> Kernel.<>(endpoint)
-    |> RpHttp.get
+    |> RpHttp.get(@pool)
   end
  
   defp post(endpoint, params) do
     ap_endpoint()
     |> Kernel.<>(endpoint)
-    |> RpHttp.post(params)
+    |> RpHttp.post(params, @pool)
   end
 
-  defp ap_endpoint, do: Application.get_env(:rp_attestation, :ap_endpoint)
+  defp ap_endpoint, do: env(:ap_endpoint)
 
-  defp ap_vendors, do: Application.get_env(:rp_attestation, :ap_vendors)
+  defp ap_vendors, do: env(:ap_vendors)
 
-  defp ap_session_create, do: Application.get_env(:rp_attestation, :ap_session_create)
+  defp ap_session_create, do: env(:ap_session_create)
 
-  defp ap_verification_info, do: Application.get_env(:rp_attestation, :ap_verification_info)
+  defp ap_verification_info, do: env(:ap_verification_info)
+
+  defp env(param), do: Application.get_env(:rp_attestation, param)
 end

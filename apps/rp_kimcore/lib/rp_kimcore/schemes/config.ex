@@ -7,19 +7,18 @@ defmodule RpKimcore.Schemes.Config do
 
   @primary_key false
   embedded_schema do
-    field :context_contract, :string
+    field :context_contract, :string, null: false
     embeds_many :attestation_parties, Attestator
   end
+
+  @required_fields ~w(context_contract)a
 
   ##### Public #####
 
   def changeset(params) when is_map(params) do
-    fields = ~w(context_contract)a
-
     %__MODULE__{}
-    |> cast(params, fields)
+    |> cast(params, @required_fields)
+    |> validate_required(@required_fields)
     |> cast_embed(:attestation_parties)
-    |> validate_required(fields)
   end
-  def changeset(_), do: :error
 end
