@@ -1,11 +1,11 @@
-defmodule RpAttestation.Application do
-  @moduledoc false
+# defmodule RpAttestation.Application do
+#   @moduledoc false
 
-  use Application
+#   use Application
 
-  def start(_type, _args) do
-    children = []
-    opts = [strategy: :one_for_one, name: RpAttestation.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
-end
+#   def start(_type, _args) do
+#     children = []
+#     opts = [strategy: :one_for_one, name: RpAttestation.Supervisor]
+#     Supervisor.start_link(children, opts)
+#   end
+# end

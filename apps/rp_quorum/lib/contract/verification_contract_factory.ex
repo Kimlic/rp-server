@@ -11,7 +11,6 @@ defmodule RpQuorum.Contract.VerificationContractFactory do
   @spec create_base_verification_contract(binary, binary, binary, binary, binary) :: {:ok, binary, binary} | {:error, binary, map}
   def create_base_verification_contract(contract_address, user_address, attestator_address, doc_type, session_tag) do
     params = {user_address, attestator_address, session_tag, doc_type}
-    IO.puts "createBaseVerificationContract address: #{contract_address}   params: #{inspect params}"
     response = ContractServer.transaction(contract_address, VerificationContractFactory, "createBaseVerificationContract", params)
 
     case response do

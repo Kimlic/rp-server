@@ -17,16 +17,16 @@ defmodule RpAttestation.MixProject do
 
   def application do
     [
-      extra_applications: [:sasl, :logger, :runtime_tools],
-      mod: {RpAttestation.Application, []}
+      extra_applications: [:sasl, :logger, :runtime_tools]
+      # mod: {RpAttestation.Application, []}
     ]
   end
 
   defp deps do
     [
-      {:httpoison, "~> 1.3", override: true},
-      {:hackney, "~> 1.14", override: true},
-      {:jason, "~> 1.1"},
+      # {:httpoison, "~> 1.3", override: true},
+      # {:hackney, "~> 1.14", override: true},
+      # {:jason, "~> 1.1"},
 
       {:rp_http, in_umbrella: true}
     ]

@@ -18,10 +18,10 @@ defmodule RpAttestation do
       device_os: device_os, 
       device_token: device_token
     }
-    
+
     res = ap_session_create()
     |> post(params)
-    
+
     case res do
       {:ok, %{"data" => %{"session_id" => session_id}}} -> {:ok, session_id}
       {:ok, %{"error" => %{"message" => reason}}} -> {:error, reason}

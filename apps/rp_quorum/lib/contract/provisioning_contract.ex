@@ -24,7 +24,6 @@ defmodule RpQuorum.Contract.ProvisioningContract do
   end
 
   def finalize_provisioning(contract_address) do
-    IO.puts "finalizeProvisioning address: #{contract_address}"
     response = ContractServer.transaction(contract_address, ProvisioningContract, "finalizeProvisioning", {})
 
     case response do

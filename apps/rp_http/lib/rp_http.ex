@@ -15,7 +15,7 @@ defmodule RpHttp do
 
   def post(req_url, params) do
     req_body = Jason.encode!(params)
-
+    
     req_url
     |> HTTPoison.post(req_body, req_headers(), req_options())
     |> response
@@ -25,7 +25,7 @@ defmodule RpHttp do
 
   defp req_headers do
     %{
-      "Account-Address" => account_address(),
+      "account-address" => account_address(),
       "Content-Type" => @content_type,
       "Accept" => @accept
     }

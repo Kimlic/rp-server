@@ -147,10 +147,6 @@ defmodule RpCore.Model.Document do
     |> Document.changeset(params)
     |> Repo.update!
   end
-  def verified_info(document, info) do
-    IO.puts "VERIFIED DOC: #{inspect document}"
-    IO.puts "VERIFIED INFO: #{inspect info}"
-  end
 
   def delete!(session_tag) do
     query = from d in Document,
