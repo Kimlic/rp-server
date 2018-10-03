@@ -2,7 +2,7 @@ defmodule RpKimcore.Server.ConfigServer do
   use GenServer
 
   alias RpKimcore.DataProvider
-  alias RpKimcore.Schemes.Config
+  alias RpKimcore.Schema.Config
 
   @poll_delay 24 * 60 * 60 * 1_000
 

@@ -1,7 +1,7 @@
-defmodule RpKimcore.Schemes.Attestator do
+defmodule RpKimcore.Schema.Attestator do
   @moduledoc false
 
-  use RpKimcore.Schemes
+  use RpKimcore.Schema
 
   ##### Schema #####
 

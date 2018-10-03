@@ -1,7 +1,7 @@
-defmodule RpKimcore.Schemes.Config do
+defmodule RpKimcore.Schema.Config do
   @moduledoc false
 
-  use RpKimcore.Schemes
+  use RpKimcore.Schema
 
   ##### Schema #####
 

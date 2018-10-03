@@ -3,7 +3,7 @@ defmodule RpKimcore.DataProvider do
 
   @pool :kim_pool
 
-  alias RpKimcore.Schemes.Config
+  alias RpKimcore.Schema.Config
   
   ##### Public #####
 

@@ -1,7 +1,7 @@
 defmodule RpKimcore do
   @moduledoc false
 
-  alias RpKimcore.Schemes.Config
+  alias RpKimcore.Schema.Config
   alias RpKimcore.Server.ConfigServer
 
   ##### Public #####

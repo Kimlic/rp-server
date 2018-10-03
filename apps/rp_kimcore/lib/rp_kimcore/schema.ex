@@ -1,4 +1,4 @@
-defmodule RpKimcore.Schemes do
+defmodule RpKimcore.Schema do
   @moduledoc false
 
   defmacro __using__(_) do
@@ -6,9 +6,8 @@ defmodule RpKimcore.Schemes do
         use Ecto.Schema
 
         import Ecto.Changeset
-        import Ecto.Query
 
-        alias RpKimcore.Schemes.{Config, Attestator}
+        alias RpKimcore.Schema.{Config, Attestator}
     end
   end
 end
