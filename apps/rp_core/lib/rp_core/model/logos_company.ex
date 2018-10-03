@@ -33,8 +33,12 @@ defmodule RpCore.Model.LogosCompany do
   end
 
   def url(model) do
-    {model.file, model}
-    |> File.url
+    case model do
+      nil -> nil
+      model ->
+        {model.file, model}
+        |> File.url
+    end
   end
 
   def logo_url do
