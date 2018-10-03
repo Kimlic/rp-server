@@ -60,7 +60,7 @@ defmodule RpCore.Model.Document do
       documents -> 
         documents = documents
         |> Enum.map(fn doc -> 
-          %Document{doc | type: Veriff.document_quorum_to_human(doc.type)}
+          %Document{doc | type: Veriff.document_quorum_to_veriff(doc.type)}
         end)
         {:ok, documents}
     end

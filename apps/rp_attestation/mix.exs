@@ -26,7 +26,9 @@ defmodule RpAttestation.MixProject do
     [
       {:httpoison, "~> 1.3", override: true},
       {:hackney, "~> 1.14", override: true},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.1"},
+
+      {:rp_http, in_umbrella: true}
     ]
   end
 end

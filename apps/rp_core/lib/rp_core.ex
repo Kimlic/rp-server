@@ -33,9 +33,7 @@ defmodule RpCore do
     end
   end
 
-  def get_verification_info(session_tag) do
-    MediaServer.verification_info(session_tag)
-  end
+  def get_verification_info(session_tag), do: MediaServer.verification_info(session_tag)
 
   ##### Dashboard #####
 
