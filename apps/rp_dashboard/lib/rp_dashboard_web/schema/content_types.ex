@@ -17,6 +17,7 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :verified, non_null(:boolean)
     field :verified_at, :string
     field :inserted_at, non_null(:string)
+    field :photos, list_of(:string)
   end
 
   object :documents_counter do

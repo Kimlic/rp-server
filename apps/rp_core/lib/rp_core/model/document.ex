@@ -50,7 +50,25 @@ defmodule RpCore.Model.Document do
     end)
   end
 
-  def documents_verified(user_address) do
+  def get_by_id(id) do
+    query = from d in Document,
+      left_join: p in assoc(d, :photos),
+      preload: [:photos],
+      where: d.id == ^id,
+      limit: 1
+
+    case Repo.one(query) do
+      nil -> nil
+      document -> 
+        photos = document.photos
+        |> Enum.map(fn photo -> 
+          Photo.url(photo)
+        end)
+        %{document | photos: photos}
+    end
+  end
+
+  def get_verified(user_address) do
     query = from d in Document,
       where: ilike(d.user_address, ^user_address),
       where: d.verified

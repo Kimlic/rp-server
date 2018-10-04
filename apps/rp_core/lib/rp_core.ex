@@ -40,11 +40,14 @@ defmodule RpCore do
   @spec documents() :: list(Document.t())
   def documents, do: Document.all()
 
+  @spec documentById(binary) :: Document.t()
+  def documentById(id), do: Document.get_by_id(id)
+
   @spec count_documents() :: list(Document.t())
   def count_documents, do: Document.count_documents()
 
   @spec documents_verified(binary) :: list(Document.t())
-  def documents_verified(user_address), do: Document.documents_verified(user_address)
+  def documents_verified(user_address), do: Document.get_verified(user_address)
 
   @spec company() :: Company.t()
   def company, do: Company.company()

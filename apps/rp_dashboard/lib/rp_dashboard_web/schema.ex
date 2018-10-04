@@ -22,6 +22,11 @@ defmodule RpDashboardWeb.Schema do
       resolve &DocumentResolver.documents/3
     end
 
+    field :document, :document do
+      arg :id, non_null(:id)
+      resolve &DocumentResolver.document/3
+    end
+
     field :count_documents, list_of(:documents_counter) do
       resolve &DocumentResolver.count_documents/3
     end
