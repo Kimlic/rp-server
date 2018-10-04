@@ -7,6 +7,6 @@ defmodule RpDashboardWeb.Router do
       schema: RpDashboardWeb.Schema,
       interface: :advanced
 
-    forward "/api", Absinthe.Plug, schema: RpDashboardWeb.Schema
+    forward "/dashboard", Absinthe.Plug, schema: RpDashboardWeb.Schema
   end
 end

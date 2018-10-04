@@ -21,6 +21,4 @@ config :phoenix, :serve_endpoints, true
 config :phoenix, :format_encoders, "json-api": Jason
 config :phoenix, :json_library, Jason
 
-config :mime, :types, %{"application/vnd.api+json" => ["json-api"]}
-
 import_config "#{Mix.env}.exs"
