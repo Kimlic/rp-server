@@ -7,6 +7,11 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :code, non_null(:string)
   end
 
+  object :photo do
+    field :url, non_null(:string)
+    field :type, non_null(:string)
+  end
+
   object :document do
     field :id, non_null(:id)
     field :user_address, non_null(:string)
@@ -17,7 +22,7 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :verified, non_null(:boolean)
     field :verified_at, :string
     field :inserted_at, non_null(:string)
-    field :photos, list_of(:string)
+    field :photos, list_of(:photo)
   end
 
   object :documents_counter do

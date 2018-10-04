@@ -62,9 +62,16 @@ defmodule RpCore.Model.Document do
       document -> 
         photos = document.photos
         |> Enum.map(fn photo -> 
-          Photo.url(photo)
+          %{
+            url: Photo.url(photo),
+            type: photo.type
+          }
         end)
-        %{document | photos: photos}
+
+        type = document.type
+        |> Veriff.document_quorum_to_human
+
+        %{document | photos: photos, type: type}
     end
   end
 
