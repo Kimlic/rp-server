@@ -67,6 +67,7 @@ defmodule RpAttestation.DataProvider do
 
     case res do
       {:ok, %{"status" => "not_found"}} -> {:error, :not_found}
+      {:ok, %{"person" => nil, "document" => nil}} -> {:error, :not_found}
       {:ok, %{"person" => %{}, "document" => %{}} = info} -> {:ok, info}
       {:error, reason} -> {:error, reason}
     end

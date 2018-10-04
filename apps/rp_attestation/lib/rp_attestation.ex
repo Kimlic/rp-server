@@ -1,7 +1,7 @@
 defmodule RpAttestation do
   @moduledoc false
 
-  alias RpAttestation.Server.VendorServer
+  alias RpAttestation.Server.{VendorServer, InfoServer}
   alias RpAttestation.DataProvider
 
   ##### Public #####
@@ -20,5 +20,5 @@ defmodule RpAttestation do
   end
 
   @spec verification_info(binary) :: {:ok, map} | {:error, binary} | {:error, atom}
-  def verification_info(session_tag), do: DataProvider.verification_info(session_tag)
+  def verification_info(session_tag), do: InfoServer.verification_info(session_tag)
 end

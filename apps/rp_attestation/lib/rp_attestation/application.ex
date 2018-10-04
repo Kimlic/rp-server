@@ -3,7 +3,7 @@ defmodule RpAttestation.Application do
 
   use Application
 
-  alias RpAttestation.Server.VendorServer
+  alias RpAttestation.Server.{VendorServer, InfoServer}
 
   ##### Public #####
 
@@ -11,7 +11,8 @@ defmodule RpAttestation.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(VendorServer, [[]], restart: :permanent)
+      worker(VendorServer, [[]], restart: :permanent),
+      worker(InfoServer, [[]], restart: :permanent)
     ]
     opts = [strategy: :one_for_one, name: RpAttestation.Supervisor]
     Supervisor.start_link(children, opts)
