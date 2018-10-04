@@ -20,16 +20,10 @@ defmodule RpMobileWeb.Plug.AccountAddress do
   def call(%Conn{} = conn, _opts) do
     with {:ok, header} <- validate_required_header(conn),
     :ok <- validate_format(header) do
-      IO.puts "DDDD: #{inspect header}"
       assign(conn, :account_address, header)
     else
-      {:error, err} -> 
-        IO.puts "EEEE: #{inspect err}"
-        no_header_error(conn, err)
-
-      _ -> 
-        IO.puts "FFFFF: #{inspect conn}"
-        no_header_error(conn)
+      {:error, err} -> no_header_error(conn, err)
+      _ -> no_header_error(conn)
     end
   end
 
@@ -37,8 +31,6 @@ defmodule RpMobileWeb.Plug.AccountAddress do
 
   @spec validate_required_header(Conn.t()) :: {:ok, binary} | {:error, binary}
   defp validate_required_header(conn) do
-    IO.puts "AAAA: #{inspect conn}"
-    IO.puts "BBBB: #{inspect Conn.get_req_header(conn, @header)}"
     case Conn.get_req_header(conn, @header) do
       [header] -> {:ok, header}
       _ -> {:error, @error_no_header}
@@ -47,7 +39,6 @@ defmodule RpMobileWeb.Plug.AccountAddress do
 
   @spec validate_format(binary) :: :ok | {:error, binary}
   defp validate_format(header) do
-    IO.puts "CCCCC: #{inspect Regex.match?(@address_regex, header)}"
     case Regex.match?(@address_regex, header) do
       true -> :ok
       false -> {:error, @error_malformed_header}

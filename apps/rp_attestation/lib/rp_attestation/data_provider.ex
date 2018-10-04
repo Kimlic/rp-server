@@ -10,7 +10,7 @@ defmodule RpAttestation.DataProvider do
     res = ap_vendors() 
     |> get
     |> elem(1)
-    |> Map.fetch!("data")
+    # |> Map.fetch!("data")
 
     {:ok, res}
   end
