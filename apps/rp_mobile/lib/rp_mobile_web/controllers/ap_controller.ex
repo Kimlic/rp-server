@@ -3,10 +3,6 @@ defmodule RpMobileWeb.ApController do
 
   use RpMobileWeb, :controller
 
-  alias RpMobileWeb.FallbackController
-
-  action_fallback FallbackController
-
   ##### Public #####
 
   @spec index(Conn.t(), map) :: Conn.t()
