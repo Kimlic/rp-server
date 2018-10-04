@@ -15,8 +15,8 @@ defmodule RpMobileWeb.Router do
   end
 
   pipeline :api do
-    plug :accepts, [:v1]
-    plug ApiVersion
+    # plug :accepts, [:v1]
+    # plug ApiVersion
     plug AccountAddress
     plug :put_resp_content_type, MIME.type("json")
   end
