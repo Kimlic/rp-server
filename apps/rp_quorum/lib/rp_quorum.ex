@@ -27,6 +27,7 @@ defmodule RpQuorum do
     res = contract_address
     |> ProvisioningContract.is_verification_finished
 
+    IO.inspect "is_verification_finished: #{inspect res}"
     case res do
       {:ok, @verified} -> {:ok, :verified}
       {:ok, @unverified} -> {:ok, :unverified}
