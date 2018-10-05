@@ -34,7 +34,10 @@ defmodule RpQuorum do
     end
   end
 
-  def finalize_provisioning(contract_address), do: ProvisioningContract.finalize_provisioning(contract_address)
+  def finalize_provisioning(contract_address) do
+    {:ok, "finalizeProvisioning", _} = ProvisioningContract.finalize_provisioning(contract_address)
+    :ok
+  end
 
   def get_verification_info(contract_address), do: ProvisioningContract.get_data(contract_address)
 
