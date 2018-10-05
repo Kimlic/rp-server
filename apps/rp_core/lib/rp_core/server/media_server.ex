@@ -61,6 +61,7 @@ defmodule RpCore.Server.MediaServer do
     # Check verification
     case get_verification_info(provisioning_contract_address) do
       {:ok, :verified, verification_info} -> 
+        IO.puts "INIT VERIFIED"
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
 
         state = %{
@@ -77,7 +78,9 @@ defmodule RpCore.Server.MediaServer do
         {:ok, state}
 
       {:ok, :unverified} ->
+        IO.puts "INIT UNVERIFIED"
         ap_address = Enum.fetch!(config.attestation_parties, 0).address
+        IO.puts "INIT ADDRESS: #{inspect ap_address}"
         {:ok, verification_contract_address} = create_verification(config.context_contract, user_address, ap_address, doc_type_str, session_tag)
 
         case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract_address, device, udid) do
@@ -138,14 +141,18 @@ defmodule RpCore.Server.MediaServer do
 
   @impl true
   def handle_info({:check_verification_attempt, attempt}, %{document: document, session_id: session_id, contracts: %{provisioning_contract_address: provisioning_contract_address}} = state) do
+    IO.puts "1111 check_verification_attempt"
     if attempt < 1 do
+      IO.puts "1111 NO ATTEMPTS"
       RpQuorum.tokens_unlock_at(provisioning_contract_address)
       RpQuorum.withdraw(provisioning_contract_address)
 
       Process.exit(self(), :normal)
     else
+      IO.puts "1111 START get_verification_info"
       case get_verification_info(provisioning_contract_address) do
         {:ok, :verified, verification_info} -> 
+          IO.puts "1111 VERIFIED: #{inspect verification_info}"
           with {:ok, info} <- RpAttestation.verification_info(session_id) do
             Document.verified_info(document, info)
           else
@@ -155,6 +162,7 @@ defmodule RpCore.Server.MediaServer do
           {:noreply, %{state | verification_info: verification_info}}
 
         {:ok, :unverified} -> 
+          IO.puts "1111 UNVERIFIED"
           check_verification_attempt(attempt - 1)
           {:noreply, state}
   
@@ -208,7 +216,7 @@ defmodule RpCore.Server.MediaServer do
   @spec check_verification_attempt(non_neg_integer) :: pid
   defp check_verification_attempt(attempt) do
     attrs = {:check_verification_attempt, attempt}
-
+    IO.puts "1111 ATTEMPTS: #{inspect attrs}"
     self()
     |> Process.send_after(attrs, @poll_time)
   end
