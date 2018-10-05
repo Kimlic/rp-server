@@ -46,7 +46,6 @@ defmodule RpAttestation.DataProvider do
       timestamp: "#{:os.system_time(:seconds)}",
       content: file
     }
-    IO.puts "AAAA: #{inspect params}"
     
     res = ap_session_create()
     |> Kernel.<>(session_id)
