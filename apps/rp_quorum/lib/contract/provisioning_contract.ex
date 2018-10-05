@@ -21,8 +21,11 @@ defmodule RpQuorum.Contract.ProvisioningContract do
   def is_verification_finished(contract_address) do
     res = contract_address 
     |> ContractServer.call(ProvisioningContract, "isVerificationFinished")
-    IO.puts "isVerificationFinished: #{inspect res}"
-    res
+
+    case res do
+      {:ok, @verified} -> {:ok, :verified}
+      {:ok, @unverified} -> {:ok, :unverified}
+    end
   end
 
   def finalize_provisioning(contract_address) do
