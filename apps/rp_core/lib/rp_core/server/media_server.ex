@@ -185,13 +185,30 @@ defmodule RpCore.Server.MediaServer do
 
   @spec get_verification_info(binary) :: {:ok, atom, map} | {:ok, atom}
   defp get_verification_info(provisioning_contract_address) do
-    with {:ok, :verified} <- provisioning_contract_address |> RpQuorum.is_verification_finished,
-      :ok <- provisioning_contract_address |> RpQuorum.finalize_provisioning,
-      {:ok, verification_info} <- provisioning_contract_address |> RpQuorum.get_verification_info do
+    IO.puts "AAA: #{inspect provisioning_contract_address}"
+    {:ok, :verified} = provisioning_contract_address |> RpQuorum.is_verification_finished
+    IO.puts "BBB: verified"
+    :ok = provisioning_contract_address |> RpQuorum.finalize_provisioning
+    IO.puts "CCC: finalize_provisioning"
+    case provisioning_contract_address |> RpQuorum.get_verification_info do
+      {:ok, :unverified} -> 
+        IO.puts "EEE: unverified"
+        {:ok, :unverified}
+        
+      {:ok, verification_info} -> 
+        IO.puts "DDD: #{inspect verification_info}"
         {:ok, :verified, verification_info}
-    else
-      {:ok, :unverified} -> {:ok, :unverified}
     end
+
+    # {:ok, :verified, verification_info}
+
+    # with {:ok, :verified} <- provisioning_contract_address |> RpQuorum.is_verification_finished,
+    #   :ok <- provisioning_contract_address |> RpQuorum.finalize_provisioning,
+    #   {:ok, verification_info} <- provisioning_contract_address |> RpQuorum.get_verification_info do
+    #     {:ok, :verified, verification_info}
+    # else
+    #   {:ok, :unverified} -> {:ok, :unverified}
+    # end
   end
 
   @spec upload_photo(binary, atom, binary, binary) :: {:ok, Photo.t()} | {:error, binary}
