@@ -4,6 +4,7 @@ defmodule RpAttestation.Server.VendorServer do
   alias RpAttestation.DataProvider
 
   @poll_delay 24 * 60 * 60 * 1_000
+  @reload_delay 60 * 1_000
 
   ##### Public #####
 
@@ -30,13 +31,20 @@ defmodule RpAttestation.Server.VendorServer do
   @impl true
   def handle_info(:vendors, state) do
     with {:ok, vendors} <- DataProvider.vendors() do
-      schedule_reload()
-      {:noreply, %{vendors: vendors}}
+      case vendors do
+        :econnrefused -> 
+          schedule_fast_reload()
+          {:noreply, state}
+
+        vendors -> 
+          schedule_reload()
+          {:noreply, %{vendors: vendors}}
+      end
     else
       {:error, :closed} -> 
         schedule_reload()
         {:noreply, state}
-
+      
       {:error, reason} -> {:stop, reason}
     end
   end
@@ -48,5 +56,11 @@ defmodule RpAttestation.Server.VendorServer do
   defp schedule_reload do
     self()
     |> Process.send_after(:vendors, @poll_delay)
+  end
+
+  @spec schedule_fast_reload() :: reference()
+  defp schedule_fast_reload do
+    self()
+    |> Process.send_after(:vendors, @reload_delay)
   end
 end
