@@ -46,6 +46,7 @@ defmodule RpAttestation.DataProvider do
       timestamp: "#{:os.system_time(:seconds)}",
       content: file
     }
+    IO.puts "AAAA: #{inspect params}"
     
     res = ap_session_create()
     |> Kernel.<>(session_id)
@@ -55,6 +56,7 @@ defmodule RpAttestation.DataProvider do
     case res do
       {:ok, %{"data" => %{"status" => "ok"}}} -> :ok
       {:ok, %{"error" => %{"invalid" => [%{"rules" => [%{"description" => reason}]}]}}} -> {:error, reason}
+      {:ok, %{"error" => %{"message" => reason}}} -> {:error, reason}
       {:error, reason} -> {:error, reason}
     end
   end
