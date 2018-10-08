@@ -144,6 +144,7 @@ defmodule RpCore.Server.MediaServer do
 
       Process.exit(self(), :normal)
     else
+      IO.puts "START GETTING VERIFICATION INFO"
       case get_verification_info(provisioning_contract_address) do
         {:ok, :verified, verification_info} -> 
           IO.puts "VERIFICATION INFO: #{inspect verification_info}"
@@ -159,10 +160,13 @@ defmodule RpCore.Server.MediaServer do
           {:noreply, %{state | verification_info: verification_info}}
 
         {:ok, :unverified} -> 
+          IO.puts "UNVERIFIED"
           check_verification_attempt(attempt - 1)
           {:noreply, state}
   
-        err -> throw "Unhandled exception: #{inspect err}"
+        err -> 
+          IO.puts "VERIFICATION WEIRD: #{inspect err}"
+          throw "Unhandled exception: #{inspect err}"
       end
     end
   end
