@@ -41,17 +41,18 @@ defmodule RpCore.Model.Document do
     |> foreign_key_constraint(:attestator_id, message: "Should reference an attestator")
   end
 
+  @spec all() :: {:ok, list(Document)}
   def all do
     query = from d in Document,
       order_by: [desc: d.inserted_at]
     
-    Repo.all(query)
-    |> Enum.map(fn doc -> 
-      %Document{doc | type: Veriff.document_quorum_to_human(doc.type)}
-    end)
+    documents = Repo.all(query)
+    |> prettify_types
+    
+    {:ok, documents}
   end
 
-  @spec get_by_id(binary) :: Document | nil
+  @spec get_by_id(binary) :: {:ok, Document} | {:error, :not_found}
   def get_by_id(id) do
     query = from d in Document,
       left_join: p in assoc(d, :photos),
@@ -60,20 +61,13 @@ defmodule RpCore.Model.Document do
       limit: 1
 
     case Repo.one(query) do
-      nil -> nil
+      nil -> {:ok, :not_found}
       document -> 
-        photos = document.photos
-        |> Enum.map(fn photo -> 
-          %{
-            url: Photo.url(photo),
-            type: photo.type
-          }
-        end)
-
+        photos = photos_to_urls(document)
         type = document.type
         |> Veriff.document_quorum_to_human
 
-        %{document | photos: photos, type: type}
+        {:ok, %{document | photos: photos, type: type}}
     end
   end
 
@@ -94,7 +88,7 @@ defmodule RpCore.Model.Document do
     end
   end
 
-  @spec count_documents :: map  
+  @spec count_documents :: {:ok, map}  
   def count_documents do
     query = "
       select t1.date_at, coalesce(t2.verified, 0) as verified, coalesce(t3.unverified, 0) as unverified from (
@@ -119,7 +113,7 @@ defmodule RpCore.Model.Document do
       order by date_at;
     "
     res = Ecto.Adapters.SQL.query!(Repo, query, [])
-    Enum.map res.rows, fn(row) ->
+    count = Enum.map(res.rows, fn(row) ->
       date = row
       |> Enum.at(0)
       |> Date.from_erl
@@ -130,7 +124,8 @@ defmodule RpCore.Model.Document do
         verified: Enum.at(row, 1), 
         unverified: Enum.at(row, 2)
       }
-    end
+    end)
+    {:ok, count}
   end
 
   @spec find_one_by(binary, binary) :: {:ok, UUID} | {:error, :not_found}
@@ -189,12 +184,39 @@ defmodule RpCore.Model.Document do
     |> Repo.update
   end
 
+  @spec delete!(UUID) :: {:ok, Document} | {:error, :not_found}
   def delete!(session_tag) do
     query = from d in Document,
       where: d.session_tag == ^session_tag,
       limit: 1
       
-    Repo.one!(query)
-    |> Repo.delete!
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      document -> Repo.delete(document)
+    end
   end 
+
+  ##### Private #####
+
+  @spec prettify_types(list(Document)) :: list(Document)
+  defp prettify_types(documents) do
+    documents
+    |> Enum.map(fn doc -> 
+      type = doc.type
+      |> Veriff.document_quorum_to_human
+
+      %Document{doc | type: type}
+    end)
+  end
+
+  @spec photos_to_urls(Document) :: map
+  defp photos_to_urls(document) do
+    document.photos
+    |> Enum.map(fn photo -> 
+      %{
+        url: Photo.url(photo),
+        type: photo.type
+      }
+    end)
+  end
 end

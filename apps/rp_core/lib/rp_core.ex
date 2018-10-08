@@ -10,7 +10,7 @@ defmodule RpCore do
 
   ##### Mobile #####
 
-  @spec store_media(binary, atom, atom, binary, binary, binary, binary, binary, media_type) :: {:ok, binary} | {:error, binary}
+  @spec store_media(binary, atom, atom, binary, binary, binary, binary, binary, media_type) :: {:ok, binary} | {:ok, :created} | {:error, binary}
   def store_media(user_address, doc_type, _attestator, first_name, last_name, country, device, udid, [{media_type, file}]) do
     hash = hash_file(file)
     doc_type_str = document_type(doc_type)
@@ -33,17 +33,18 @@ defmodule RpCore do
     end
   end
 
+  @spec get_verification_info(UUID) :: map
   def get_verification_info(session_tag), do: MediaServer.verification_info(session_tag)
 
   ##### Dashboard #####
 
-  @spec documents() :: list(Document.t())
+  @spec documents() :: {:ok, list(Document.t())}
   def documents, do: Document.all()
 
-  @spec documentById(binary) :: Document.t()
-  def documentById(id), do: Document.get_by_id(id)
+  @spec document_by_id(binary) :: {:ok, Document.t()} | {:error, :not_found}
+  def document_by_id(id), do: Document.get_by_id(id)
 
-  @spec count_documents() :: list(Document.t())
+  @spec count_documents() :: {:ok, map}
   def count_documents, do: Document.count_documents()
 
   @spec documents_verified(binary) :: list(Document.t())
@@ -58,8 +59,10 @@ defmodule RpCore do
   @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
   def company_update(id, params), do: Company.update(id, params)
 
+  @spec logo_url() :: binary
   def logo_url, do: LogosCompany.logo_url()
 
+  @spec logo_update(UUID, binary) :: {:ok, binary}
   def logo_update(company_id, file) do
     {:ok, %LogosCompany{} = logo} = Upload.replace_logo(company_id, file)
     {:ok, LogosCompany.url(logo)}
@@ -70,6 +73,7 @@ defmodule RpCore do
 
   ##### Private #####
 
+  @spec find_document(binary, binary, binary) :: {:ok, Photo} | {:ok, Document} | {:error, :not_found}
   def find_document(user_address, doc_type_str, hash) do
     with {:error, :not_found} <- Photo.find_one_by(hash),
     {:error, :not_found} <- Document.find_one_by(user_address, doc_type_str) do
@@ -80,8 +84,10 @@ defmodule RpCore do
     end
   end
 
+  @spec hash_file(binary) :: binary
   defp hash_file(file), do: :crypto.hash(:sha256, file) |> Base.encode16
 
+  @spec document_type(atom) :: binary
   defp document_type(type) do
     case type do
       :id_card -> "documents.id_card"
