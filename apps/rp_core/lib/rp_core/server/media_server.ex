@@ -59,10 +59,15 @@ defmodule RpCore.Server.MediaServer do
     |> create_provisioning(user_address, doc_type_str, session_tag)
     
     # Check verification
+    IO.puts "INIT GET VERIFICATION INFO"
     case get_verification_info(provisioning_contract_address) do
-      {:ok, :verified, verification_info} -> 
+      {:ok, :verified, verification_info} ->
+        IO.puts "INIT VERIFIED: #{inspect verification_info}" 
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
-
+        IO.puts "INIT DOCUMENT: #{inspect document}" 
+        res = Document.verified_info(document, verification_info)
+        IO.puts "DOCUMENT ADDED: #{inspect res}"
+        
         state = %{
           document: document,
           photos: [],
