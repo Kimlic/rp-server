@@ -146,10 +146,14 @@ defmodule RpCore.Server.MediaServer do
     else
       case get_verification_info(provisioning_contract_address) do
         {:ok, :verified, verification_info} -> 
+          IO.puts "VERIFICATION INFO: #{inspect verification_info}"
           with {:ok, info} <- RpAttestation.verification_info(session_id) do
+            IO.puts "AP INFO: #{inspect info}"
             Document.verified_info(document, info)
           else
-            {:error, :not_found} -> throw "Unable to fetch document: #{inspect document}, session id: #{inspect session_id}"
+            {:error, :not_found} -> 
+              IO.puts "AP INFO NOT FOUND"
+              throw "Unable to fetch document: #{inspect document}, session id: #{inspect session_id}"
           end
         
           {:noreply, %{state | verification_info: verification_info}}
