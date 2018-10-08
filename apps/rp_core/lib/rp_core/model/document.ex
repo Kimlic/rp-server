@@ -32,6 +32,7 @@ defmodule RpCore.Model.Document do
 
   ##### Public #####
 
+  @spec changeset(Document, map) :: Changeset.t()
   def changeset(model, params \\ :invalid) do
     model
     |> cast(params, @required_params ++ @optional_params)
@@ -50,6 +51,7 @@ defmodule RpCore.Model.Document do
     end)
   end
 
+  @spec get_by_id(binary) :: Document | nil
   def get_by_id(id) do
     query = from d in Document,
       left_join: p in assoc(d, :photos),
@@ -75,6 +77,7 @@ defmodule RpCore.Model.Document do
     end
   end
 
+  @spec get_verified(binary) :: {:ok, Document} | {:error, :not_found}
   def get_verified(user_address) do
     query = from d in Document,
       where: ilike(d.user_address, ^user_address),
@@ -91,6 +94,7 @@ defmodule RpCore.Model.Document do
     end
   end
 
+  @spec count_documents :: map  
   def count_documents do
     query = "
       select t1.date_at, coalesce(t2.verified, 0) as verified, coalesce(t3.unverified, 0) as unverified from (
@@ -115,7 +119,7 @@ defmodule RpCore.Model.Document do
       order by date_at;
     "
     res = Ecto.Adapters.SQL.query!(Repo, query, [])
-    roles = Enum.map res.rows, fn(row) ->
+    Enum.map res.rows, fn(row) ->
       date = row
       |> Enum.at(0)
       |> Date.from_erl
@@ -127,10 +131,9 @@ defmodule RpCore.Model.Document do
         unverified: Enum.at(row, 2)
       }
     end
-
-    roles
   end
 
+  @spec find_one_by(binary, binary) :: {:ok, UUID} | {:error, :not_found}
   def find_one_by(user_address, type) do
     query = from d in Document,
       where: d.user_address == ^user_address,
@@ -143,6 +146,7 @@ defmodule RpCore.Model.Document do
     end
   end
 
+  @spec create(binary, binary, UUID, binary, binary, binary, Attestator) :: {:ok, Document} | {:error, Changeset.t()}
   def create(user_address, doc_type, session_tag, first_name, last_name, country, attestator) do
     params = %{
       user_address: user_address,
@@ -159,6 +163,7 @@ defmodule RpCore.Model.Document do
     |> Repo.insert
   end
 
+  @spec verified_info(Document, map) :: {:ok, Document} :: {:error, Changeset.t()}
   def verified_info(document, %{"person" => %{"firstName" => first_name, "lastName" => last_name}, "document" => %{"country" => country}}) do
     params = %{
       first_name: first_name,
@@ -170,7 +175,18 @@ defmodule RpCore.Model.Document do
 
     document
     |> Document.changeset(params)
-    |> Repo.update!
+    |> Repo.update
+  end
+  @spec verified_info(Document) :: {:ok, Document} | {:error, Changeset.t()}
+  def verified_info(document) do
+    params = %{
+      verified: true,
+      verified_at: Timex.now()
+    }
+
+    document
+    |> Document.changeset(params)
+    |> Repo.update
   end
 
   def delete!(session_tag) do

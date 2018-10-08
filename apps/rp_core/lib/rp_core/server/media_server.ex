@@ -65,9 +65,9 @@ defmodule RpCore.Server.MediaServer do
         IO.puts "INIT VERIFIED: #{inspect verification_info}" 
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
         IO.puts "INIT DOCUMENT: #{inspect document}" 
-        res = Document.verified_info(document, verification_info)
+        res = Document.verified_info(document)
         IO.puts "DOCUMENT ADDED: #{inspect res}"
-        
+
         state = %{
           document: document,
           photos: [],
