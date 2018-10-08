@@ -26,42 +26,41 @@ defmodule RpCore.Media.Upload do
       {:ok, photo}
     else
       {:ok, %Photo{} = photo} -> {:ok, photo}
-      {:error, :not_found} -> {:error, "No photo uploaded"}
+      {:error, :not_found} -> {:error, :not_found}
       {:error, changeset} -> pretty_errors(changeset)
     end
   end
 
+  @spec replace_logo(UUID, binary) :: {:ok, LogosCompany} | {:error, :not_found} | {:error, binary}
   def replace_logo(company_id, file) do
     with _ <- LogosCompany.delete_all(),
     {:ok, logo} <- LogosCompany.create_logo(file, company_id) do
       {:ok, logo}
     else
-      {:error, :not_found} -> {:error, "No logo uploaded"}
+      {:error, :not_found} -> {:error, :not_found}
       {:error, changeset} -> pretty_errors(changeset)
     end
   end
 
   ##### Private #####
 
+  @spec store_image(binary) :: {:ok, binary}
   defp store_image(file) do
     Image.base64_to_binary(file)
     |> create_filename
     |> File.store
   end
 
+  @spec create_filename(binary) :: map
   defp create_filename(binary) do
-    try do
-      name = binary
-      |> Image.image_extension()
-      |> Image.unique_filename()
-      |> to_charlist
+    name = Image.image_extension(binary)
+    |> Image.unique_filename()
+    |> to_charlist
 
-      %{filename: name, binary: binary}
-    rescue
-      e in RuntimeException -> IO.puts "Exception: #{inspect e}"
-    end
+    %{filename: name, binary: binary}
   end
 
+  @spec pretty_errors(Changeset.t()) :: {:error, binary}
   defp pretty_errors(changeset) do
     errors = for {_key, {message, _}} <- changeset.errors, do: "#{message}"
     {:error, errors}
