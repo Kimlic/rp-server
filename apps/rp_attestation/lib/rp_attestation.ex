@@ -25,7 +25,7 @@ defmodule RpAttestation do
     |> DataProvider.verification_info
     |> case do
       {:error, :not_found} -> {:error, :not_found}
-      {:ok, %{"document" => _, "person" => _} = info} -> {:ok, info}
+      {:ok, %{"document" => _, "person" => _, "status" => _, "reason" => _} = info} -> {:ok, info}
     end 
   end
 end

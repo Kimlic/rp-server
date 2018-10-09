@@ -18,6 +18,8 @@ defmodule RpCore.Model.Document do
     field :first_name, :string, null: false
     field :last_name, :string, null: false
     field :country, :string, null: false
+    field :status, :string
+    field :reason, :string
     field :verified_at, Timex.Ecto.DateTime, usec: false
     field :verified, :boolean, null: false, default: false
     
@@ -28,7 +30,7 @@ defmodule RpCore.Model.Document do
   end
 
   @required_params ~w(user_address session_tag type first_name last_name country attestator_id)a
-  @optional_params ~w(verified_at verified)a
+  @optional_params ~w(verified_at verified status reason)a
 
   ##### Public #####
 
@@ -159,11 +161,13 @@ defmodule RpCore.Model.Document do
   end
 
   @spec verified_info(Document, map) :: {:ok, Document} :: {:error, Changeset.t()}
-  def verified_info(document, %{"person" => %{"firstName" => first_name, "lastName" => last_name}, "document" => %{"country" => country}}) do
+  def verified_info(document, %{"status" => status, "reason" => reason, "person" => %{"firstName" => first_name, "lastName" => last_name}, "document" => %{"country" => country}}) do
     params = %{
       first_name: first_name,
       last_name: last_name,
       country: country,
+      status: status,
+      reason: reason,
       verified: true,
       verified_at: Timex.now()
     }
