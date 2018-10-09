@@ -39,7 +39,7 @@ defmodule RpAttestation.DataProvider do
   end
 
   @spec photo_upload(binary, binary, binary, binary) :: :ok | {:error, binary}
-  def photo_upload(session_id, country, media_type, file) do
+  def photo_upload(media_type, session_id, country, file) do
     params = %{
       country: country,
       context: media_type,

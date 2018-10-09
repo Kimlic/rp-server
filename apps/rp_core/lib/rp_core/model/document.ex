@@ -4,7 +4,7 @@ defmodule RpCore.Model.Document do
   use RpCore.Model
   use Timex
 
-  alias RpCore.Mapper.Veriff
+  alias RpCore.Mapper
 
   ##### Schema #####
 
@@ -65,7 +65,7 @@ defmodule RpCore.Model.Document do
       document -> 
         photos = photos_to_urls(document)
         type = document.type
-        |> Veriff.document_quorum_to_human
+        |> Mapper.Veriff.document_quorum_to_human
 
         {:ok, %{document | photos: photos, type: type}}
     end
@@ -82,7 +82,7 @@ defmodule RpCore.Model.Document do
       documents -> 
         documents = documents
         |> Enum.map(fn doc -> 
-          %Document{doc | type: Veriff.document_quorum_to_veriff(doc.type)}
+          %Document{doc | type: Mapper.Veriff.document_quorum_to_veriff(doc.type)}
         end)
         {:ok, documents}
     end
@@ -203,7 +203,7 @@ defmodule RpCore.Model.Document do
     documents
     |> Enum.map(fn doc -> 
       type = doc.type
-      |> Veriff.document_quorum_to_human
+      |> Mapper.Veriff.document_quorum_to_human
 
       %Document{doc | type: type}
     end)

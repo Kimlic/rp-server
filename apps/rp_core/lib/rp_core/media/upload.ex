@@ -4,6 +4,7 @@ defmodule RpCore.Media.Upload do
   alias RpCore.Uploader.File
   alias RpCore.Media.Image
   alias RpCore.Model.{Document, Photo, LogosCompany, Attestator}
+  alias RpCore.Mapper
   
   ##### Public #####
 
@@ -17,9 +18,10 @@ defmodule RpCore.Media.Upload do
     end
   end
 
-  @spec create_photo(binary, binary, binary, binary) :: {:ok, Photo.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
-  def create_photo(document_id, media_type, file, file_hash) do
-    with {:error, :not_found} <- Photo.find_one_by(document_id, media_type, file_hash),
+  @spec create_photo(atom, binary, binary, binary) :: {:ok, Photo.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
+  def create_photo(media_type, document_id, file, file_hash) do
+    with media_type_veriff <- Mapper.Veriff.photo_atom_to_veriff(media_type),
+    {:error, :not_found} <- Photo.find_one_by(document_id, media_type_veriff, file_hash),
     {:ok, filename} <- store_image(file),
     {:ok, url} <- File.file_url(filename),
     {:ok, photo} <- Photo.create_photo(url, file_hash, media_type, document_id) do

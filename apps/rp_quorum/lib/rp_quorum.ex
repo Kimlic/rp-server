@@ -8,53 +8,46 @@ defmodule RpQuorum do
 
   ##### Public #####
 
-  @spec get_provisioning_contract_factory(binary) :: binary
-  def get_provisioning_contract_factory(contract_address), do: KimlicContractsContext.get_provisioning_contract_factory(contract_address)
-
-  @spec create_provisioning_contract(binary, binary, binary, binary) :: binary
-  def create_provisioning_contract(contract_address, account_address, document_type, tag) do
-    contract_address
-    |> ProvisioningContractFactory.create_provisioning_contract(account_address, document_type, tag)
-  end
-
-  @spec get_provisioning_contract(binary, binary) :: binary
-  def get_provisioning_contract(contract_address, tag) do
-    contract_address
-    |> ProvisioningContractFactory.get_provisioning_contract(tag)
-  end
-
-  def is_verification_finished(contract_address) do
-    res = contract_address
-    |> ProvisioningContract.is_verification_finished
-
-    IO.inspect "is_verification_finished: #{inspect res}"
-    case res do
-      {:ok, @verified} -> {:ok, :verified}
-      {:ok, @unverified} -> {:ok, :unverified}
+  @spec create_provisioning(binary, binary, binary, binary) :: binary
+  def create_provisioning(context_contract, user_address, doc_type, session_tag) do
+    with {:ok, provisioning_factory} <- KimlicContractsContext.get_provisioning_contract_factory(context_contract),
+    {:ok, _method, _tx_hash} <- ProvisioningContractFactory.create_provisioning_contract(provisioning_factory, user_address, doc_type, session_tag),
+    {:ok, provisioning_contract} <- ProvisioningContractFactory.get_provisioning_contract(provisioning_factory, session_tag) do
+      provisioning_contract
     end
   end
 
-  def finalize_provisioning(contract_address) do
-    {:ok, "finalizeProvisioning", _} = ProvisioningContract.finalize_provisioning(contract_address)
-    :ok
+  @spec create_verification(binary, binary, binary, binary, binary) :: {:ok, binary}
+  def create_verification(context_contract, user_address, ap_address, doc_type, session_tag) do
+    with {:ok, verification_factory} <- KimlicContractsContext.get_verification_contract_factory(context_contract),
+    {:ok, _method, _tx_hash} <- VerificationContractFactory.create_base_verification_contract(verification_factory, user_address, ap_address, doc_type, session_tag) do
+      VerificationContractFactory.get_verification_contract(verification_factory, session_tag)
+    end
   end
 
-  def get_verification_info(contract_address), do: ProvisioningContract.get_data(contract_address)
-
-  def tokens_unlock_at(contract_address), do: ProvisioningContract.tokens_unlock_at(contract_address)
-
-  def withdraw(contract_address), do: ProvisioningContract.withdraw(contract_address)
-
-  @spec get_verification_contract_factory(binary) :: binary
-  def get_verification_contract_factory(contract_address), do: KimlicContractsContext.get_verification_contract_factory(contract_address)
-
-  def get_verification_contract(contract_address, session_tag) do
-    contract_address
-    |> VerificationContractFactory.get_verification_contract(session_tag)
+  def verification_decision(provisioning_contract) do
+    with {:ok, :verified} <- is_verification_finished(provisioning_contract),
+    {:ok, "finalizeProvisioning", _} = ProvisioningContract.finalize_provisioning(provisioning_contract),
+    {:ok, verification_info} <- ProvisioningContract.get_data(provisioning_contract) do
+      {:ok, :verified, provisioning_contract, verification_info}
+    else
+      {:ok, :unverified} -> {:ok, :unverified, provisioning_contract}
+    end
   end
 
-  def create_base_verification_contract(contract_address, user_address, attestator_address, doc_type, tag) do
+  def revoke_provisioning(provisioning_contract) do
+    ProvisioningContract.tokens_unlock_at(provisioning_contract)
+    ProvisioningContract.withdraw(provisioning_contract)
+  end
+
+  ##### Private #####
+
+  defp is_verification_finished(contract_address) do
     contract_address
-    |> VerificationContractFactory.create_base_verification_contract(user_address, attestator_address, doc_type, tag)
+    |> ProvisioningContract.is_verification_finished
+    |> case do
+      {:ok, @verified} -> {:ok, :verified}
+      {:ok, @unverified} -> {:ok, :unverified}
+    end
   end
 end

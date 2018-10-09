@@ -8,4 +8,9 @@ defmodule RpKimcore do
 
   @spec config() :: {:ok, Config.t()}
   def config, do: ConfigServer.config()
+
+  def veriff do
+    conf = config()
+    Enum.fetch!(conf.attestation_parties, 0).address
+  end
 end
