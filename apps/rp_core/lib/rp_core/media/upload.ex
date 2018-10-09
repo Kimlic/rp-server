@@ -20,16 +20,19 @@ defmodule RpCore.Media.Upload do
 
   @spec create_photo(atom, binary, binary, binary) :: {:ok, Photo.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
   def create_photo(media_type, document_id, file, file_hash) do
+    IO.puts "CREATE PHOTO: #{inspect media_type} #{inspect document_id} #{inspect file_hash}"
     with media_type_veriff <- Mapper.Veriff.photo_atom_to_veriff(media_type),
     {:error, :not_found} <- Photo.find_one_by(document_id, media_type_veriff, file_hash),
     {:ok, filename} <- store_image(file),
     {:ok, url} <- File.file_url(filename),
-    {:ok, photo} <- Photo.create_photo(url, file_hash, media_type, document_id) do
+    {:ok, photo} <- Photo.create_photo(url, file_hash, media_type_veriff, document_id) do
       {:ok, photo}
     else
       {:ok, %Photo{} = photo} -> {:ok, photo}
       {:error, :not_found} -> {:error, :not_found}
-      {:error, changeset} -> pretty_errors(changeset)
+      {:error, changeset} -> 
+        IO.puts "CREATE PHOTO ERR: #{inspect changeset}"
+        pretty_errors(changeset)
     end
   end
 

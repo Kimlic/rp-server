@@ -10,7 +10,7 @@ defmodule RpKimcore do
   def config, do: ConfigServer.config()
 
   def veriff do
-    conf = config()
+    {:ok, conf} = config()
     Enum.fetch!(conf.attestation_parties, 0).address
   end
 end
