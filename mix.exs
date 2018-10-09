@@ -31,7 +31,7 @@ defmodule RpServer.MixProject do
 
   defp aliases do
     [
-      "ecto.setup": ["ecto.drop", "ecto.create", "ecto.migrate", "ecto.seed"],
+      "ecto.setup": ["ecto.drop", "ecto.create", "ecto.migrate"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.seed": ["run apps/rp_core/priv/repo/seeds.exs"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]

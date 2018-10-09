@@ -30,6 +30,7 @@ defmodule RpCore.MixProject do
       {:timex, "~> 3.4"},
       {:timex_ecto, "~> 3.3"},
       {:uuid, "~> 1.1"},
+      {:jason, "~> 1.1"},
       {:arc, github: "PharosProduction/arc", override: true},
       {:arc_ecto, github: "PharosProduction/arc_ecto", override: true},
       {:erlazure, github: "Kimlic/erlazure", override: true},
