@@ -21,14 +21,13 @@ defmodule RpQuorum.Contract.ProvisioningContractFactory do
 
   @spec get_provisioning_contract(binary, binary) :: binary
   def get_provisioning_contract(contract_address, tag) do
-    contract_address
-    |> get_address("getProvisioningContract", {tag})
+    get_address(contract_address, "getProvisioningContract", {tag})
   end
 
   # ##### Private #####
 
-  @spec get_address(binary, binary) :: binary
-  defp get_address(contract_address, method, params \\ {}) do
+  @spec get_address(binary, binary, tuple) :: binary
+  defp get_address(contract_address, method, params) do
     address = contract_address 
     |> ContractServer.call(ProvisioningContractFactory, method, params)
     |> Kernel.elem(1)

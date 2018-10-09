@@ -21,7 +21,7 @@ defmodule RpQuorum.ContractLoader do
   ##### Private #####
 
   @spec load_abi(atom) :: [map]
-  defp load_abi(contract_module) do
+  defp load_abi(contract_module) when is_atom(contract_module) do
     contract_module
     |> contract_path()
     |> File.read!()
@@ -29,14 +29,13 @@ defmodule RpQuorum.ContractLoader do
   end
 
   @spec contract_path(atom) :: binary 
-  defp contract_path(contract_module) do
+  defp contract_path(contract_module) when is_atom(contract_module) do
     abi_file = contract_module
     |> apply(:abi_file, [])
     
     Application.app_dir(:rp_quorum, @abi_dir <> abi_file)
   end
-  defp contract_path(_), do: throw "Invalid contract"
-  
+
   @spec add_prefix(binary, binary) :: binary
   defp add_prefix(string, prefix), do: prefix <> string
 end

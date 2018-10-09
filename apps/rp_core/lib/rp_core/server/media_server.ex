@@ -26,7 +26,6 @@ defmodule RpCore.Server.MediaServer do
 
   def start_link(_args_init, args) do
     name = args[:session_tag] |> via
-    IO.puts "START LINK: #{inspect name}"
     GenServer.start_link(__MODULE__, args, name: name)
   end
 
@@ -37,7 +36,7 @@ defmodule RpCore.Server.MediaServer do
       file: file, 
       hash: hash
     ]
-    IO.puts "PUSH PHOTO: #{inspect args}"
+
     via(session_tag)
     |> GenServer.call({:push_photo, args}, @timeout)
   end
@@ -59,15 +58,13 @@ defmodule RpCore.Server.MediaServer do
 
   @impl true
   def init(user_address: user_address, doc_type_str: doc_type_str, session_tag: session_tag, first_name: first_name, last_name: last_name, device: device, udid: udid, country: country) do
-    IO.puts "INIT"
     {:ok, config} = RpKimcore.config()
-    IO.puts "INIT: #{inspect config}"
+
     config.context_contract
     |> RpQuorum.create_provisioning(user_address, doc_type_str, session_tag)
     |> RpQuorum.verification_decision
     |> case do
       {:ok, :verified, provisioning_contract, verification_info} ->
-        IO.puts "INIT verification_info: #{inspect verification_info}"
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
         Document.verified_info(document)
 
@@ -81,13 +78,10 @@ defmodule RpCore.Server.MediaServer do
         {:ok, state}
 
       {:ok, :unverified, provisioning_contract} ->
-        IO.puts "INIT provisioning_contract: #{inspect provisioning_contract}"
         ap_address = RpKimcore.veriff()
-        IO.puts "AP ADDRESS: #{inspect ap_address}"
         {:ok, verification_contract} = RpQuorum.create_verification(config.context_contract, user_address, ap_address, doc_type_str, session_tag)
-        IO.puts "VERIFICATION CONTRACT: #{inspect verification_contract}"
         veriff_doc = Mapper.Veriff.document_quorum_to_veriff(doc_type_str)
-        IO.puts "VERIFF DOC: #{inspect veriff_doc}"
+
         case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract, device, udid) do
           {:error, reason} -> {:error, reason}
           {:ok, session_id} ->
@@ -111,24 +105,19 @@ defmodule RpCore.Server.MediaServer do
   @impl true
   def handle_call(:verification_info, _from, state), do: {:reply, {:ok, state[:verification_info]}, state}
   def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id, verification_info: verification_info} = state) do
-    IO.puts "CALL PUSH PHOTO: #{inspect state}"
     with {:ok, photo} <- Upload.create_photo(media_type, document.id, file, hash) do
-      IO.puts "CALL PUSH PHOTO: #{inspect photo}"
       if is_nil(verification_info) do
-        IO.puts "IS NIL"
         media_type
         |> Mapper.Veriff.photo_atom_to_veriff
         |> RpAttestation.photo_upload(session_id, document.country, file)
       end
-      IO.puts "ADD TO STATE"
+
       new_photos = photos ++ [photo]
       new_state = %{state | photos: new_photos}
 
       {:reply, {:ok, :created}, new_state}
     else
-      {:error, reason} -> 
-        IO.puts "ERR: #{inspect reason}"
-        {:reply, {:error, reason}, state}
+      {:error, reason} -> {:reply, {:error, reason}, state}
     end
   end
   def handle_call(message, _from, state), do: {:reply, {:error, message}, state}

@@ -52,7 +52,7 @@ defmodule RpMobileWeb.Router do
 
   ##### Plug.ErrorHandler #####
 
-  defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: kind, reason: reason, stack: stack}) do
+  defp handle_errors(%Plug.Conn{status: 500} = conn, %{kind: _kind, reason: _reason, stack: _stack}) do
     Logger.log(:info, fn ->
       Jason.encode!(%{
         "log_type" => "error",
@@ -64,7 +64,7 @@ defmodule RpMobileWeb.Router do
     send_resp(conn, 500, "")
   end
 
-  defp handle_errors(%Plug.Conn{status: 406} = conn, %{kind: kind, reason: reason, stack: stack}) do
+  defp handle_errors(%Plug.Conn{status: 406} = conn, %{kind: _kind, reason: _reason, stack: _stack}) do
     Logger.log(:info, fn ->
       Jason.encode!(%{
         "log_type" => "error",

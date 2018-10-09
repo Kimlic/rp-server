@@ -14,15 +14,12 @@ defmodule RpCore do
   def store_media(user_address, doc_type, _attestator, first_name, last_name, country, device, udid, [{media_type, file}]) do
     hash = hash_file(file)
     doc_type_str = document_type(doc_type)
-    IO.puts "STORE MEDIA"
+
     with {:error, :not_found} <- find_document(user_address, doc_type_str, hash) do
       session_tag = UUID.uuid1
       params = [user_address: user_address, doc_type_str: doc_type_str, session_tag: session_tag, first_name: first_name, last_name: last_name, device: device, udid: udid, country: country]
-      IO.puts "STORE MEDIA PARAMS: #{inspect params}"
       case MediaSupervisor.start_child(params) do
-        {:ok, _pid} -> 
-          IO.puts "STORE MEDIA SERVER STARTED"
-          MediaServer.push_photo(session_tag, media_type, file, hash)
+        {:ok, _pid} -> MediaServer.push_photo(session_tag, media_type, file, hash)
         {:error, reason} -> {:error, reason}
       end
     else
