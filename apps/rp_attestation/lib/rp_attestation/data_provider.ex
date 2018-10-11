@@ -61,15 +61,14 @@ defmodule RpAttestation.DataProvider do
   end
 
   @spec verification_info(binary) :: {:ok, map} | {:error, binary} | {:error, atom}
-  def verification_info(session_tag) do
+  def verification_info(session_id) do
     res = ap_verification_info()
-    |> Kernel.<>("/#{session_tag}")
+    |> Kernel.<>("/#{session_id}")
     |> get
 
     case res do
       {:ok, %{"status" => "not_found"}} -> {:error, :not_found}
-      {:ok, %{"person" => nil, "document" => nil}} -> {:error, :not_found}
-      {:ok, %{"person" => %{}, "document" => %{}} = info} -> {:ok, info}
+      {:ok, %{"person" => _, "document" => _, "status" => _, "reason" => _} = info} -> {:ok, info}
       {:error, reason} -> {:error, reason}
     end
   end

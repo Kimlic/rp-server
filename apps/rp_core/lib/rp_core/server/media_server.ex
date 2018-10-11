@@ -19,7 +19,8 @@ defmodule RpCore.Server.MediaServer do
   alias RpCore.Mapper
 
   @max_check_polls 12 * 24
-  @poll_time 5 * 60 * 1_000
+  # @poll_time 5 * 60 * 1_000
+  @poll_time 60 * 1_000
   @timeout 180_000
 
   ##### Public #####
@@ -59,12 +60,13 @@ defmodule RpCore.Server.MediaServer do
   @impl true
   def init(user_address: user_address, doc_type_str: doc_type_str, session_tag: session_tag, first_name: first_name, last_name: last_name, device: device, udid: udid, country: country) do
     {:ok, config} = RpKimcore.config()
-
+    IO.puts "INIT"
     config.context_contract
     |> RpQuorum.create_provisioning(user_address, doc_type_str, session_tag)
     |> RpQuorum.verification_decision
     |> case do
       {:ok, :verified, provisioning_contract, verification_info} ->
+        IO.puts "AAAA: #{inspect verification_info}"
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
         Document.verified_info(document)
 
@@ -78,13 +80,15 @@ defmodule RpCore.Server.MediaServer do
         {:ok, state}
 
       {:ok, :unverified, provisioning_contract} ->
+        IO.puts "BBBB: #{inspect provisioning_contract}"
         ap_address = RpKimcore.veriff()
         {:ok, verification_contract} = RpQuorum.create_verification(config.context_contract, user_address, ap_address, doc_type_str, session_tag)
         veriff_doc = Mapper.Veriff.document_quorum_to_veriff(doc_type_str)
-
+        IO.puts "CREATE SESSION"
         case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract, device, udid) do
           {:error, reason} -> {:error, reason}
           {:ok, session_id} ->
+            IO.puts "SESSION ID: #{inspect session_id}"
             {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
             
             check_verification_attempt(@max_check_polls)
@@ -127,15 +131,23 @@ defmodule RpCore.Server.MediaServer do
     if attempt < 1 do
       stop_server(provisioning_contract)
     else
+      IO.puts "SESSIONID: #{inspect session_id}"
+
       provisioning_contract
       |> RpQuorum.verification_decision
       |> case do
         {:ok, :verified, _, verification_info} -> 
           {:ok, info} = RpAttestation.verification_info(session_id)
+          IO.puts "INFO: #{inspect info}"
           Document.verified_info(document, info)
-          {:noreply, %{state | verification_info: verification_info}}
+          
+          {:noreply, %{state | verification_info: verification_info, document_info: info}}
 
         {:ok, :unverified, _} -> 
+          with {:ok, info} <- RpAttestation.verification_info(session_id) do
+            IO.puts "UNVERIFIED INFO: #{inspect info}"
+          end
+          IO.puts "UNVERIFIED ATTEMPT"
           check_verification_attempt(attempt - 1)
           {:noreply, state}
       end
@@ -155,8 +167,8 @@ defmodule RpCore.Server.MediaServer do
 
   defp stop_server(provisioning_contract) do
     RpQuorum.revoke_provisioning(provisioning_contract)
-
-    self() 
-    |> Process.exit(:normal)
+    stop()
   end
+
+  defp stop, do: self() |> Process.exit(:normal)
 end

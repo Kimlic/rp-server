@@ -20,8 +20,8 @@ defmodule RpAttestation do
   end
 
   @spec verification_info(binary) :: {:ok, map} | {:error, binary} | {:error, atom}
-  def verification_info(session_tag) do 
-    session_tag
+  def verification_info(session_id) do 
+    session_id
     |> DataProvider.verification_info
     |> case do
       {:error, :not_found} -> {:error, :not_found}
