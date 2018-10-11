@@ -65,19 +65,11 @@ defmodule RpCore.Server.MediaServer do
     |> RpQuorum.create_provisioning(user_address, doc_type_str, session_tag)
     |> RpQuorum.verification_decision
     |> case do
-      {:ok, :verified, provisioning_contract, verification_info} ->
-        IO.puts "AAAA: #{inspect verification_info}"
+      {:ok, :verified, _} ->
+        IO.puts "AAAA"
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
-        Document.verified_info(document)
-
-        state = %MediaServer{
-          document: document,
-          verification_info: verification_info,
-          contracts: %{
-            provisioning_contract: provisioning_contract
-          }
-        }
-        {:ok, state}
+        Document.assign_verification(document, nil)
+        {:stop, :normal}
 
       {:ok, :unverified, provisioning_contract} ->
         IO.puts "BBBB: #{inspect provisioning_contract}"
@@ -86,22 +78,24 @@ defmodule RpCore.Server.MediaServer do
         veriff_doc = Mapper.Veriff.document_quorum_to_veriff(doc_type_str)
         IO.puts "CREATE SESSION"
         case RpAttestation.session_create(first_name, last_name, veriff_doc, verification_contract, device, udid) do
-          {:error, reason} -> {:error, reason}
+          {:error, reason} -> {:stop, reason}
           {:ok, session_id} ->
             IO.puts "SESSION ID: #{inspect session_id}"
-            {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
-            
-            check_verification_attempt(@max_check_polls)
+            with {:ok, %Document{} = document} <- Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country) do
+              check_verification_attempt(@max_check_polls)
 
-            state = %MediaServer{
-              document: document,
-              session_id: session_id,
-              contracts: %{
-                provisioning_contract: provisioning_contract,
-                verification_contract: verification_contract
+              state = %MediaServer{
+                document: document,
+                session_id: session_id,
+                contracts: %{
+                  provisioning_contract: provisioning_contract,
+                  verification_contract: verification_contract
+                }
               }
-            }
-            {:ok, state}
+              {:ok, state}
+            else
+              {:error, reason} -> {:stop, reason}
+            end
         end
     end
   end
@@ -136,18 +130,18 @@ defmodule RpCore.Server.MediaServer do
       provisioning_contract
       |> RpQuorum.verification_decision
       |> case do
-        {:ok, :verified, _, verification_info} -> 
+        {:ok, :verified, _} -> 
           {:ok, info} = RpAttestation.verification_info(session_id)
           IO.puts "INFO: #{inspect info}"
-          Document.verified_info(document, info)
-          
-          {:noreply, %{state | verification_info: verification_info, document_info: info}}
+          {:ok, result_doc} = Document.assign_verification(document, info)
+          IO.puts "RES: #{inspect result_doc}"
+          case result_doc.status do
+            "approved" -> {:stop, :shutdown, nil}
+            _ -> {:stop, {:shutdown, result_doc.reason}, nil}
+          end
 
         {:ok, :unverified, _} -> 
-          with {:ok, info} <- RpAttestation.verification_info(session_id) do
-            IO.puts "UNVERIFIED INFO: #{inspect info}"
-          end
-          IO.puts "UNVERIFIED ATTEMPT"
+          IO.puts "UNVERIFIED ATTEMPT: #{inspect attempt}"
           check_verification_attempt(attempt - 1)
           {:noreply, state}
       end
@@ -159,7 +153,7 @@ defmodule RpCore.Server.MediaServer do
   @spec via(binary) :: tuple
   defp via(name), do: {:via, MediaRegistry, {:media_server, name}}
 
-  @spec check_verification_attempt(non_neg_integer) :: pid
+  @spec check_verification_attempt(number()) :: reference()
   defp check_verification_attempt(attempt) do
     self() 
     |> Process.send_after({:check_verification_attempt, attempt}, @poll_time)

@@ -27,7 +27,7 @@ defmodule RpMobileWeb.Plug.RequestValidator do
 
   ##### Private #####
 
-  @spec error_conn(Conn.t(), Plug.opts(), Changeset.t()) :: Conn.t()
+  @spec error_conn(Conn.t(), Plug.opts(), Ecto.Changeset.t()) :: Conn.t()
   defp error_conn(conn, opts, changeset) do
     err_handler = fetch_error_handler(opts)
 

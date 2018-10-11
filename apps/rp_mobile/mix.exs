@@ -36,6 +36,8 @@ defmodule RpMobile.Mixfile do
       {:gettext, "~> 0.16"},
       {:cowboy, "~> 2.4", [github: "Kimlic/cowboy", override: true, manager: :rebar3]},
       {:jason, "~> 1.1"},
+      {:prometheus_ex, "~> 3.0"},
+      {:prometheus_plugs, "~> 1.1"},
 
       {:rp_core, in_umbrella: true},
       {:rp_attestation, in_umbrella: true},

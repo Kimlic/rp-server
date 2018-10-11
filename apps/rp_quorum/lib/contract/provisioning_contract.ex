@@ -55,6 +55,7 @@ defmodule RpQuorum.Contract.ProvisioningContract do
     |> ContractServer.call(ProvisioningContract, "tokensUnlockAt")
   end
 
+  @spec withdraw(binary) :: {:ok | :error, binary, binary | map}
   def withdraw(contract_address) do
     response = ContractServer.transaction(contract_address, ProvisioningContract, "withdraw", {})
 

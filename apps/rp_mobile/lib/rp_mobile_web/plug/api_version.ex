@@ -37,7 +37,7 @@ defmodule RpMobileWeb.Plug.ApiVersion do
     end
   end
 
-  @spec validate_format(map) :: {:ok, binary} | {:error, binary}
+  @spec validate_format(binary) :: {:ok, binary} | {:error, binary}
   defp validate_format(header) do
     case Map.fetch(@versions, header) do
       {:ok, [version]} -> {:ok, version}
@@ -45,17 +45,17 @@ defmodule RpMobileWeb.Plug.ApiVersion do
     end
   end
 
-  @spec no_header_error(Conn.t(), binary) :: Conn.t()
-  defp no_header_error(conn, err) do
-    conn
-    |> send_resp(:bad_request, err)
-    |> halt()
-  end
-
   @spec no_header_error(Conn.t()) :: Conn.t()
   defp no_header_error(conn) do
     conn
     |> send_resp(:bad_request, @error_no_header)
+    |> halt()
+  end
+
+  @spec no_header_error(Conn.t(), binary) :: Conn.t()
+  defp no_header_error(conn, err) do
+    conn
+    |> send_resp(:bad_request, err)
     |> halt()
   end
 end

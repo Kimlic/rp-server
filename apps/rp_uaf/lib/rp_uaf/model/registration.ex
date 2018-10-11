@@ -48,10 +48,11 @@ defmodule RpUaf.Model.Registration do
   @spec changeset(map) :: Ecto.Changeset.t()
   def changeset(params) when is_map(params), do: changeset(%__MODULE__{}, params)
 
-  @spec changeset(__MODULE__, map) :: Ecto.Changeset.t()
-  def changeset(%__MODULE__{} = entity, params) do
+  @spec changeset(__MODULE__, :invalid | map) :: Ecto.Changeset.t()
+  def changeset(%__MODULE__{} = entity, params \\ :invalid) do
     entity
     |> cast(params, @required_fields ++ @optional_fileds)
     |> validate_required(@required_fields)
   end
 end
+ 

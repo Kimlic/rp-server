@@ -66,7 +66,7 @@ defmodule RpCore.Model.Company do
       limit: 1
   end
 
-  @spec update(UUID, map) :: {:ok, Company} | {:error, Changeset.t()}
+  @spec update(UUID, map) :: {:ok, Company} | {:error, Ecto.Changeset.t()}
   def update(id, params) do
     companyById(id)
     |> changeset(params)

@@ -29,7 +29,7 @@ defmodule RpMobileWeb.Router do
     get "/vendors", ApController, :index
     post "/medias", MediaController, :create
     get "/company", CompanyController, :show
-    get "/documents/:type", DocumentController, :index
+    get "/documents", DocumentController, :index
 
     ##### UAF #####
 

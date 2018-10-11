@@ -11,6 +11,9 @@ defmodule RpAttestation.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
+      dialyzer: [plt_add_deps: :transitive],
+      # elixirc_options: [warnings_as_errors: true],
+      aliases: aliases(),
       deps: deps()
     ]
   end
@@ -22,8 +25,16 @@ defmodule RpAttestation.MixProject do
     ]
   end
 
+  defp aliases do
+    [
+      dialyzer: "dialyzer --halt-exit-status"
+    ]
+  end
+
   defp deps do
     [
+      {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false},
+      
       {:rp_http, in_umbrella: true}
     ]
   end

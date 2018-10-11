@@ -25,7 +25,7 @@ defmodule RpUaf.Model.ScopeRequest do
 
   ##### Public #####
 
-  @spec status(atom) :: charlist
+  @spec status(:new) :: binary
   def status(:new), do: @status_new
 
   @spec changeset(ScopeRequest.t(), map) :: Ecto.Changeset.t()

@@ -12,7 +12,10 @@ defmodule RpAttestation.DataProvider do
     |> elem(1)
     # |> Map.fetch!("data")
 
-    {:ok, res}
+    case res do
+      :econnrefused -> {:error, :econnrefused}
+      res -> {:ok, res}
+    end
   end
 
   @spec session_create(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
@@ -75,25 +78,32 @@ defmodule RpAttestation.DataProvider do
 
   ##### Private #####
 
+  @spec get(binary) :: {:ok, map}
   defp get(endpoint) do
     ap_endpoint()
     |> Kernel.<>(endpoint)
     |> RpHttp.get(@pool)
   end
 
+  @spec post(binary, map) :: {:ok, map}
   defp post(endpoint, params) do
     ap_endpoint()
     |> Kernel.<>(endpoint)
     |> RpHttp.post(params, @pool)
   end
 
+  @spec ap_endpoint() :: binary
   defp ap_endpoint, do: env(:ap_endpoint)
 
+  @spec ap_vendors() :: binary
   defp ap_vendors, do: env(:ap_vendors)
 
+  @spec ap_session_create() :: binary
   defp ap_session_create, do: env(:ap_session_create)
 
+  @spec ap_verification_info() :: binary
   defp ap_verification_info, do: env(:ap_verification_info)
 
+  @spec env(binary) :: binary
   defp env(param), do: Application.get_env(:rp_attestation, param)
 end

@@ -8,7 +8,7 @@ defmodule RpCore.Media.Upload do
   
   ##### Public #####
 
-  @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, binary} | {:error, binary}
+  @spec create_document(binary, binary, binary, binary, binary, binary) :: {:ok, Document} | {:error, binary}
   def create_document(user_address, doc_type, session_tag, first_name, last_name, country) do
     with {:ok, veriff} <- Attestator.veriff(),
     {:ok, document} <- Document.create(user_address, doc_type, session_tag, first_name, last_name, country, veriff) do
@@ -18,7 +18,7 @@ defmodule RpCore.Media.Upload do
     end
   end
 
-  @spec create_photo(atom, binary, binary, binary) :: {:ok, Photo.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
+  @spec create_photo(atom, binary, binary, binary) :: {:ok, Photo.t} | {:error, :not_found} | {:error, Ecto.Changeset.t}
   def create_photo(media_type, document_id, file, file_hash) do
     with media_type_veriff <- Mapper.Veriff.photo_atom_to_veriff(media_type),
     {:error, :not_found} <- Photo.find_one_by(document_id, media_type_veriff, file_hash),
@@ -62,7 +62,7 @@ defmodule RpCore.Media.Upload do
     %{filename: name, binary: binary}
   end
 
-  @spec pretty_errors(Changeset.t()) :: {:error, binary}
+  @spec pretty_errors(Ecto.Changeset.t) :: {:error, binary}
   defp pretty_errors(changeset) do
     errors = for {_key, {message, _}} <- changeset.errors, do: "#{message}"
     {:error, errors}

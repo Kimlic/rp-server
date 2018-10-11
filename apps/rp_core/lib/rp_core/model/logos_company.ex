@@ -32,6 +32,7 @@ defmodule RpCore.Model.LogosCompany do
     |> foreign_key_constraint(:company_id, message: "Should reference a company")
   end
 
+  @spec url(LogosCompany) :: binary
   def url(model) do
     case model do
       nil -> nil
@@ -41,6 +42,7 @@ defmodule RpCore.Model.LogosCompany do
     end
   end
 
+  @spec logo_url :: {:ok, binary} | {:error, :not_found}
   def logo_url do
     query = from l in LogosCompany,
       limit: 1
@@ -51,6 +53,7 @@ defmodule RpCore.Model.LogosCompany do
     end
   end
 
+  @spec create_logo(binary, UUID) :: {:ok, LogosCompany} | {:error, Ecto.Changeset.t()}
   def create_logo(file, company_id) do
     params = %{
       file: file,
@@ -62,5 +65,6 @@ defmodule RpCore.Model.LogosCompany do
     |> Repo.insert
   end
 
+  @spec delete_all :: LogosCompany
   def delete_all, do: Repo.delete_all(LogosCompany)
 end

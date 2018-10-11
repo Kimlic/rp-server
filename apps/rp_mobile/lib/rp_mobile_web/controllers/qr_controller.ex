@@ -7,6 +7,7 @@ defmodule RpMobileWeb.QrController do
 
   ##### Public #####
   
+  @spec show(Conn.t(), map) :: Conn.t() | no_return()
   def show(conn, _) do
     {:ok, scope_request} = RpUaf.create_scope_request()
     qr = Qr.generate_qr_code(scope_request)
@@ -17,14 +18,15 @@ defmodule RpMobileWeb.QrController do
     # |> send_resp(:created, response)
   end
 
-  def callback(conn, %{"scope_request" => id}) do
-    with account_address <- conn.assigns.account_address,
-    {:ok, %{scope_request: _, fido: _} = resp} <- RpUaf.process_scope_request(id, account_address) do
-      json(conn, resp)
-    else
-      {:error, :scope_request_already_processed} -> json(conn, %{error: "Scope request already processed"})
-      {:error, :scope_request_expired} -> json(conn, %{error: "Scope request expired"})
-      _ -> send_resp(conn, :unprocessable_entity, %{error: "Request error"})
-    end
-  end
+  # @spec callback(Conn.t(), map) :: conn | no_return
+  # def callback(conn, %{"scope_request" => id}) do
+  #   with account_address <- conn.assigns.account_address,
+  #   {:ok, %{scope_request: _, fido: _} = resp} <- RpUaf.process_scope_request(id, account_address) do
+  #     json(conn, resp)
+  #   else
+  #     {:error, :scope_request_already_processed} -> json(conn, %{error: "Scope request already processed"})
+  #     {:error, :scope_request_expired} -> json(conn, %{error: "Scope request expired"})
+  #     _ -> send_resp(conn, :unprocessable_entity, %{error: "Request error"})
+  #   end
+  # end
 end

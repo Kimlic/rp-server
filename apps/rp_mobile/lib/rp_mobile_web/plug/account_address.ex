@@ -45,17 +45,17 @@ defmodule RpMobileWeb.Plug.AccountAddress do
     end
   end
 
-  @spec no_header_error(Conn.t(), binary) :: Conn.t()
-  defp no_header_error(conn, err) do
-    conn
-    |> send_resp(:bad_request, err)
-    |> halt()
-  end
-
   @spec no_header_error(Conn.t()) :: Conn.t()
   defp no_header_error(conn) do
     conn
     |> send_resp(:bad_request, @error_no_header)
+    |> halt()
+  end
+  
+  @spec no_header_error(Conn.t(), binary) :: Conn.t()
+  defp no_header_error(conn, err) do
+    conn
+    |> send_resp(:bad_request, err)
     |> halt()
   end
 end

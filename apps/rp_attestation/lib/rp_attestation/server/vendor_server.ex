@@ -18,8 +18,7 @@ defmodule RpAttestation.Server.VendorServer do
 
   @impl true
   def init(_) do
-    self() 
-    |> send(:vendors)
+    fetch_vendors()
 
     {:ok, nil}
   end
@@ -31,16 +30,13 @@ defmodule RpAttestation.Server.VendorServer do
   @impl true
   def handle_info(:vendors, state) do
     with {:ok, vendors} <- DataProvider.vendors() do
-      case vendors do
-        :econnrefused -> 
-          schedule_fast_reload()
-          {:noreply, state}
-
-        vendors -> 
-          schedule_reload()
-          {:noreply, %{vendors: vendors}}
-      end
+      schedule_reload()
+      {:noreply, %{vendors: vendors}}
     else
+      {:error, :econnrefused} ->
+        schedule_fast_reload()
+        {:noreply, state}
+
       {:error, :closed} -> 
         schedule_reload()
         {:noreply, state}
@@ -51,6 +47,9 @@ defmodule RpAttestation.Server.VendorServer do
   def handle_info(_, state), do: {:noreply, state}
 
   ##### Private #####
+
+  @spec fetch_vendors() :: :vendors
+  defp fetch_vendors, do: self() |> send(:vendors)
 
   @spec schedule_reload() :: reference()
   defp schedule_reload do

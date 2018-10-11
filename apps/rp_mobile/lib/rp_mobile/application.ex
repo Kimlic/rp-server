@@ -4,6 +4,8 @@ defmodule RpMobile.Application do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    RpMobileWeb.Metrics.Setup.setup()
+
     children = [
       supervisor(RpMobileWeb.Endpoint, []),
     ]

@@ -25,16 +25,18 @@ defmodule RpQuorum do
     end
   end
 
+  @spec verification_decision(binary) :: {:ok, :verified | :unverified, binary}
   def verification_decision(provisioning_contract) do
     with {:ok, :verified} <- is_verification_finished(provisioning_contract),
     {:ok, "finalizeProvisioning", _} = ProvisioningContract.finalize_provisioning(provisioning_contract),
-    {:ok, verification_info} <- ProvisioningContract.get_data(provisioning_contract) do
-      {:ok, :verified, provisioning_contract, verification_info}
+    {:ok, _} <- ProvisioningContract.get_data(provisioning_contract) do
+      {:ok, :verified, provisioning_contract}
     else
       {:ok, :unverified} -> {:ok, :unverified, provisioning_contract}
     end
   end
 
+  @spec revoke_provisioning(binary) :: {:ok | :error, binary, binary | map}
   def revoke_provisioning(provisioning_contract) do
     ProvisioningContract.tokens_unlock_at(provisioning_contract)
     ProvisioningContract.withdraw(provisioning_contract)
@@ -42,6 +44,7 @@ defmodule RpQuorum do
 
   ##### Private #####
 
+  @spec is_verification_finished(binary) :: {:ok, :verified | :unverified}
   defp is_verification_finished(contract_address) do
     contract_address
     |> ProvisioningContract.is_verification_finished

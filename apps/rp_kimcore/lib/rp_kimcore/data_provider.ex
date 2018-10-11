@@ -7,7 +7,7 @@ defmodule RpKimcore.DataProvider do
   
   ##### Public #####
 
-  @spec config() :: {:ok, Config.t()} | {:error, binary}
+  @spec config() :: {:ok, Config.t()} | {:error, binary()}
   def config do
     kim_config()
     |> get
@@ -19,14 +19,14 @@ defmodule RpKimcore.DataProvider do
 
   ##### Private #####
 
-  @spec get(binary) :: binary
+  @spec get(binary()) :: {:error, binary()} | {:ok, map()}
   defp get(endpoint) do
     kim_endpoint()
     |> Kernel.<>(endpoint)
     |> RpHttp.get(@pool)
   end
 
-  @spec parseConfigRes(Ecto.Changeset.t()) :: {:ok, Config.t()} | {:error, binary}
+  @spec parseConfigRes(Ecto.Changeset.t()) :: {:ok, Config.t()} | {:error, binary()}
   defp parseConfigRes(res) do
     changeset = res
     |> Map.fetch!("data")
@@ -38,17 +38,18 @@ defmodule RpKimcore.DataProvider do
     end
   end
 
+  @spec pretty_errors(Ecto.Changeset.t()) :: {:error, binary()}
   defp pretty_errors(changeset) do
     errors = for {_key, {message, _}} <- changeset.errors, do: "#{message}"
     {:error, errors}
   end
 
-  @spec kim_endpoint() :: binary
+  @spec kim_endpoint() :: binary()
   defp kim_endpoint, do: env(:kim_endpoint)
 
-  @spec kim_config() :: binary
+  @spec kim_config() :: binary()
   defp kim_config, do: env(:kim_config)
 
-  @spec env(binary) :: binary
+  @spec env(:kim_config | :kim_endpoint) :: binary()
   defp env(param), do: Application.get_env(:rp_kimcore, param)
 end

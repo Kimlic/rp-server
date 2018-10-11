@@ -32,7 +32,7 @@ defmodule RpCore do
     end
   end
 
-  @spec get_verification_info(UUID) :: map
+  @spec get_verification_info(UUID) :: {:ok, nil | map}
   def get_verification_info(session_tag), do: MediaServer.verification_info(session_tag)
 
   ##### Dashboard #####
@@ -43,11 +43,11 @@ defmodule RpCore do
   @spec document_by_id(binary) :: {:ok, Document.t()} | {:error, :not_found}
   def document_by_id(id), do: Document.get_by_id(id)
 
-  @spec count_documents() :: {:ok, map}
+  @spec count_documents :: {:ok, map}
   def count_documents, do: Document.count_documents()
 
-  @spec documents_verified(binary) :: list(Document.t())
-  def documents_verified(user_address), do: Document.get_verified(user_address)
+  @spec documents_by_user_address(binary) :: {:ok, list(Document)} | {:error, :not_found}
+  def documents_by_user_address(user_address), do: Document.documents_by_user_address(user_address)
 
   @spec company() :: Company.t()
   def company, do: Company.company()
@@ -55,10 +55,10 @@ defmodule RpCore do
   @spec company_details() :: Company.t()
   def company_details, do: Company.company_details()
 
-  @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Changeset.t()}
+  @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Ecto.Changeset.t()}
   def company_update(id, params), do: Company.update(id, params)
 
-  @spec logo_url() :: binary
+  @spec logo_url :: {:error, :not_found} | {:ok, binary}
   def logo_url, do: LogosCompany.logo_url()
 
   @spec logo_update(UUID, binary) :: {:ok, binary}

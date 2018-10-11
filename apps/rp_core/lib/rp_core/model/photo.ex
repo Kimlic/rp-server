@@ -38,6 +38,19 @@ defmodule RpCore.Model.Photo do
     |> File.url
   end
 
+  @spec find_one_by(binary) :: {:ok, Photo} | {:error, :not_found}
+  def find_one_by(file_hash) do
+    query = from p in Photo,
+      where: p.file_hash == ^file_hash,
+      limit: 1
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      photo -> {:ok, photo}
+    end
+  end
+
+  @spec find_one_by(UUID, binary, binary) :: {:ok, Photo} | {:error, :not_found}
   def find_one_by(document_id, media_type, file_hash) do
     query = from p in Photo,
       where: p.type == ^media_type,
@@ -50,18 +63,8 @@ defmodule RpCore.Model.Photo do
       photo -> {:ok, photo}
     end
   end
-  
-  def find_one_by(file_hash) do
-    query = from p in Photo,
-      where: p.file_hash == ^file_hash,
-      limit: 1
 
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      photo -> {:ok, photo}
-    end
-  end
-
+  @spec create_photo(binary, binary, binary, UUID) :: {:ok, Photo} | {:error, Ecto.Changeset.t()}
   def create_photo(file_url, file_hash, media_type, document_id) do
     params = %{
       file: file_url,

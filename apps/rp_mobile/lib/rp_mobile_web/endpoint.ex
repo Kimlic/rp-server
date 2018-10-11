@@ -14,6 +14,7 @@ defmodule RpMobileWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
 
+  plug RpMobileWeb.Metrics.MetricsExporter
   plug RpMobileWeb.Router
 
   def init(_key, config) do
