@@ -100,10 +100,11 @@ defmodule RpCore.Server.MediaServer do
 
   @impl true
   def handle_call(:verification_info, _from, state), do: {:reply, {:ok, state[:verification_info]}, state}
-  def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id, verification_info: verification_info} = state) do
+  def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id} = state) do
     with {:ok, photo} <- Upload.create_photo(media_type, document.id, file, hash) do
       IO.puts "PHOTO: #{inspect photo}"
-      if is_nil(verification_info) do
+      IO.puts "SESSION ID: #{inspect session_id}   #{inspect !is_nil(session_id)}"
+      if !is_nil(session_id) do
         media_type
         |> Mapper.Veriff.photo_atom_to_veriff
         |> RpAttestation.photo_upload(session_id, document.country, file)
