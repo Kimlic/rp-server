@@ -69,6 +69,8 @@ defmodule RpCore.Server.MediaServer do
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
         Document.assign_verification(document, nil)
         
+        wait_photos()
+
         state = %MediaServer{
           document: document,
         }
@@ -114,7 +116,11 @@ defmodule RpCore.Server.MediaServer do
       new_photos = photos ++ [photo]
       new_state = %{state | photos: new_photos}
 
-      {:reply, {:ok, :created}, new_state}
+      if length(new_photos) < 3 do
+        {:reply, {:ok, :created}, new_state}
+      else
+        {:stop, :shutdown, nil}
+      end
     else
       {:error, reason} -> {:reply, {:error, reason}, state}
     end
@@ -150,10 +156,16 @@ defmodule RpCore.Server.MediaServer do
   @spec via(binary) :: tuple
   defp via(name), do: {:via, MediaRegistry, {:media_server, name}}
 
-  @spec check_verification_attempt(number()) :: reference()
+  @spec check_verification_attempt(number) :: reference
   defp check_verification_attempt(attempt) do
     self() 
     |> Process.send_after({:check_verification_attempt, attempt}, @poll_time)
+  end
+
+  @spec wait_photos :: reference
+  defp wait_photos do
+    self() 
+    |> Process.send_after(:wait_photos, @poll_time)
   end
 
   defp stop_server(provisioning_contract) do
