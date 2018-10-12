@@ -18,7 +18,7 @@ defmodule RpCore.Media.Upload do
     end
   end
 
-  @spec create_photo(atom, binary, binary, binary) :: {:ok, Photo.t} | {:error, :not_found} | {:error, Ecto.Changeset.t}
+  @spec create_photo(atom, binary, binary, binary) :: {:ok, Photo} | {:error, :not_found} | {:error, Ecto.Changeset.t}
   def create_photo(media_type, document_id, file, file_hash) do
     with media_type_veriff <- Mapper.Veriff.photo_atom_to_veriff(media_type),
     {:error, :not_found} <- Photo.find_one_by(document_id, media_type_veriff, file_hash),

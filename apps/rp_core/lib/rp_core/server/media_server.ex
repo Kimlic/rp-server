@@ -68,7 +68,11 @@ defmodule RpCore.Server.MediaServer do
       {:ok, :verified, _} ->
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
         Document.assign_verification(document, nil)
-        {:stop, :normal}
+        
+        state = %MediaServer{
+          document: document,
+        }
+        {:ok, state}
 
       {:ok, :unverified, provisioning_contract} ->
         ap_address = RpKimcore.veriff()

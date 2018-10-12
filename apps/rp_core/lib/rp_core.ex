@@ -37,10 +37,10 @@ defmodule RpCore do
 
   ##### Dashboard #####
 
-  @spec documents() :: {:ok, list(Document.t())}
+  @spec documents() :: {:ok, list(Document)}
   def documents, do: Document.all()
 
-  @spec document_by_id(binary) :: {:ok, Document.t()} | {:error, :not_found}
+  @spec document_by_id(binary) :: {:ok, Document} | {:error, :not_found}
   def document_by_id(id), do: Document.get_by_id(id)
 
   @spec count_documents :: {:ok, map}
@@ -49,13 +49,13 @@ defmodule RpCore do
   @spec documents_by_user_address(binary) :: {:ok, list(Document)} | {:error, :not_found}
   def documents_by_user_address(user_address), do: Document.documents_by_user_address(user_address)
 
-  @spec company() :: Company.t()
+  @spec company :: Company
   def company, do: Company.company()
 
-  @spec company_details() :: Company.t()
+  @spec company_details() :: Company
   def company_details, do: Company.company_details()
 
-  @spec company_update(UUID, map) :: {:ok, Company.t()} | {:error, Ecto.Changeset.t()}
+  @spec company_update(UUID, map) :: {:ok, Company} | {:error, Ecto.Changeset.t}
   def company_update(id, params), do: Company.update(id, params)
 
   @spec logo_url :: {:error, :not_found} | {:ok, binary}
