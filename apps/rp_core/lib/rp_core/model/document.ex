@@ -180,9 +180,11 @@ defmodule RpCore.Model.Document do
   #   "status" => "declined"
   # }
   @spec assign_verification(__MODULE__, map | nil) :: {:ok, __MODULE__} :: {:error, Ecto.Changeset.t}
-  def assign_verification(%__MODULE__{} = document, %{"status" => "approved", "person" => person, "document" => document}) do
+  def assign_verification(document, %{"status" => "approved"} = info) do
+    %{"document" => verified_document, "person" => person} = info
     %{"firstName" => first_name, "lastName" => last_name} = person
-    %{"country" => country} = document
+    %{"country" => country} = verified_document
+
     params = %{
       first_name: first_name,
       last_name: last_name,
@@ -192,7 +194,7 @@ defmodule RpCore.Model.Document do
       verified: true,
       verified_at: Timex.now()
     }
-
+  
     document
     |> Document.changeset(params)
     |> Repo.update

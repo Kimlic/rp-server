@@ -67,7 +67,7 @@ defmodule RpCore do
     {:ok, LogosCompany.url(logo)}
   end
 
-  @spec attestators() :: list(Attestator.t())
+  @spec attestators() :: list(Attestator)
   def attestators, do: Attestator.attestators()
 
   ##### Private #####
