@@ -52,11 +52,6 @@ defmodule RpCore.Server.MediaServer do
 
   def whereis(name: name), do: MediaRegistry.whereis_name({:media_server, name})
 
-  def consumption_first() do
-  end
-  def consumption() do
-  end
-
   @impl true
   def init(user_address: user_address, doc_type_str: doc_type_str, session_tag: session_tag, first_name: first_name, last_name: last_name, device: device, udid: udid, country: country) do
     {:ok, config} = RpKimcore.config()
@@ -67,9 +62,9 @@ defmodule RpCore.Server.MediaServer do
     |> case do
       {:ok, :verified, _} ->
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
-        Document.assign_verification(document, nil)
-        
-        wait_photos()
+        IO.puts "INIT DOCUMENT: #{inspect document}"
+        res = Document.assign_verification(document, nil)
+        IO.puts "INIT RES: #{inspect res}"
 
         state = %MediaServer{
           document: document,
@@ -107,6 +102,7 @@ defmodule RpCore.Server.MediaServer do
   def handle_call(:verification_info, _from, state), do: {:reply, {:ok, state[:verification_info]}, state}
   def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id, verification_info: verification_info} = state) do
     with {:ok, photo} <- Upload.create_photo(media_type, document.id, file, hash) do
+      IO.puts "PHOTO: #{inspect photo}"
       if is_nil(verification_info) do
         media_type
         |> Mapper.Veriff.photo_atom_to_veriff
@@ -116,13 +112,11 @@ defmodule RpCore.Server.MediaServer do
       new_photos = photos ++ [photo]
       new_state = %{state | photos: new_photos}
 
-      if length(new_photos) < 3 do
-        {:reply, {:ok, :created}, new_state}
-      else
-        {:stop, :shutdown, nil}
-      end
+      {:reply, {:ok, :created}, new_state}
     else
-      {:error, reason} -> {:reply, {:error, reason}, state}
+      {:error, reason} -> 
+        IO.puts "PHOTO ERROR: #{inspect reason}"
+        {:reply, {:error, reason}, state}
     end
   end
   def handle_call(message, _from, state), do: {:reply, {:error, message}, state}
@@ -156,16 +150,10 @@ defmodule RpCore.Server.MediaServer do
   @spec via(binary) :: tuple
   defp via(name), do: {:via, MediaRegistry, {:media_server, name}}
 
-  @spec check_verification_attempt(number) :: reference
+  @spec check_verification_attempt(number()) :: reference()
   defp check_verification_attempt(attempt) do
     self() 
     |> Process.send_after({:check_verification_attempt, attempt}, @poll_time)
-  end
-
-  @spec wait_photos :: reference
-  defp wait_photos do
-    self() 
-    |> Process.send_after(:wait_photos, @poll_time)
   end
 
   defp stop_server(provisioning_contract) do
