@@ -19,7 +19,6 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :first_name, non_null(:string)
     field :last_name, non_null(:string)
     field :country, non_null(:string)
-    field :verified, non_null(:boolean)
     field :verified_at, :string
     field :inserted_at, non_null(:string)
     field :photos, list_of(:photo)

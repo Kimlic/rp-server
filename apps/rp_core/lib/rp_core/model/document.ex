@@ -8,7 +8,7 @@ defmodule RpCore.Model.Document do
 
   ##### Schema #####
 
-  @derive {Jason.Encoder, only: [:first_name, :last_name, :verified_at, :type, :country]}
+  @derive {Jason.Encoder, only: [:first_name, :last_name, :verified_at, :status, :reason, :type, :country]}
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
   schema "documents" do
