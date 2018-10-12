@@ -21,7 +21,6 @@ defmodule RpCore.Model.Document do
     field :status, :string
     field :reason, :string
     field :verified_at, Timex.Ecto.DateTime, usec: false
-    field :verified, :boolean, null: false, default: false
     
     has_many :photos, Photo, foreign_key: :document_id, on_delete: :delete_all
     belongs_to :attestator, Attestator
@@ -30,7 +29,7 @@ defmodule RpCore.Model.Document do
   end
 
   @required_params ~w(user_address session_tag type first_name last_name attestator_id)a
-  @optional_params ~w(verified_at verified status reason country)a
+  @optional_params ~w(verified_at status reason country)a
 
   ##### Public #####
 
@@ -100,14 +99,14 @@ defmodule RpCore.Model.Document do
       left join (
         select count(d.id) as verified, date(d.inserted_at) as date_at
         from rp_core.documents as d
-        where d.verified
+        where d.verified_at is not null
         group by date(d.inserted_at)
       ) as t2
       on t2.date_at = t1.date_at
       left join (
         select count(d.id) as unverified, date(d.inserted_at) as date_at
         from rp_core.documents as d
-        where not d.verified
+        where d.verified_at is null
         group by date(d.inserted_at)
       ) as t3
       on t3.date_at = t1.date_at
@@ -191,7 +190,6 @@ defmodule RpCore.Model.Document do
       country: country,
       status: "approved",
       reason: nil,
-      verified: true,
       verified_at: Timex.now()
     }
   
@@ -214,7 +212,6 @@ defmodule RpCore.Model.Document do
     params = %{
       status: "approved",
       reason: nil,
-      verified: true,
       verified_at: Timex.now()
     }
 
