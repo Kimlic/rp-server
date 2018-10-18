@@ -1,6 +1,6 @@
-defmodule RpExplorer.BlocksStorage do
+defmodule RpExplorer.BlockFetch.Storage do
 
-  alias RpExplorer.TxsServer
+  alias RpExplorer.Server.TxsServer
 
   ##### Public #####
 
@@ -8,9 +8,6 @@ defmodule RpExplorer.BlocksStorage do
     Task.start_link fn -> 
       {:ok, provisioning_factory} = TxsServer.address_provisioning()
       {:ok, verification_factory} = TxsServer.address_verification()
-
-      block_num = event["number"]
-      |> int_from_hex
 
       txs_stream = event["transactions"]
       |> Stream.map(fn tx -> 
@@ -22,7 +19,7 @@ defmodule RpExplorer.BlocksStorage do
         %{to: to, block_number: block_number, hash: hash}
       end) 
 
-      provisioning_txs = txs_stream
+      txs_stream
       |> Stream.filter(fn tx -> 
         tx
         |> Map.fetch(:to)
@@ -30,8 +27,9 @@ defmodule RpExplorer.BlocksStorage do
         |> Kernel.==(provisioning_factory)
       end)
       |> Enum.to_list
+      |> TxsServer.put_txs
 
-      verification_txs = txs_stream
+      txs_stream
       |> Stream.filter(fn tx -> 
         tx
         |> Map.fetch(:to)
@@ -39,12 +37,12 @@ defmodule RpExplorer.BlocksStorage do
         |> Kernel.==(verification_factory)
       end)
       |> Enum.to_list
+      |> TxsServer.put_txs
 
-
-      IO.puts "Process block: #{inspect {self(), block_num}}"
-      IO.puts "Provisioning txs: #{inspect provisioning_txs}"
-      IO.puts "Verification txs: #{inspect verification_txs}"
-      IO.puts "----------------------------------------------------------"
+      # IO.puts "Process block: #{inspect {self(), block_num}}"
+      # IO.puts "Provisioning txs: #{inspect provisioning_txs}"
+      # IO.puts "Verification txs: #{inspect verification_txs}"
+      # IO.puts "----------------------------------------------------------"
     end
   end
 

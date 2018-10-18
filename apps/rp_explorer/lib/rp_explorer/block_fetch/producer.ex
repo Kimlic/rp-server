@@ -1,4 +1,4 @@
-defmodule RpExplorer.BlocksProducer do
+defmodule RpExplorer.BlockFetch.Producer do
   @moduledoc false
 
   use GenStage

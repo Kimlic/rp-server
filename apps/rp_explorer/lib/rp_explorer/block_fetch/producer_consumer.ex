@@ -1,9 +1,10 @@
-defmodule RpExplorer.BlocksProducerConsumer do
+defmodule RpExplorer.BlockFetch.ProducerConsumer do
   @moduledoc false
 
   use GenStage
 
-  alias RpExplorer.{BlocksProducer, Lookup}
+  alias RpExplorer.Lookup
+  alias RpExplorer.BlockFetch.Producer
 
   ##### Public #####
 
@@ -17,7 +18,7 @@ defmodule RpExplorer.BlocksProducerConsumer do
       min_demand: round(batch / 2), 
       max_demand: batch
     ]
-    {:producer_consumer, args, subscribe_to: [{BlocksProducer, attrs}]}
+    {:producer_consumer, args, subscribe_to: [{Producer, attrs}]}
   end
 
   @impl true
