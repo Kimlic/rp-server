@@ -82,7 +82,6 @@
               var anchor = document.createElement('a');
               document.body.appendChild(anchor);
               anchor.href = intentUrl;
-              alert(intentUrl);
 
               if (anchor.click) anchor.click();
               else window.location = intentUrl;
