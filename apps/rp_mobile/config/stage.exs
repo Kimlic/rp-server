@@ -5,3 +5,6 @@ config :rp_mobile, RpMobileWeb.Endpoint,
   catch_errors: true,
   code_reloader: false,
   check_origin: false
+
+config :rp_mobile,
+  endpoint: "https://demo-rp2.kimlic.com"

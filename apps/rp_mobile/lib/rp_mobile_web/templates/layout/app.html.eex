@@ -125,14 +125,13 @@
         iosApp: 'twitter://post?message=' + qs['message'],
         iosAppStore: 'https://itunes.apple.com/il/app/twitter/id333903271?mt=8&message=' + qs['message'],
         android: {
-          'host': 'post/?message=' + encodeURIComponent(qs['message']), // Host/path/querystring part in a custom scheme URL
+          'host': 'qr?url=' + "<%= @url %>", // encodeURIComponent(qs['message']), // Host/path/querystring part in a custom scheme URL
           // 'action': '', // Equivalent to ACTION in INTENTs
           // 'category': '', // Equivalent to CATEGORY in INTENTs
           // 'component': '', // Equivalent to COMPONENT in INTENTs
           'scheme': 'kimlic', // Scheme part in a custom scheme URL
           'package': 'com.kimlic', // Package name in Play store
-          'fallback': 'https://play.google.com/store/apps/details?id=com.kimlic'
-          // 'fallback': 'https://play.google.com/store/apps/details?id=com.twitter.android&hl=en&message=' + qs['message']
+          'fallback': 'https://play.google.com/store/apps/details?id=com.kimlic&hl=en&message=' + qs['message']
         }
       });
     </script>

@@ -6,6 +6,9 @@ config :rp_mobile, RpMobileWeb.Endpoint,
   code_reloader: true,
   check_origin: false
 
+config :rp_mobile,
+  endpoint: "http://localhost:4002"
+
 config :phoenix, :stacktrace_depth, 20
 
 config :rp_mobile, RpMobileWeb.Endpoint, live_reload: [

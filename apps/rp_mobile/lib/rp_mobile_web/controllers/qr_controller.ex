@@ -9,9 +9,11 @@ defmodule RpMobileWeb.QrController do
   
   @spec show(Plug.Conn.t, map) :: Plug.Conn.t | no_return
   def show(conn, _) do
+    url = Application.get_env(:rp_mobile, :endpoint)
+
     {:ok, scope_request} = RpUaf.create_scope_request()
     qr = Qr.generate_qr_code(scope_request)
-    render(conn, "show.html", %{qr: qr})
+    render(conn, "show.html", %{qr: qr, url: url})
 
     # conn
     # |> put_resp_content_type("image/png")

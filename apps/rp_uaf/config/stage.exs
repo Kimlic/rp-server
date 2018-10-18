@@ -15,7 +15,7 @@ config :rp_uaf, RpUaf.Repo,
 #   pool_size: 10
 
 config :rp_uaf, 
-  callback_url: "http://168.62.55.56:4002/api/qr_callback" # System.get_env("RELAYING_CALLBACK_URL")
+  callback_url: "https://demo-rp2.kimlic.com/api/qr_callback" # System.get_env("RELAYING_CALLBACK_URL")
 
 config :rp_uaf, RpUaf.Fido.Client,
   url: "http://23.96.96.65:8080/fidouaf/v1/public" # System.get_env("FIDO_ENDPOINT")
