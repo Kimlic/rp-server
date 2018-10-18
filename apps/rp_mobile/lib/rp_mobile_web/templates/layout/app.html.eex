@@ -7,6 +7,95 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    <script type="text/javascript">
+      console.log("AAAAA");
+      (function () {
+        var queryString = {}, browserMovedToBackground = false;
+
+        (function (search) {
+          search = (search || '').split(/[\&\?]/g);
+          
+          for (var i = 0, count = search.length; i < count; i++) {
+            if (!search[i]) continue;
+
+            var pair = search[i].split('=');
+            queryString[pair[0]] = queryString[pair[0]] !== undefined ? ([pair[1] || ''].concat(queryString[pair[0]])) : (pair[1] || '');
+          }
+        })(window.location.search);
+
+        window.document.addEventListener("visibilitychange", function(e) {
+            browserMovedToBackground = window.document.visibilityState === 'hidden' || window.document.visibilityState === 'unloaded';
+        });
+
+        window.addEventListener("blur", function(e) {
+            browserMovedToBackground = true;
+        });
+
+          var AppRedirect = {queryString: queryString, redirect: function (options) {
+            var hasIos = !!(options.iosApp || options.iosAppStore);
+            var hasAndroid = !!(options.android);
+
+            var tryToOpenInMultiplePhases = function(urls) {
+              browserMovedToBackground = false;
+              var currentIndex = 0;
+              var redirectTime = new Date();
+              window.location = urls[currentIndex++];
+            
+              var next = function () {
+                if (urls.length > currentIndex) {
+                  setTimeout(function () {
+                    if (browserMovedToBackground) {
+                      console.log('Browser moved to the background, we assume that we are done here')
+                      return;
+                    }
+
+                    if (new Date() - redirectTime > 3000) {
+                      console.log('Enough time has passed, the app is probably open');
+                    } else {
+                      redirectTime = new Date();
+                      window.location = urls[currentIndex++];
+                      next();
+                    }
+                  }, 10);
+                }
+              };
+
+              next();
+            };
+
+            if (hasIos && /iP(hone|ad|od)/.test(navigator.userAgent)) {
+              var urls = [];
+
+              if (options.iosApp) urls.push(options.iosApp);
+              if (options.iosAppStore) urls.push(options.iosAppStore);
+
+              tryToOpenInMultiplePhases(urls);
+            } else if (hasAndroid && /Android/.test(navigator.userAgent)) {
+              var intent = options.android;
+              var intentUrl = 'intent://' + intent.host + '#Intent;' +
+                'scheme=' + encodeURIComponent(intent.scheme) + ';' + 
+                'package=' + encodeURIComponent(intent.package) + ';' + 
+                (intent.action ? 'action=' + encodeURIComponent(intent.action) + ';': '') + 
+                (intent.category ? 'category=' + encodeURIComponent(intent.category) + ';': '') + 
+                (intent.component ? 'component=' + encodeURIComponent(intent.component) + ';': '') + 
+                (intent.fallback ? 'S.browser_fallback_url=' + encodeURIComponent(intent.fallback) + ';': '') + 
+                'end';
+              var anchor = document.createElement('a');
+              document.body.appendChild(anchor);
+              anchor.href = intentUrl;
+
+              if (anchor.click) anchor.click();
+              else window.location = intentUrl;
+            } else {
+              console.log('Unknown platform, nothing to do');
+            }
+          }
+        };
+
+        window.AppRedirect = AppRedirect;
+      })();
+    </script>
+
     <title>Hello Kimlic!</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
@@ -30,36 +119,21 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     <script>window.userToken = "<%= assigns[:user_token] %>"</script>
-
     <script type="text/javascript">
-      var iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
-      var is_uiwebview = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent);
-      var ua = navigator.userAgent.toLowerCase();
-      var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
-
-      if (isAndroid) {
-        notyfy({
-          text: 'Download Kimlic App from Play Store: https://play.google.com/store/apps/details?id=com.kimlic',
-          layout: 'top',
-          dismissQueue: true,
-          style: 'bootstrap',
-          type: 'information',
-          buttons: [{
-            addClass: 'btn btn-success btn-small btn-icon glyphicons ok_2',
-            text: '<i></i> Go!',
-            onClick: function ($notyfy) {
-              $notyfy.close();
-              window.location.href = 'https://play.google.com/store/apps/details?id=com.kimlic'
-            }
-          }, {
-            addClass: 'btn btn-danger btn-small btn-icon glyphicons remove_2',
-            text: '<i></i> Close',
-            onClick: function ($notyfy) {
-              $notyfy.close();
-            }
-          }]
-        });
-      }
+      var qs = AppRedirect.queryString;
+      AppRedirect.redirect({
+        iosApp: 'twitter://post?message=' + qs['message'],
+        iosAppStore: 'https://itunes.apple.com/il/app/twitter/id333903271?mt=8&message=' + qs['message'],
+        android: {
+          'host': 'post/?message=' + encodeURIComponent(qs['message']), // Host/path/querystring part in a custom scheme URL
+          // 'action': '', // Equivalent to ACTION in INTENTs
+          // 'category': '', // Equivalent to CATEGORY in INTENTs
+          // 'component': '', // Equivalent to COMPONENT in INTENTs
+          'scheme': 'twitter', // Scheme part in a custom scheme URL
+          'package': 'com.twitter.android', // Package name in Play store
+          'fallback': 'https://play.google.com/store/apps/details?id=com.twitter.android&hl=en&message=' + qs['message']
+        }
+      });
     </script>
   </body>
 </html>
