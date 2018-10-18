@@ -8,7 +8,6 @@
     <meta name="author" content="">
 
     <script type="text/javascript">
-      console.log("AAAAA");
       (function () {
         var queryString = {}, browserMovedToBackground = false;
 
@@ -83,6 +82,7 @@
               var anchor = document.createElement('a');
               document.body.appendChild(anchor);
               anchor.href = intentUrl;
+              alert(intentUrl);
 
               if (anchor.click) anchor.click();
               else window.location = intentUrl;
@@ -129,9 +129,10 @@
           // 'action': '', // Equivalent to ACTION in INTENTs
           // 'category': '', // Equivalent to CATEGORY in INTENTs
           // 'component': '', // Equivalent to COMPONENT in INTENTs
-          'scheme': 'twitter', // Scheme part in a custom scheme URL
-          'package': 'com.twitter.android', // Package name in Play store
-          'fallback': 'https://play.google.com/store/apps/details?id=com.twitter.android&hl=en&message=' + qs['message']
+          'scheme': 'kimlic', // Scheme part in a custom scheme URL
+          'package': 'com.kimlic', // Package name in Play store
+          'fallback': 'https://play.google.com/store/apps/details?id=com.kimlic'
+          // 'fallback': 'https://play.google.com/store/apps/details?id=com.twitter.android&hl=en&message=' + qs['message']
         }
       });
     </script>
