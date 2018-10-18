@@ -32,42 +32,33 @@
     <script>window.userToken = "<%= assigns[:user_token] %>"</script>
 
     <script type="text/javascript">
-      if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i) || navigator.userAgent.match(/android/i)) {
-        var store_loc = "itms://itunes.com/apps/kimlic";
-        var href = "/iphone/";
-        var is_android = false;
+      var iOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+      var is_uiwebview = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(navigator.userAgent);
+      var ua = navigator.userAgent.toLowerCase();
+      var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
 
-        if (navigator.userAgent.match(/android/i)) {
-          store_loc = "https://play.google.com/store/apps/details?id=com.kimlic";
-          href = "/android/";
-          is_android = true;
-        }
-
-        if (location.hash) {
-          var app_loc = "kimlic://" + location.hash.substring(2);
-
-          if (is_android) {
-            var w = null;
-
-            try {
-              w = window.open(app_loc, '_blank');
-            } catch (e) {}
-
-            if (w) { window.close(); }
-            else { window.location = store_loc; }
-          } else {
-            var loadDateTime = new Date();
-            window.setTimeout(function() {
-              var timeOutDateTime = new Date();
-              if (timeOutDateTime - loadDateTime < 5000) {
-                window.location = store_loc;
-              } else { window.close(); }
-            }, 25);
-            window.location = app_loc;
-          }
-        } else {
-          location.href = href;
-        }
+      if (isAndroid) {
+        notyfy({
+          text: 'Download Kimlic App from Play Store: https://play.google.com/store/apps/details?id=com.kimlic',
+          layout: 'top',
+          dismissQueue: true,
+          style: 'bootstrap',
+          type: 'information',
+          buttons: [{
+            addClass: 'btn btn-success btn-small btn-icon glyphicons ok_2',
+            text: '<i></i> Go!',
+            onClick: function ($notyfy) {
+              $notyfy.close();
+              window.location.href = 'https://play.google.com/store/apps/details?id=com.kimlic'
+            }
+          }, {
+            addClass: 'btn btn-danger btn-small btn-icon glyphicons remove_2',
+            text: '<i></i> Close',
+            onClick: function ($notyfy) {
+              $notyfy.close();
+            }
+          }]
+        });
       }
     </script>
   </body>
