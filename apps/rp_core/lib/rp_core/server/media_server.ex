@@ -19,8 +19,8 @@ defmodule RpCore.Server.MediaServer do
   alias RpCore.Mapper
 
   @max_check_polls 12 * 24
-  # @poll_time 5 * 60 * 1_000
-  @poll_time 60 * 1_000
+  @poll_time 5 * 60 * 1_000
+  # @poll_time 60 * 1_000
   @timeout 180_000
 
   ##### Public #####
@@ -32,14 +32,10 @@ defmodule RpCore.Server.MediaServer do
 
   @spec push_photo(binary, binary, binary, binary) :: {:ok, :created} | {:error, binary}
   def push_photo(session_tag, media_type, file, hash) do
-    args = [
-      media_type: media_type, 
-      file: file, 
-      hash: hash
-    ]
+    args = {:push_photo, media_type, file, hash}
 
     via(session_tag)
-    |> GenServer.call({:push_photo, args}, @timeout)
+    |> GenServer.call(args, @timeout)
   end
 
   @spec verification_info(binary) :: {:ok, map} | {:ok, nil}
@@ -62,9 +58,7 @@ defmodule RpCore.Server.MediaServer do
     |> case do
       {:ok, :verified, _} ->
         {:ok, %Document{} = document} = Upload.create_document(user_address, doc_type_str, session_tag, first_name, last_name, country)
-        IO.puts "INIT DOCUMENT: #{inspect document}"
-        res = Document.assign_verification(document, nil)
-        IO.puts "INIT RES: #{inspect res}"
+        Document.assign_verification(document, nil)
 
         state = %MediaServer{
           document: document,
@@ -99,25 +93,16 @@ defmodule RpCore.Server.MediaServer do
   end
 
   @impl true
-  def handle_call(:verification_info, _from, state), do: {:reply, {:ok, state[:verification_info]}, state}
-  def handle_call({:push_photo, media_type: media_type, file: file, hash: hash}, _from, %{photos: photos, document: document, session_id: session_id} = state) do
+  def handle_call({:push_photo, media_type, file, hash}, _from, %{photos: photos, document: document, session_id: session_id} = state) do
     with {:ok, photo} <- Upload.create_photo(media_type, document.id, file, hash) do
-      IO.puts "PHOTO: #{inspect photo}"
-      IO.puts "SESSION ID: #{inspect session_id}   #{inspect !is_nil(session_id)}"
-      if !is_nil(session_id) do
-        media_type
-        |> Mapper.Veriff.photo_atom_to_veriff
-        |> RpAttestation.photo_upload(session_id, document.country, file)
-      end
+      self() |> send({:send_to_attestator, media_type, session_id, document.country, file})
 
       new_photos = photos ++ [photo]
       new_state = %{state | photos: new_photos}
 
       {:reply, {:ok, :created}, new_state}
     else
-      {:error, reason} -> 
-        IO.puts "PHOTO ERROR: #{inspect reason}"
-        {:reply, {:error, reason}, state}
+      {:error, _} = err -> {:reply, err, state}
     end
   end
   def handle_call(message, _from, state), do: {:reply, {:error, message}, state}
@@ -145,6 +130,11 @@ defmodule RpCore.Server.MediaServer do
       end
     end
   end
+  def handle_info({:send_to_attestator, media_type, session_id, country, file}, _) do
+    media_type
+    |> Mapper.Veriff.photo_atom_to_veriff
+    |> RpAttestation.photo_upload(session_id, country, file)
+  end
 
   ##### Private #####
 
@@ -153,8 +143,8 @@ defmodule RpCore.Server.MediaServer do
 
   @spec check_verification_attempt(number()) :: reference()
   defp check_verification_attempt(attempt) do
-    self() 
-    |> Process.send_after({:check_verification_attempt, attempt}, @poll_time)
+    attrs = {:check_verification_attempt, attempt}
+    self() |> Process.send_after(attrs, @poll_time)
   end
 
   defp stop_server(provisioning_contract) do

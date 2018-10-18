@@ -33,7 +33,7 @@ defmodule RpCore.Model.Document do
 
   ##### Public #####
 
-  @spec changeset(__MODULE__, map | :invalid) :: Ecto.Changeset.t()
+  @spec changeset(__MODULE__, map | :invalid) :: Ecto.Changeset.t
   def changeset(%__MODULE__{} = model, params \\ :invalid) do
     model
     |> cast(params, @required_params ++ @optional_params)
@@ -128,7 +128,7 @@ defmodule RpCore.Model.Document do
     {:ok, count}
   end
 
-  @spec find_one_by(binary, binary) :: {:ok, UUID} | {:error, :not_found}
+  @spec find_one_by(binary, binary) :: {:ok, __MODULE__} | {:error, :not_found}
   def find_one_by(user_address, type) do
     query = from d in Document,
       where: d.user_address == ^user_address,
@@ -137,7 +137,7 @@ defmodule RpCore.Model.Document do
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
-      document_id -> {:ok, document_id}
+      document -> {:ok, document}
     end
   end
 
@@ -178,7 +178,7 @@ defmodule RpCore.Model.Document do
   #   "reason" => "Client did not use a physical document. ", 
   #   "status" => "declined"
   # }
-  @spec assign_verification(__MODULE__, map | nil) :: {:ok, __MODULE__} :: {:error, Ecto.Changeset.t}
+  @spec assign_verification(__MODULE__, nil | map) :: {:ok, __MODULE__} :: {:error, Ecto.Changeset.t}
   def assign_verification(document, %{"status" => "approved"} = info) do
     %{"document" => verified_document, "person" => person} = info
     %{"firstName" => first_name, "lastName" => last_name} = person

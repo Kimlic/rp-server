@@ -24,6 +24,7 @@ defmodule RpCore.Model.LogosAttestator do
 
   ##### Public #####
 
+  @spec changeset(__MODULE__, :invalid | map) :: Ecto.Changeset.t
   def changeset(model, params \\ :invalid) do
     model
     |> cast(params, @required_params ++ @optional_params)
@@ -32,6 +33,7 @@ defmodule RpCore.Model.LogosAttestator do
     |> foreign_key_constraint(:company_id, message: "Should reference a company")
   end
 
+  @spec url(__MODULE__) :: nil | binary
   def url(model) do
     case model do
       nil -> nil
@@ -41,6 +43,7 @@ defmodule RpCore.Model.LogosAttestator do
     end
   end
 
+  @spec logo_url :: {:error, :not_found} | {:ok, binary}
   def logo_url do
     query = from l in LogosAttestator,
       limit: 1
@@ -51,5 +54,6 @@ defmodule RpCore.Model.LogosAttestator do
     end
   end
 
+  @spec delete_all :: __MODULE__
   def delete_all, do: Repo.delete_all(LogosAttestator)
 end

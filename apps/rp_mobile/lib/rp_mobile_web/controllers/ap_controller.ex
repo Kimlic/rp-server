@@ -5,7 +5,7 @@ defmodule RpMobileWeb.ApController do
 
   ##### Public #####
 
-  @spec index(Conn.t(), map) :: Conn.t()
+  @spec index(Plug.Conn.t, map) :: Plug.Conn.t
   def index(conn, _) do
     with {:ok, vendors} <- RpAttestation.vendors do
       json(conn, vendors)

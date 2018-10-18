@@ -5,9 +5,9 @@ defmodule RpMobileWeb.FallbackController do
 
   use RpMobileWeb, :controller
 
-  @typep fallback_param_t :: nil | tuple | Ecto.Changeset.t()
+  @typep fallback_param_t :: nil | tuple | Ecto.Changeset.t
 
-  @spec call(Plug.Conn.t(), fallback_param_t) :: Plug.Conn.t()
+  @spec call(Plug.Conn.t, fallback_param_t) :: Plug.Conn.t
   def call(conn, nil), do: call(conn, {:error, :not_found})
 
   def call(conn, {:error, :not_found}) do

@@ -24,6 +24,7 @@ defmodule RpCore.Model.LogosCompany do
 
   ##### Public #####
 
+  @spec changeset(__MODULE__, :invalid | map) :: Ecto.Changeset.t
   def changeset(model, params \\ :invalid) do
     model
     |> cast(params, @required_params ++ @optional_params)
@@ -32,7 +33,7 @@ defmodule RpCore.Model.LogosCompany do
     |> foreign_key_constraint(:company_id, message: "Should reference a company")
   end
 
-  @spec url(LogosCompany) :: binary
+  @spec url(__MODULE__) :: nil | binary
   def url(model) do
     case model do
       nil -> nil
@@ -53,7 +54,7 @@ defmodule RpCore.Model.LogosCompany do
     end
   end
 
-  @spec create_logo(binary, UUID) :: {:ok, LogosCompany} | {:error, Ecto.Changeset.t()}
+  @spec create_logo(binary, UUID) :: {:ok, __MODULE__} | {:error, Ecto.Changeset.t}
   def create_logo(file, company_id) do
     params = %{
       file: file,
@@ -65,6 +66,6 @@ defmodule RpCore.Model.LogosCompany do
     |> Repo.insert
   end
 
-  @spec delete_all :: LogosCompany
+  @spec delete_all :: __MODULE__
   def delete_all, do: Repo.delete_all(LogosCompany)
 end

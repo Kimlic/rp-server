@@ -7,10 +7,10 @@ defmodule RpQuorum.Contract do
         alias RpQuorum.ContractServer
         alias RpQuorum.Contract.{
           KimlicContractsContext, 
-          ProvisioningContractFactory, 
-          # AccountStorageAdapter,
+          ProvisioningContractFactory,
           ProvisioningContract,
-          VerificationContractFactory
+          VerificationContractFactory,
+          KimlicToken
         }
       end
   end

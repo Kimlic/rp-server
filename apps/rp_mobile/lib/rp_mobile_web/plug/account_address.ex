@@ -13,10 +13,10 @@ defmodule RpMobileWeb.Plug.AccountAddress do
 
   ##### Public #####
 
-  @spec init(Plug.opts()) :: Plug.opts()
+  @spec init(Plug.opts) :: Plug.opts
   def init(opts), do: opts
 
-  @spec call(Conn.t(), Plug.opts()) :: Conn.t()
+  @spec call(Plug.Conn.t, Plug.opts) :: Plug.Conn.t
   def call(%Conn{} = conn, _opts) do
     with {:ok, header} <- validate_required_header(conn),
     :ok <- validate_format(header) do
@@ -29,7 +29,7 @@ defmodule RpMobileWeb.Plug.AccountAddress do
 
   ##### Private #####
 
-  @spec validate_required_header(Conn.t()) :: {:ok, binary} | {:error, binary}
+  @spec validate_required_header(Plug.Conn.t) :: {:ok, binary} | {:error, binary}
   defp validate_required_header(conn) do
     case Conn.get_req_header(conn, @header) do
       [header] -> {:ok, header}
@@ -45,14 +45,14 @@ defmodule RpMobileWeb.Plug.AccountAddress do
     end
   end
 
-  @spec no_header_error(Conn.t()) :: Conn.t()
+  @spec no_header_error(Plug.Conn.t) :: Plug.Conn.t
   defp no_header_error(conn) do
     conn
     |> send_resp(:bad_request, @error_no_header)
     |> halt()
   end
   
-  @spec no_header_error(Conn.t(), binary) :: Conn.t()
+  @spec no_header_error(Plug.Conn.t, binary) :: Plug.Conn.t
   defp no_header_error(conn, err) do
     conn
     |> send_resp(:bad_request, err)

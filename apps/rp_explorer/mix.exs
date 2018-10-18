@@ -1,9 +1,9 @@
-defmodule RpQuorum.MixProject do
+defmodule RpExplorer.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :rp_quorum,
+      app: :rp_explorer,
       version: "1.0.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -17,16 +17,17 @@ defmodule RpQuorum.MixProject do
 
   def application do
     [
-      extra_applications: [:sasl, :logger, :runtime_tools]
+      extra_applications: [:sasl, :logger, :runtime_tools],
+      mod: {RpExplorer.Application, []}
     ]
   end
 
   defp deps do
     [
-      {:ethereumex, "~> 0.3"},
-      {:keccakf1600, "~> 2.0", hex: :keccakf1600_orig},
-      {:httpoison, "~> 1.3", override: true},
-      {:hackney, "~> 1.14", override: true}
+      {:gen_stage, "~> 0.14"}, 
+
+      {:rp_kimcore, in_umbrella: true},
+      {:rp_quorum, in_umbrella: true}
     ]
   end
 end

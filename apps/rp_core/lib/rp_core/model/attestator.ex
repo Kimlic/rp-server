@@ -33,6 +33,7 @@ defmodule RpCore.Model.Attestator do
     |> validate_required(@required_params)
   end
 
+  @spec attestators :: {:ok, list[__MODULE__]}
   def attestators do
     query = from a in Attestator,
       left_join: logo in assoc(a, :logo),
@@ -43,6 +44,7 @@ defmodule RpCore.Model.Attestator do
     |> Enum.map(&prepare_attestator/1)
   end
 
+  @spec veriff :: {:ok, __MODULE__} | {:error, :not_found}
   def veriff do
     query = from a in Attestator,
       where: a.name == "veriff",
@@ -56,18 +58,19 @@ defmodule RpCore.Model.Attestator do
 
   ##### Private #####
 
-  defp prepare_attestator(attestator) do
+  @spec prepare_attestator(__MODULE__) :: __MODULE__
+  defp prepare_attestator(%Attestator{} = attestator) do
     compliance = attestator.compliance
-      |> Enum.join(", ")
+    |> Enum.join(", ")
 
-      cost = attestator.cost_per_user
-      |> :erlang.float_to_binary([:compact, {:decimals, 10}])
+    cost = attestator.cost_per_user
+    |> :erlang.float_to_binary([:compact, {:decimals, 10}])
 
-      logo = case attestator.logo do
-        nil -> nil
-        logo -> LogosAttestator.url(logo)
-      end
+    logo = case attestator.logo do
+      nil -> nil
+      logo -> LogosAttestator.url(logo)
+    end
 
-      %{attestator | compliance: compliance, cost_per_user: cost, logo: logo }
+    %{attestator | compliance: compliance, cost_per_user: cost, logo: logo }
   end
 end

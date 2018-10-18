@@ -30,5 +30,45 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
     <script>window.userToken = "<%= assigns[:user_token] %>"</script>
+
+    <script type="text/javascript">
+      if (navigator.userAgent.match(/(iPhone|iPod|iPad);?/i) || navigator.userAgent.match(/android/i)) {
+        var store_loc = "itms://itunes.com/apps/kimlic";
+        var href = "/iphone/";
+        var is_android = false;
+
+        if (navigator.userAgent.match(/android/i)) {
+          store_loc = "https://play.google.com/store/apps/details?id=com.kimlic";
+          href = "/android/";
+          is_android = true;
+        }
+
+        if (location.hash) {
+          var app_loc = "kimlic://" + location.hash.substring(2);
+
+          if (is_android) {
+            var w = null;
+
+            try {
+              w = window.open(app_loc, '_blank');
+            } catch (e) {}
+
+            if (w) { window.close(); }
+            else { window.location = store_loc; }
+          } else {
+            var loadDateTime = new Date();
+            window.setTimeout(function() {
+              var timeOutDateTime = new Date();
+              if (timeOutDateTime - loadDateTime < 5000) {
+                window.location = store_loc;
+              } else { window.close(); }
+            }, 25);
+            window.location = app_loc;
+          }
+        } else {
+          location.href = href;
+        }
+      }
+    </script>
   </body>
 </html>

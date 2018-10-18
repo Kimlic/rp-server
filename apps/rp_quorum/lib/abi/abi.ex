@@ -1,7 +1,12 @@
 defmodule RpQuorum.ABI do
   @moduledoc false
 
-  alias RpQuorum.ABI.{FunctionSelector, Parser, TypeDecoder, TypeEncoder}
+  alias RpQuorum.ABI.{
+    FunctionSelector, 
+    Parser, 
+    TypeDecoder, 
+    TypeEncoder
+  }
 
   @spec encode(binary, list) :: binary
   def encode(function_signature, data) when is_binary(function_signature) do
@@ -10,7 +15,7 @@ defmodule RpQuorum.ABI do
     |> encode(data)
   end
 
-  @spec encode(FunctionSelector.t(), list) :: binary
+  @spec encode(FunctionSelector.t, list) :: binary
   def encode(%FunctionSelector{} = function_selector, data) do
     TypeEncoder.encode(data, function_selector)
   end

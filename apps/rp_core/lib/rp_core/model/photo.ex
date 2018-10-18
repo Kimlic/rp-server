@@ -1,8 +1,7 @@
 defmodule RpCore.Model.Photo do
   @moduledoc false
   
-  use RpCore.Model
-  use RpCore.Uploader
+  use RpCore.{Model, Uploader}
 
   ##### Schema #####
 
@@ -24,6 +23,7 @@ defmodule RpCore.Model.Photo do
 
   ##### Public #####
 
+  @spec changeset(__MODULE__, :invalid | map) :: Ecto.Changeset.t
   def changeset(model, params \\ :invalid) do
     model
     |> cast(params, @required_params ++ @optional_params)
@@ -33,12 +33,13 @@ defmodule RpCore.Model.Photo do
     |> foreign_key_constraint(:document_id, message: "Should reference a document")
   end
 
+  @spec url(__MODULE__) :: binary
   def url(model) do
     {model.file, model}
     |> File.url
   end
 
-  @spec find_one_by(binary) :: {:ok, Photo} | {:error, :not_found}
+  @spec find_one_by(binary) :: {:ok, __MODULE__} | {:error, :not_found}
   def find_one_by(file_hash) do
     query = from p in Photo,
       where: p.file_hash == ^file_hash,
@@ -50,7 +51,7 @@ defmodule RpCore.Model.Photo do
     end
   end
 
-  @spec find_one_by(UUID, binary, binary) :: {:ok, Photo} | {:error, :not_found}
+  @spec find_one_by(UUID, binary, binary) :: {:ok, __MODULE__} | {:error, :not_found}
   def find_one_by(document_id, media_type, file_hash) do
     query = from p in Photo,
       where: p.type == ^media_type,
@@ -64,7 +65,7 @@ defmodule RpCore.Model.Photo do
     end
   end
 
-  @spec create_photo(binary, binary, binary, UUID) :: {:ok, Photo} | {:error, Ecto.Changeset.t()}
+  @spec create_photo(binary, binary, binary, UUID) :: {:ok, __MODULE__} | {:error, Ecto.Changeset.t()}
   def create_photo(file_url, file_hash, media_type, document_id) do
     params = %{
       file: file_url,

@@ -11,10 +11,10 @@ defmodule RpMobileWeb.Plug.RequestValidator do
 
   ##### Public #####
 
-  @spec init(Plug.opts()) :: Plug.opts()
+  @spec init(Plug.opts) :: Plug.opts
   def init(opts), do: opts
 
-  @spec call(Conn.t(), Plug.opts()) :: Conn.t()
+  @spec call(Plug.Conn.t, Plug.opts) :: Plug.Conn.t
   def call(%Conn{params: params} = conn, opts) do
     validator = fetch_validator!(opts)
 
@@ -27,7 +27,7 @@ defmodule RpMobileWeb.Plug.RequestValidator do
 
   ##### Private #####
 
-  @spec error_conn(Conn.t(), Plug.opts(), Ecto.Changeset.t()) :: Conn.t()
+  @spec error_conn(Plug.Conn.t, Plug.opts, Ecto.Changeset.t) :: Plug.Conn.t
   defp error_conn(conn, opts, changeset) do
     err_handler = fetch_error_handler(opts)
 

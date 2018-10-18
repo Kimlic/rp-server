@@ -10,7 +10,7 @@ defmodule RpCore do
 
   ##### Mobile #####
 
-  @spec store_media(binary, atom, atom, binary, binary, binary, binary, binary, media_type) :: {:ok, binary} | {:ok, :created} | {:error, binary}
+  @spec store_media(binary, atom, atom, binary, binary, binary, binary, binary, list(media_type)) :: {:ok, binary} | {:ok, :created} | {:error, binary}
   def store_media(user_address, doc_type, _attestator, first_name, last_name, country, device, udid, [{media_type, file}]) do
     hash = hash_file(file)
     doc_type_str = document_type(doc_type)
@@ -40,7 +40,7 @@ defmodule RpCore do
   @spec documents() :: {:ok, list(Document)}
   def documents, do: Document.all()
 
-  @spec document_by_id(binary) :: {:ok, Document} | {:error, :not_found}
+  @spec document_by_id(UUID) :: {:ok, Document} | {:error, :not_found}
   def document_by_id(id), do: Document.get_by_id(id)
 
   @spec count_documents :: {:ok, map}
@@ -52,7 +52,7 @@ defmodule RpCore do
   @spec company :: Company
   def company, do: Company.company()
 
-  @spec company_details() :: Company
+  @spec company_details :: Company
   def company_details, do: Company.company_details()
 
   @spec company_update(UUID, map) :: {:ok, Company} | {:error, Ecto.Changeset.t}
@@ -61,7 +61,7 @@ defmodule RpCore do
   @spec logo_url :: {:error, :not_found} | {:ok, binary}
   def logo_url, do: LogosCompany.logo_url()
 
-  @spec logo_update(UUID, binary) :: {:ok, binary}
+  @spec logo_update(UUID, binary) :: {:ok, Photo}
   def logo_update(company_id, file) do
     {:ok, %LogosCompany{} = logo} = Upload.replace_logo(company_id, file)
     {:ok, LogosCompany.url(logo)}

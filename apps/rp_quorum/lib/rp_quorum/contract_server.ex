@@ -1,12 +1,14 @@
 defmodule RpQuorum.ContractServer do
 
   alias RpQuorum.ContractLoader
+  alias Ethereumex.HttpClient
 
-  @transaction_delay Application.get_env(:rp_quorum, :transaction_delay)
+  @gas_price "0x0"
+  @gas_limit "0x4612388"
+  @tx_failed "0x0"
+  @tx_success "0x1"
 
   ##### Public #####
-
-  def account_address, do: :account_address |> env
 
   def call(contract_address, module, method, params \\ {}, attempt \\ 1) do
     data = ContractLoader.hash_data(module, method, [params])
@@ -14,17 +16,17 @@ defmodule RpQuorum.ContractServer do
       from: account_address(), 
       to: contract_address, 
       data: data,
-      gasPrice: "0x0", 
-      gas: "0x4612388"
+      gasPrice: @gas_price, 
+      gas: @gas_limit
     }
 
-    case Ethereumex.HttpClient.eth_call(eth_params, "latest", []) do
+    case HttpClient.eth_call(eth_params, "latest", []) do
       {:ok, response} -> {:ok, response}
       {:error, err} ->
         case attempt do
           3 -> {:error, err}
           _ ->
-            :timer.sleep(@transaction_delay)
+            sleep()
             call(contract_address, module, method, params, attempt + 1)
         end
     end
@@ -36,11 +38,11 @@ defmodule RpQuorum.ContractServer do
         from: account_address(), 
         to: contract_address, 
         data: data,
-        gasPrice: "0x0", 
-        gas: "0x4612388"
+        gasPrice: @gas_price, 
+        gas: @gas_limit
       }
 
-      case Ethereumex.HttpClient.eth_send_transaction(eth_params, []) do
+      case HttpClient.eth_send_transaction(eth_params, []) do
         {:ok, transaction_hash} -> receipt(transaction_hash)
         
         {:error, %{"code" => -32000, "message" => "authentication needed: password or unlock"}} ->
@@ -55,7 +57,7 @@ defmodule RpQuorum.ContractServer do
           case attempt do
             3 -> {:error, err}
             _ ->
-              :timer.sleep(@transaction_delay)
+              sleep()
               transaction(contract_address, module, method, params, attempt + 1)
           end
       end
@@ -64,11 +66,11 @@ defmodule RpQuorum.ContractServer do
   ##### Private #####
 
   defp receipt(tx_hash, attempt \\ 1) do
-    :timer.sleep(@transaction_delay)
+    sleep()
 
-    case Ethereumex.HttpClient.eth_get_transaction_receipt(tx_hash, []) do
-      {:ok, %{"status" => "0x1"}} -> {:ok, tx_hash}
-      {:ok, %{"status" => "0x0"} = receipt} -> {:error, receipt}
+    case HttpClient.eth_get_transaction_receipt(tx_hash, []) do
+      {:ok, %{"status" => @tx_success}} -> {:ok, tx_hash}
+      {:ok, %{"status" => @tx_failed} = receipt} -> {:error, receipt}
       {:ok, nil} -> 
         case attempt do
           3 -> {:error, "No receipt for #{tx_hash}"}
@@ -78,10 +80,24 @@ defmodule RpQuorum.ContractServer do
   end
 
   defp unlock_account({m, f, a}, account_address, password \\ "") do
-    with {:ok, true} <- Ethereumex.HttpClient.request("personal_unlockAccount", [account_address, password], []) do
-      apply(m, f, a)
+    params = [account_address, password]
+
+    "personal_unlockAccount"
+    |> HttpClient.request(params, [])
+    |> case do
+      {:ok, true} -> apply(m, f, a)
     end
   end
 
+  @spec sleep :: :ok
+  defp sleep, do: transaction_delay() |> :timer.sleep
+
+  @spec transaction_delay :: number
+  defp transaction_delay, do: env(:transaction_delay)
+
+  @spec account_address :: binary
+  defp account_address, do: env(:account_address)
+
+  @spec env(atom) :: binary
   defp env(param), do: Application.get_env(:rp_quorum, param)
 end

@@ -5,6 +5,14 @@ defmodule RpQuorum.Contract.ProvisioningContract do
 
   alias RpQuorum.ABI.TypeDecoder
 
+  @abi_file "provisioning_contract.json"
+  @is_verified "isVerificationFinished"
+  @finalize "finalizeProvisioning"
+  @get_provisioning "getData"
+  @withdraw "withdraw"
+  @unlock_time "tokensUnlockAt"
+  @addr_prefix "0x"
+
   # enum Status { None, Created, Verified, Unverified, Canceled }
   # @status_new "NEW"
   # @status_pending "PENDING"
@@ -14,32 +22,34 @@ defmodule RpQuorum.Contract.ProvisioningContract do
 
   ##### Public #####
 
-  @spec abi_file() :: binary
-  def abi_file, do: "provisioning_contract.json"
+  @spec abi_file :: binary
+  def abi_file, do: @abi_file
 
   @spec is_verification_finished(binary) :: {:ok, binary} | {:error, binary}
   def is_verification_finished(contract_address) do
     contract_address 
-    |> ContractServer.call(ProvisioningContract, "isVerificationFinished")
+    |> ContractServer.call(ProvisioningContract, @is_verified)
   end
 
+  @spec finalize_provisioning(binary) :: {:ok, binary, binary} | {:error, binary, map}
   def finalize_provisioning(contract_address) do
-    response = ContractServer.transaction(contract_address, ProvisioningContract, "finalizeProvisioning", {})
-
-    case response do
-      {:ok, tx_hash} -> {:ok, "finalizeProvisioning", tx_hash}
-      {:error, tx_receipt} -> {:error, "finalizeProvisioning", tx_receipt}
+    contract_address
+    |> ContractServer.transaction(ProvisioningContract, @finalize, {})
+    |> case do
+      {:ok, tx_hash} -> {:ok, @finalize, tx_hash}
+      {:error, tx_receipt} -> {:error, @finalize, tx_receipt}
     end
   end
 
+  @spec get_data(binary) :: {:ok, map}
   def get_data(contract_address) do
     types = [{:tuple, [:string, {:uint, 256}, :address, {:uint, 256}]}]
 
     {document, status, addr, verified_on} = contract_address 
-    |> ContractServer.call(ProvisioningContract, "getData")
+    |> ContractServer.call(ProvisioningContract, @get_provisioning)
     |> decode(types)
 
-    verification_contract_address = "0x" <> Base.encode16(addr, case: :lower)
+    verification_contract_address = @addr_prefix <> Base.encode16(addr, case: :lower)
     data = %{
       document: document, 
       status: status, 
@@ -50,24 +60,25 @@ defmodule RpQuorum.Contract.ProvisioningContract do
     {:ok, data}
   end
 
+  @spec tokens_unlock_at(binary) :: {:ok, number}
   def tokens_unlock_at(contract_address) do
     contract_address 
-    |> ContractServer.call(ProvisioningContract, "tokensUnlockAt")
+    |> ContractServer.call(ProvisioningContract, @unlock_time)
   end
 
-  @spec withdraw(binary) :: {:ok | :error, binary, binary | map}
+  @spec withdraw(binary) :: {:ok, binary, binary} | {:error, binary, map}
   def withdraw(contract_address) do
-    response = ContractServer.transaction(contract_address, ProvisioningContract, "withdraw", {})
+    response = ContractServer.transaction(contract_address, ProvisioningContract, @withdraw, {})
 
     case response do
-      {:ok, tx_hash} -> {:ok, "withdraw", tx_hash}
-      {:error, tx_receipt} -> {:error, "withdraw", tx_receipt}
+      {:ok, tx_hash} -> {:ok, @withdraw, tx_hash}
+      {:error, tx_receipt} -> {:error, @withdraw, tx_receipt}
     end
   end
 
   ##### Private #####
 
-  defp decode({:ok, "0x" <> data}, types) do
+  defp decode({:ok, @addr_prefix <> data}, types) do
     data
     |> Base.decode16!(case: :lower)
     |> TypeDecoder.decode_raw(types)

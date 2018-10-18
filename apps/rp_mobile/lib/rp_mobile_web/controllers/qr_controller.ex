@@ -7,7 +7,7 @@ defmodule RpMobileWeb.QrController do
 
   ##### Public #####
   
-  @spec show(Conn.t(), map) :: Conn.t() | no_return()
+  @spec show(Plug.Conn.t, map) :: Plug.Conn.t | no_return
   def show(conn, _) do
     {:ok, scope_request} = RpUaf.create_scope_request()
     qr = Qr.generate_qr_code(scope_request)

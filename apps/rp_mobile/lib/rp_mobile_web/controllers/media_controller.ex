@@ -13,7 +13,7 @@ defmodule RpMobileWeb.MediaController do
 
   ##### Public #####
 
-  @spec create(Conn.t(), map) :: Conn.t()
+  @spec create(Plug.Conn.t, map) :: Plug.Conn.t
   def create(%{assigns: %{version: :v1}} = conn, %{"attestator" => attestator_str, "doc" => doc_str, "type" => photo_type_str, 
   "file" => file, "first_name" => first_name, "last_name" => last_name, "country" => country, "device" => device, "udid" => udid}) do
     with {:ok, attestator} <- attestator(attestator_str),

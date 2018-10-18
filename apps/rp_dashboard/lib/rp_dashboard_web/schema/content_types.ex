@@ -59,4 +59,8 @@ defmodule RpDashboardWeb.Schema.ContentTypes do
     field :status, non_null(:boolean)
     field :logo, :string
   end
+
+  object :balance do
+    field :value, non_null(:string)
+  end
 end

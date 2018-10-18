@@ -5,7 +5,7 @@ defmodule RpMobileWeb.CompanyController do
 
   ##### Public #####
 
-  @spec show(Conn.t(), map) :: Conn.t()
+  @spec show(Plug.Conn.t, map) :: Plug.Conn.t
   def show(%{assigns: %{version: :v1}} = conn, _params) do
     {:ok, company} = RpCore.company_details()
     render(conn, "v1.show.json", company: company)

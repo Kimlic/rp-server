@@ -8,7 +8,8 @@ defmodule RpDashboardWeb.Schema do
     DocumentResolver, 
     QrResolver, 
     CompanyResolver, 
-    AttestatorResolver
+    AttestatorResolver,
+    FinanceResolver
   }
   
   query do
@@ -44,6 +45,10 @@ defmodule RpDashboardWeb.Schema do
     @desc "Get attestators"
     field :attestators, list_of(:attestator) do
       resolve &AttestatorResolver.attestators/3
+    end
+
+    field :balance, :balance do
+      resolve &FinanceResolver.balance/3
     end
   end
 

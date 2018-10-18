@@ -4,7 +4,7 @@ defmodule RpCore.Application do
   alias RpCore.Repo
   alias RpCore.Server.ServerSupervisor
 
-  @spec start(Application.start_type(), list) :: Supervisor.on_start()
+  @spec start(Application.start_type, list) :: {:error, binary} | {:ok, pid} | {:ok, pid, binary}
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
