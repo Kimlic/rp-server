@@ -1,18 +1,18 @@
 use Mix.Config
   
-config :rp_core, RpCore.Repo,
-  username: "kimlic",
-  password: "kimlic",
-  hostname: "localhost",
-  pool_size: 10
-
 # config :rp_core, RpCore.Repo,
-#   #username: "kimlic@stage-postgres-pr2", # System.get_env("DB_USERNAME"),
-#   username: "kimlic", # System.get_env("DB_USERNAME"),
-#   password: "LU6dME4NzQ", # System.get_env("DB_PASSWORD"),
-#   #hostname: "stage-postgres-pr2.postgres.database.azure.com", # System.get_env("DB_HOSTNAME"),
-#   hostname: "stage-postgresql-rp2.eastus.cloudapp.azure.com", # System.get_env("DB_HOSTNAME"),
-#   pool_size: 10 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
+#   username: "kimlic",
+#   password: "kimlic",
+#   hostname: "localhost",
+#   pool_size: 10
+
+config :rp_core, RpCore.Repo,
+  #username: "kimlic@stage-postgres-pr2", # System.get_env("DB_USERNAME"),
+  username: "kimlic", # System.get_env("DB_USERNAME"),
+  password: "LU6dME4NzQ", # System.get_env("DB_PASSWORD"),
+  #hostname: "stage-postgres-pr2.postgres.database.azure.com", # System.get_env("DB_HOSTNAME"),
+  hostname: "stage-postgresql-rp2.eastus.cloudapp.azure.com", # System.get_env("DB_HOSTNAME"),
+  pool_size: 10 # System.get_env("DB_POOL") |> Integer.parse |> elem(0)
 
 config :rp_core,
   azure_container: "rp-blob", # System.get_env("AZURE_CONTAINER"),
