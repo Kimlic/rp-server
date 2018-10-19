@@ -49,7 +49,7 @@ defmodule RpAttestation.DataProvider do
       timestamp: "#{:os.system_time(:seconds)}",
       content: file
     }
-    
+
     res = ap_session_create()
     |> Kernel.<>(session_id)
     |> Kernel.<>("/media")

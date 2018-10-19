@@ -6,6 +6,7 @@ defmodule RpCore.Server.MediaServer do
     photos: [], 
     vendors: [], 
     session_id: nil, 
+    session_tag: nil,
     verification_info: nil, 
     contracts: %{}
   ]
@@ -63,6 +64,7 @@ defmodule RpCore.Server.MediaServer do
         state = %MediaServer{
           document: document,
         }
+
         {:ok, state}
 
       {:ok, :unverified, provisioning_contract} ->
@@ -79,6 +81,7 @@ defmodule RpCore.Server.MediaServer do
               state = %MediaServer{
                 document: document,
                 session_id: session_id,
+                session_tag: session_tag,
                 contracts: %{
                   provisioning_contract: provisioning_contract,
                   verification_contract: verification_contract
@@ -93,9 +96,10 @@ defmodule RpCore.Server.MediaServer do
   end
 
   @impl true
-  def handle_call({:push_photo, media_type, file, hash}, _from, %{photos: photos, document: document, session_id: session_id} = state) do
+  def handle_call({:push_photo, media_type, file, hash}, _from, %{photos: photos, document: document, session_id: session_id, session_tag: session_tag} = state) do
     with {:ok, photo} <- Upload.create_photo(media_type, document.id, file, hash) do
-      GenServer.cast(__MODULE__, {:send_to_attestator, media_type, session_id, document.country, file})
+      via(session_tag)
+      |> GenServer.cast({:send_to_attestator, media_type, session_id, document.country, file})
 
       new_photos = photos ++ [photo]
       new_state = %{state | photos: new_photos}
