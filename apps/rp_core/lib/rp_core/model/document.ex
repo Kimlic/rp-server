@@ -141,7 +141,7 @@ defmodule RpCore.Model.Document do
     end
   end
 
-  @spec create(binary, binary, UUID, binary, binary, binary, Attestator) :: {:ok, __MODULE__} | {:error, Ecto.Changeset.t()}
+  @spec create(binary, binary, UUID, binary, binary, binary, Attestator) :: {:ok, __MODULE__} | {:error, Ecto.Changeset.t}
   def create(user_address, doc_type, session_tag, first_name, last_name, country, attestator) do
     params = %{
       user_address: user_address,

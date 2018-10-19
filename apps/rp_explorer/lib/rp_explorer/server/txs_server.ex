@@ -48,8 +48,12 @@ defmodule RpExplorer.Server.TxsServer do
       case to do
         ^provisioning -> :txs_provisioning
         ^verification -> :txs_verification
+        _ -> :invalid
       end
-      |> :ets.insert({hash, block_number})
+      |> case do
+        :invalid -> :invalid
+        table -> :ets.insert(table, {hash, block_number})
+      end
     end
   end
 

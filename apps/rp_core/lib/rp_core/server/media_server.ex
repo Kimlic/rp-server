@@ -95,7 +95,7 @@ defmodule RpCore.Server.MediaServer do
   @impl true
   def handle_call({:push_photo, media_type, file, hash}, _from, %{photos: photos, document: document, session_id: session_id} = state) do
     with {:ok, photo} <- Upload.create_photo(media_type, document.id, file, hash) do
-      self() |> send({:send_to_attestator, media_type, session_id, document.country, file})
+      GenServer.cast(__MODULE__, {:send_to_attestator, media_type, session_id, document.country, file})
 
       new_photos = photos ++ [photo]
       new_state = %{state | photos: new_photos}
@@ -106,6 +106,15 @@ defmodule RpCore.Server.MediaServer do
     end
   end
   def handle_call(message, _from, state), do: {:reply, {:error, message}, state}
+
+  @impl true
+  def handle_cast({:send_to_attestator, media_type, session_id, country, file}, state) do
+    media_type
+    |> Mapper.Veriff.photo_atom_to_veriff
+    |> RpAttestation.photo_upload(session_id, country, file)
+
+    {:noreply, state}
+  end
 
   @impl true
   def handle_info({:check_verification_attempt, attempt}, %{document: document, session_id: session_id, contracts: %{provisioning_contract: provisioning_contract}} = state) do
@@ -129,11 +138,6 @@ defmodule RpCore.Server.MediaServer do
           {:noreply, state}
       end
     end
-  end
-  def handle_info({:send_to_attestator, media_type, session_id, country, file}, _) do
-    media_type
-    |> Mapper.Veriff.photo_atom_to_veriff
-    |> RpAttestation.photo_upload(session_id, country, file)
   end
 
   ##### Private #####

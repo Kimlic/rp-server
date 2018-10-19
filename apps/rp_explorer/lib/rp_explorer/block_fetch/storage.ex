@@ -20,29 +20,24 @@ defmodule RpExplorer.BlockFetch.Storage do
       end) 
 
       txs_stream
-      |> Stream.filter(fn tx -> 
-        tx
-        |> Map.fetch(:to)
-        |> Kernel.elem(1)
-        |> Kernel.==(provisioning_factory)
-      end)
+      # |> Stream.filter(fn tx -> 
+      #   tx
+      #   |> Map.fetch(:to)
+      #   |> Kernel.elem(1)
+      #   |> Kernel.==(provisioning_factory)
+      # end)
       |> Enum.to_list
       |> TxsServer.put_txs
 
-      txs_stream
-      |> Stream.filter(fn tx -> 
-        tx
-        |> Map.fetch(:to)
-        |> Kernel.elem(1)
-        |> Kernel.==(verification_factory)
-      end)
-      |> Enum.to_list
-      |> TxsServer.put_txs
-
-      # IO.puts "Process block: #{inspect {self(), block_num}}"
-      # IO.puts "Provisioning txs: #{inspect provisioning_txs}"
-      # IO.puts "Verification txs: #{inspect verification_txs}"
-      # IO.puts "----------------------------------------------------------"
+      # txs_stream
+      # |> Stream.filter(fn tx -> 
+      #   tx
+      #   |> Map.fetch(:to)
+      #   |> Kernel.elem(1)
+      #   |> Kernel.==(verification_factory)
+      # end)
+      # |> Enum.to_list
+      # |> TxsServer.put_txs
     end
   end
 
