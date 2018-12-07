@@ -24,7 +24,7 @@ defmodule RpKimcore.MixProject do
 
   defp deps do
     [
-      {:ecto, "~> 3.0"},
+      {:ecto_sql, "~> 3.0"},
 
       {:rp_http, in_umbrella: true}
     ]

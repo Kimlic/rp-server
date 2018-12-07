@@ -28,7 +28,7 @@ defmodule RpUaf.Mixfile do
       {:jason, "~> 1.1"},
       {:httpoison, "~> 1.4", override: true},
       {:hackney, "~> 1.14", override: true},
-      {:ecto, "~> 3.0"},
+      {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.14"},
       {:qrcode, "~> 0.1"}
     ]

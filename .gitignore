@@ -30,7 +30,7 @@ error.log
 bench/snapshots
 
 # Don't commit editor configs
-.vscode
+.vscode/
 .idea
 
 # Elastic Beanstalk Files
