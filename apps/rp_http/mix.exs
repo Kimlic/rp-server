@@ -24,7 +24,7 @@ defmodule RpHttp.MixProject do
 
   defp deps do
     [
-      {:httpoison, "~> 1.3", override: true},
+      {:httpoison, "~> 1.4", override: true},
       {:hackney, "~> 1.14", override: true}
     ]
   end

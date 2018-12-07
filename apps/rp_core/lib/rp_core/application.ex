@@ -2,7 +2,7 @@ defmodule RpCore.Application do
   use Application
 
   alias RpCore.Repo
-  alias RpCore.Server.ServerSupervisor
+  alias RpCore.Server.{ServerSupervisor, DocumentServer}
 
   @spec start(Application.start_type, list) :: {:error, binary} | {:ok, pid} | {:ok, pid, binary}
   def start(_type, _args) do
@@ -10,7 +10,8 @@ defmodule RpCore.Application do
 
     children = [
       supervisor(Repo, []),
-      supervisor(ServerSupervisor, [[]])
+      supervisor(ServerSupervisor, [[]]),
+      worker(DocumentServer, [[]])
     ]
     opts = [strategy: :one_for_one, name: RpCore.Supervisor]
     Supervisor.start_link(children, opts)

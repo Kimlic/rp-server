@@ -25,7 +25,7 @@ defmodule RpQuorum.MixProject do
     [
       {:ethereumex, "~> 0.3"},
       {:keccakf1600, "~> 2.0", hex: :keccakf1600_orig},
-      {:httpoison, "~> 1.3", override: true},
+      {:httpoison, "~> 1.4", override: true},
       {:hackney, "~> 1.14", override: true}
     ]
   end

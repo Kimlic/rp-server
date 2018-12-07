@@ -22,7 +22,7 @@ defmodule RpExplorer.Server.TxsServer do
 
   @impl true
   def init(_args) do
-    [:txs_provisioning, :txs_verification]
+    [:txs_provisioning, :txs_verification, :txs_incoming]
     |> Enum.each(&:ets.new(&1, [:named_table, read_concurrency: true]))
 
     state = %{
@@ -43,11 +43,15 @@ defmodule RpExplorer.Server.TxsServer do
   end
 
   defp insert_tx(tx, state) do
-    with %{to: to, hash: hash, block_number: block_number} <- tx,
-    %{provisioning: provisioning, verification: verification} <- state do
+    with %{to: to, from: from, hash: hash, block_number: block_number} <- tx,
+    %{provisioning: provisioning, verification: verification} <- state,
+    account <- account_address() do
       case to do
         ^provisioning -> :txs_provisioning
         ^verification -> :txs_verification
+        ^account -> 
+          IO.puts "TX: #{inspect tx}"
+          :txs_incoming
         _ -> :invalid
       end
       |> case do
@@ -63,6 +67,8 @@ defmodule RpExplorer.Server.TxsServer do
     context <- config.context_contract,
     {:ok, provisioning} <- RpQuorum.get_provisioning_contract_factory(context),
     {:ok, verification} <- RpQuorum.get_verification_contract_factory(context) do
+      IO.puts "AAA: #{inspect provisioning}"
+      IO.puts "BBB: #{inspect verification}"
       new_state = %{state | provisioning: provisioning, verification: verification}
 
       {:noreply, new_state}
@@ -74,4 +80,12 @@ defmodule RpExplorer.Server.TxsServer do
   @impl true
   def handle_call(:provisioning, _, %{provisioning: address} = state), do: {:reply, {:ok, address}, state}
   def handle_call(:verification, _, %{verification: address} = state), do: {:reply, {:ok, address}, state}
+
+  ##### Private #####
+
+  @spec account_address :: binary
+  defp account_address, do: env(:account_address)
+  
+  @spec env(binary) :: binary
+  defp env(param), do: Application.get_env(:rp_explorer, param)
 end

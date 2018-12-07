@@ -21,10 +21,12 @@ defmodule RpServer.MixProject do
 
   defp deps do
     [
-      {:distillery, "~> 2.0.0-rc.7", runtime: false},
-      {:excoveralls, "~> 0.9", only: [:dev, :test]},
-      {:credo, "~> 0.9", only: [:dev, :test], runtime: false}
-      # {:uberlog, github: "PharosProduction/uberlog"}
+      {:distillery, "~> 2.0", runtime: false},
+      {:ex_doc, "~> 0.19", only: [:dev], runtime: false},
+      {:poison, "~> 4.0", only: [:test], override: true},
+      {:excoveralls, "~> 0.10", only: [:test]},
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
     ]
   end
 

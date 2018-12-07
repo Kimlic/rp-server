@@ -25,19 +25,18 @@ defmodule RpCore.MixProject do
 
   defp deps do
     [
-      {:ecto, "~> 2.2"},
-      {:postgrex, "~> 0.13"},
+      {:postgrex, "~> 0.14"},
       {:timex, "~> 3.4"},
-      {:timex_ecto, "~> 3.3"},
       {:uuid, "~> 1.1"},
       {:jason, "~> 1.1"},
       {:arc, github: "PharosProduction/arc", override: true},
       {:arc_ecto, github: "PharosProduction/arc_ecto", override: true},
       {:erlazure, github: "Kimlic/erlazure", override: true},
-      {:httpoison, "~> 1.3", override: true},
+      {:httpoison, "~> 1.4", override: true},
       {:hackney, "~> 1.14", override: true},
       {:ex_azure, "~> 0.1"},
-
+      {:ecto, "~> 3.0", override: true},
+      
       {:rp_quorum, in_umbrella: true},
       {:rp_kimcore, in_umbrella: true},
       {:rp_attestation, in_umbrella: true}

@@ -53,6 +53,16 @@ defmodule RpCore.Model.Document do
     {:ok, documents}
   end
 
+  def session_tags do
+    query = from d in Document,
+      select: [:session_tag]
+    
+    res = Repo.all(query)
+    |> Enum.map(fn doc -> doc.session_tag end)
+
+    {:ok, res}
+  end
+
   @spec get_by_id(UUID) :: {:ok, __MODULE__} | {:error, :not_found}
   def get_by_id(id) do
     query = from d in Document,

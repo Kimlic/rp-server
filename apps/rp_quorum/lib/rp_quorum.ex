@@ -13,14 +13,16 @@ defmodule RpQuorum do
   def create_provisioning(context_contract, user_address, doc_type, session_tag) do
     with {:ok, provisioning_factory} <- get_provisioning_contract_factory(context_contract),
     {:ok, _method, _tx_hash} <- ProvisioningContractFactory.create_provisioning_contract(provisioning_factory, user_address, doc_type, session_tag),
-    {:ok, provisioning_contract} <- ProvisioningContractFactory.get_provisioning_contract(provisioning_factory, session_tag) do
+    {:ok, provisioning_contract} <- get_provisioning_contract(provisioning_factory, session_tag) do
       provisioning_contract
     end
   end
 
-  defdelegate get_provisioning_contract_factory(context_contract), to: RpQuorum.Contract.KimlicContractsContext
+  defdelegate get_provisioning_contract_factory(context_contract), to: KimlicContractsContext
 
-  defdelegate get_verification_contract_factory(context_contract), to: RpQuorum.Contract.KimlicContractsContext
+  defdelegate get_verification_contract_factory(context_contract), to: ProvisioningContractFactory
+
+  defdelegate get_provisioning_contract(provisioning_factory, session_tag), to: R
 
   @spec create_verification(binary, binary, binary, binary, binary) :: {:ok, binary}
   def create_verification(context_contract, user_address, ap_address, doc_type, session_tag) do
