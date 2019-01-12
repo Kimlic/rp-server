@@ -10,7 +10,20 @@ defmodule RpUaf.Mixfile do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
+      test_coverage: [tool: ExCoveralls],
+      dialyzer: [
+        plt_add_deps: :transitive,
+        plt_apps: [:erts, :kernel, :stdlib],
+        flags: [
+          "-Wunmatched_returns",
+          "-Werror_handling",
+          "-Wrace_conditions",
+          "-Wunderspecs",
+          "-Wno_opaque"
+        ]
+      ],
       deps: deps(),
       aliases: aliases()
     ]
@@ -18,8 +31,16 @@ defmodule RpUaf.Mixfile do
 
   def application do
     [
-      extra_applications: [:sasl, :logger, :runtime_tools],
-      mod: {RpUaf.Application, []}
+      mod: {RpUaf.Application, []},
+      registered: [RpServer.UAF],
+      env: [],
+      extra_applications: [
+        :sasl,
+        :logger,
+        :runtime_tools,
+        :observer,
+        :wx
+      ]
     ]
   end
 
@@ -30,7 +51,12 @@ defmodule RpUaf.Mixfile do
       {:hackney, "~> 1.14", override: true},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.14"},
-      {:qrcode, "~> 0.1"}
+      {:qrcode, "~> 0.1"},
+      {:toml, "~> 0.5"},
+      {:prometheus, "~> 4.2", override: true},
+      {:prometheus_ex, "~> 3.0"},
+      {:prometheus_plugs, "~> 1.1"},
+      {:prometheus_httpd, "~> 2.1"}
     ]
   end
 

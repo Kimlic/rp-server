@@ -22,8 +22,8 @@ defmodule RpMobile.Mixfile do
   def application do
     [
       mod: {RpMobile.Application, []},
-      env: [],
       registered: [Excluster.ApiMobile],
+      env: [],
       extra_applications: [
         :sasl,
         :logger,
