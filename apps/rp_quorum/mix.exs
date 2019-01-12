@@ -10,14 +10,34 @@ defmodule RpQuorum.MixProject do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
+      test_coverage: [tool: ExCoveralls],
+      dialyzer: [
+        plt_add_deps: :transitive,
+        plt_apps: [:erts, :kernel, :stdlib],
+        flags: [
+          "-Wunmatched_returns",
+          "-Werror_handling",
+          "-Wrace_conditions",
+          "-Wunderspecs",
+          "-Wno_opaque"
+        ]
+      ],
       deps: deps()
     ]
   end
 
   def application do
     [
-      extra_applications: [:sasl, :logger, :runtime_tools]
+      env: [],
+      extra_applications: [
+        :sasl,
+        :logger,
+        :runtime_tools,
+        :observer,
+        :wx
+      ]
     ]
   end
 
@@ -26,7 +46,8 @@ defmodule RpQuorum.MixProject do
       {:ethereumex, "~> 0.3"},
       {:keccakf1600, "~> 2.0", hex: :keccakf1600_orig},
       {:httpoison, "~> 1.4", override: true},
-      {:hackney, "~> 1.14", override: true}
+      {:hackney, "~> 1.14", override: true},
+      {:toml, "~> 0.5"}
     ]
   end
 end
