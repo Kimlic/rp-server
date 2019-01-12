@@ -14,6 +14,7 @@ defmodule RpMobile.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers,
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
+      test_coverage: [tool: ExCoveralls],
       deps: deps()
     ]
   end
@@ -21,7 +22,17 @@ defmodule RpMobile.Mixfile do
   def application do
     [
       mod: {RpMobile.Application, []},
-      extra_applications: [:sasl, :logger, :runtime_tools, :jsx, :parse_trans]
+      env: [],
+      registered: [Excluster.ApiMobile],
+      extra_applications: [
+        :sasl,
+        :logger,
+        :runtime_tools,
+        :observer,
+        :wx,
+        :jsx, 
+        :parse_trans
+      ]
     ]
   end
 
@@ -32,13 +43,12 @@ defmodule RpMobile.Mixfile do
     [
       {:phoenix, "~> 1.4"},
       {:phoenix_pubsub, "~> 1.1"},
+      {:gettext, "~> 0.11"},
+      {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
-      {:gettext, "~> 0.16"},
       {:cowboy, "~> 2.6"},
-      {:jason, "~> 1.1"},
       {:phoenix_html, "~> 2.12"},
-      {:gettext, "~> 0.16"},
       {:prometheus_ex, "~> 3.0"},
       {:prometheus_plugs, "~> 1.1"},
 
