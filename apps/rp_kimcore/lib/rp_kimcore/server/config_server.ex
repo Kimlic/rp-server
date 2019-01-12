@@ -1,12 +1,12 @@
 defmodule RpKimcore.Server.ConfigServer do
-  use GenServer
+  use GenServer, restart: :permanent
 
   alias RpKimcore.DataProvider
   alias RpKimcore.Schema.Config
 
   @poll_delay 24 * 60 * 60 * 1_000
 
-  ##### Public #####
+  # Public
 
   @spec start_link(list) :: {:ok, pid} | {:error, binary}
   def start_link(_), do: GenServer.start_link(__MODULE__, nil, name: __MODULE__)
@@ -14,7 +14,7 @@ defmodule RpKimcore.Server.ConfigServer do
   @spec config :: {:ok, Config.t}
   def config, do: GenServer.call(__MODULE__, :config)
 
-  ##### Callbacks #####
+  # Callbacks
 
   @impl true
   def init(_), do: {:ok, %{config: nil}, {:continue, :config}}
@@ -25,20 +25,24 @@ defmodule RpKimcore.Server.ConfigServer do
   end
 
   @impl true
-  def handle_continue(:config, state) do
+  def handle_continue(:config, _state) do
     with {:ok, %Config{} = config} <- DataProvider.config() do
       schedule_reload()
       {:noreply, %{config: config}}
     else
-      {:error, :closed} -> 
+      {:error, :closed} ->
+        schedule_reload() 
+        {:noreply, %{config: nil}}
+        
+      {:error, :econnrefused} -> 
         schedule_reload()
-        {:noreply, state}
+        {:noreply, %{config: nil}}
 
       {:error, reason} -> {:stop, reason}
     end
   end
 
-  ##### Private #####
+  # Private
 
   @spec schedule_reload :: reference
   defp schedule_reload, do: Process.send_after(self(), :config, @poll_delay)

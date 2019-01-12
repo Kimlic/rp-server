@@ -5,13 +5,11 @@ defmodule RpKimcore.Application do
 
   alias RpKimcore.Server.ConfigServer
 
-  ##### Public #####
-
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-
+    :prometheus_httpd.start()
+    
     children = [
-      worker(ConfigServer, [[]], restart: :permanent)
+      {ConfigServer, []}
     ]
     opts = [strategy: :one_for_one, name: RpKimcore.Supervisor]
     Supervisor.start_link(children, opts)

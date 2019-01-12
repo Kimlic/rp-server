@@ -3,6 +3,7 @@ defmodule RpExplorer.Server.TxsServer do
 
   use GenServer
 
+  @err_no_context_contract "Context contract not found"
   @err_provisioning_address "Unable to fetch provisioning factory address"
 
   ##### Public #####
@@ -63,7 +64,7 @@ defmodule RpExplorer.Server.TxsServer do
 
   @impl true
   def handle_continue(:fetch_addresses, state) do
-    with {:ok, config} <- RpKimcore.config(),
+    with {:ok, %{} = config} <- RpKimcore.config(),
     context <- config.context_contract,
     {:ok, provisioning} <- RpQuorum.get_provisioning_contract_factory(context),
     {:ok, verification} <- RpQuorum.get_verification_contract_factory(context) do
@@ -73,6 +74,7 @@ defmodule RpExplorer.Server.TxsServer do
 
       {:noreply, new_state}
     else
+      {:ok, nil} -> {:stop, @err_no_context_contract}
       _ -> {:stop, @err_provisioning_address}
     end
   end
