@@ -1,5 +1,5 @@
-# RpServer
+# RP Server
 
-**TODO: Add description**
+**RP Server**
+Kimlic Relying Party server. Includes mobile API and dashboard API
 
-# test Jenkins again

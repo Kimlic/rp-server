@@ -8,7 +8,7 @@
 /deps/
 
 # Where 3rd-party dependencies like ExDoc output generated docs.
-/doc/
+/docs/
 
 # Ignore .fetch files in case you like to edit your project deps locally.
 /.fetch
@@ -18,6 +18,9 @@ erl_crash.dump
 
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
+
+# Ignore package tarball (built via "mix hex.build").
+api_mobile-*.tar
 
 Logs
 /log
@@ -30,7 +33,7 @@ error.log
 bench/snapshots
 
 # Don't commit editor configs
-.vscode/
+.vscode
 .idea
 
 # Elastic Beanstalk Files
@@ -61,6 +64,9 @@ npm-debug.log
 node_modules
 logs
 **/priv/static/
+/priv/static/
 
 data
 pgdata
+cover
+*.dot

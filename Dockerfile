@@ -1,42 +1,59 @@
-FROM bitwalker/alpine-elixir-phoenix:latest
+FROM elixir:1.7.4-alpine as builder
 
-MAINTAINER Pharos Production Inc. <dmytro@pharosproduction.com>
+LABEL company="Kimlic"
+LABEL version="1.0.0"
 
-ENV LANG=C.UTF-8 \
-    TERM=xterm \
-    MIX_ENV=prod \
-    DEBIAN_FRONTEND=noninteractive \
-    APP_NAME=rp_server \
-    VERSION=1.0.0 \
-    REPLACE_OS_VARS=true \
-    REFRESHED_AT=2018-07-30-4 \
-    \
-    RP_MOBILE_SECRET_KEY_BASE=TaRwP6iMHBxzDxN3A3nhQ649q86wLxR2tw4oKOTpJpIDdKNbmnDcg4WvQCcC79yY \
-    RP_MOBILE_PORT=4000 \
-    RP_MOBILE_HOST=localhost \
-    RP_MOBILE_STATIC_SCHEME=https \
-    RP_MOBILE_STATIC_HOST=localhost \
-    RP_MOBILE_STATIC_PORT=443 \
-    \
-    RP_DASHBOARD_SECRET_KEY_BASE=TaRwP6iMHBxzDxN3A3nhQ649q86wLxR2tw4oKOTpJpIDdKNbmnDcg4WvQCcC79yY \
-    RP_DASHBOARD_PORT=4001 \
-    RP_DASHBOARD_HOST=localhost \
-    RP_DASHBOARD_STATIC_SCHEME=https \
-    RP_DASHBOARD_STATIC_HOST=localhost \
-    RP_DASHBOARD_STATIC_PORT=443 \
-    \
-    RP_CORE_DB_DATABASE=rp_core \
-    RP_CORE_DB_USERNAME=postgres \
-    RP_CORE_DB_PASSWORD=postgres \
-    RP_CORE_DB_HOSTNAME=db \
-    RP_CORE_DB_PORT=5432 \
-    RP_CORE_DB_POOL_SIZE=10
+ENV LANG C.UTF-8 \
+  REFRESHED_AT 2019-01-12-1 \
+  TERM xterm \
+  DEBIAN_FRONTEND noninteractive
+ENV ELIXIR_VERSION v1.7.4
 
-RUN apk --update add postgresql-client && rm -rf /var/cache/apk/*
+RUN apk add --update \
+  git \
+  build-base \
+  wget \
+  bash
 
-RUN mkdir /$APP_NAME
-WORKDIR /$APP_NAME
-COPY . .
+WORKDIR /opt/$rp-server_build/
+COPY . /opt/$rp-server_build/
+# RUN wget -O - https://github.com/kimlic/rp-server/tarball/master | tar xz \
+#   && mv Kimlic-rp-server-* rp-server \
+#   && cd rp-server
 
-RUN MIX_ENV=$MIX_ENV mix do deps.get, deps.compile
-RUN MIX_ENV=$MIX_ENV mix release --verbose --env=$MIX_ENV
+RUN mix local.hex --force && mix local.rebar --force
+RUN MIX_ENV=prod mix do deps.get --only prod, deps.compile --force
+RUN MIX_ENV=prod mix release --env=prod
+
+RUN mkdir /opt/rp-server \
+  && tar xvzf ./_build/prod/rel/rp-server/releases/1.0.0/rp-server.tar.gz -C /opt/rp-server
+WORKDIR /opt/rp-server
+RUN rm -rf /opt/rp-server_build
+COPY ./rel/config/hosts.config ./etc/hosts.config
+COPY ./rel/config/.hosts.erlang ./.hosts.erlang
+
+CMD ["/bin/bash"]
+
+#############################################################
+
+FROM alpine:3.8
+
+LABEL company="Pharos Production Inc."
+LABEL version="1.0.0"
+
+ENV REPLACE_OS_VARS=true \
+  HOSTNAME=${HOSTNAME}
+
+RUN apk add --update \
+  bash \
+  openssl
+
+ENV LANG C.UTF-8 \
+  REFRESHED_AT 2019-01-04-1 \
+  TERM xterm \
+  DEBIAN_FRONTEND noninteractive
+
+COPY --from=builder /opt/rp-server /usr/local/bin/rp-server
+WORKDIR /usr/local/bin/rp-server
+
+CMD ["/bin/bash"]
