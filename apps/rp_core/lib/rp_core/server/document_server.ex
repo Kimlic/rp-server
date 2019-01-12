@@ -22,9 +22,9 @@ defmodule RpCore.Server.DocumentServer do
   def handle_continue(:fetch_documents, state) do
     Document.session_tags
     |> Kernel.elem(1)
-    |> Enum.map(fn tag -> 
-      Rp.Quorum
-    end)
+    # |> Enum.map(fn tag -> 
+    #   Rp.Quorum
+    # end)
     |> Enum.each(&:ets.insert(:documents, {&1}))
 
     {:noreply, state}

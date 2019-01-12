@@ -43,7 +43,7 @@ defmodule RpExplorer.Server.TxsServer do
   end
 
   defp insert_tx(tx, state) do
-    with %{to: to, from: from, hash: hash, block_number: block_number} <- tx,
+    with %{to: to, from: _from, hash: hash, block_number: block_number} <- tx,
     %{provisioning: provisioning, verification: verification} <- state,
     account <- account_address() do
       case to do

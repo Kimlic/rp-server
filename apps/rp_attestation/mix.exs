@@ -49,7 +49,7 @@ defmodule RpAttestation.MixProject do
       {:prometheus, "~> 4.2", override: true},
       {:prometheus_ex, "~> 3.0"},
       {:prometheus_plugs, "~> 1.1"},
-      {:prometheus_httpd, "~> 2.1"}
+      {:prometheus_httpd, "~> 2.1"},
       
       {:rp_http, in_umbrella: true}
     ]

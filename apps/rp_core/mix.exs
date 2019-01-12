@@ -52,7 +52,7 @@ defmodule RpCore.MixProject do
       {:jason, "~> 1.1"},
       {:arc, github: "PharosProduction/arc", override: true},
       {:arc_ecto, github: "PharosProduction/arc_ecto", override: true},
-      {:erlazure, github: "Kimlic/erlazure", override: true},
+      {:erlazure, github: "PharosProduction/erlazure", override: true},
       {:httpoison, "~> 1.4", override: true},
       {:hackney, "~> 1.14", override: true},
       {:ex_azure, "~> 0.1"},

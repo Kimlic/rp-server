@@ -20,9 +20,9 @@ defmodule RpQuorum do
 
   defdelegate get_provisioning_contract_factory(context_contract), to: KimlicContractsContext
 
-  defdelegate get_verification_contract_factory(context_contract), to: ProvisioningContractFactory
+  defdelegate get_verification_contract_factory(context_contract), to: KimlicContractsContext
 
-  defdelegate get_provisioning_contract(provisioning_factory, session_tag), to: R
+  defdelegate get_provisioning_contract(provisioning_factory, session_tag), to: ProvisioningContractFactory
 
   @spec create_verification(binary, binary, binary, binary, binary) :: {:ok, binary}
   def create_verification(context_contract, user_address, ap_address, doc_type, session_tag) do
