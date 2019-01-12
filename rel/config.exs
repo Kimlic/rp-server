@@ -11,12 +11,17 @@ use Mix.Releases.Config,
   default_release: :rp_server,
   default_environment: Mix.env()
 
-environment :dev do
-  set dev_mode: true
-  set include_erts: false
-  set include_system_libs: false
-  set include_src: false
-  set cookie: erlang_cookie
+release :rp_server do
+  set version: "1.0.0"
+  set applications: [
+    :runtime_tools,
+    :sasl,
+    :logger,
+    :observer,
+    :wx,
+    core: :permanent,
+    api_mobile: :permanent
+  ]
 end
 
 environment :stage do
@@ -25,6 +30,17 @@ environment :stage do
   set include_system_libs: true
   set include_src: false
   set cookie: erlang_cookie
+  set vm_args: "rel/vm.args/stage.vm.args"
+  set pre_configure_hooks: "rel/hooks/pre_configure.d"
+  set overlays: [
+    {:copy, "rel/config/config_stage.toml", "etc/config_stage.toml"}
+  ]
+  set overlay_vars: [
+    release_name: "rp_server"
+  ]
+  set config_providers: [
+    {Toml.Provider, path: "${RELEASE_ROOT_DIR}/etc/config_stage.toml", transforms: []}
+  ]
 end
 
 environment :prod do
@@ -33,22 +49,15 @@ environment :prod do
   set include_system_libs: true
   set include_src: false
   set cookie: erlang_cookie
-end
-
-release :rp_server do
-  set version: "1.0.0"
-  set applications: [
-    :rp_attestation,
-    :rp_core,
-    # :rp_eventbus,
-    :rp_dashboard,
-    :rp_kimcore,
-    :rp_mobile,
-    :rp_quorum,
-    :rp_uaf
+  set vm_args: "rel/vm.args/prod.vm.args"
+  set pre_configure_hooks: "rel/hooks/pre_configure.d"
+  set overlays: [
+    {:copy, "rel/config/config_prod.toml", "etc/config_prod.toml"}
   ]
-  set commands: [
-    "migrate": "rel/commands/migrate.sh",
-    "seeds": "rel/commands/seeds.sh"
+  set overlay_vars: [
+    release_name: "rp_server"
+  ]
+  set config_providers: [
+    {Toml.Provider, path: "${RELEASE_ROOT_DIR}/etc/config_prod.toml", transforms: []}
   ]
 end

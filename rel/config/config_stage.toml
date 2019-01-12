@@ -1,0 +1,4 @@
+title = "RP Server Stage Configuration"
+
+[core]
+demo_value = "Hello from Stage Core!"

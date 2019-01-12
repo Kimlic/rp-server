@@ -30,7 +30,7 @@ defmodule RpServer.MixProject do
       source_url: "https://github.com/Kimlic/rp-server",
       homepage_url: "http://kimlic.com",
       docs: [
-        logo: "./images/kimlic_logo.svg",
+        logo: "./images/logo.jpg",
         output: "./docs",
         extras: ["README.md", "ENVIRONMENT.md"]
       ]

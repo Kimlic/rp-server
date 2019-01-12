@@ -10,30 +10,46 @@ defmodule RpAttestation.MixProject do
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
       elixir: "~> 1.7",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      dialyzer: [plt_add_deps: :transitive],
-      # elixirc_options: [warnings_as_errors: true],
-      aliases: aliases(),
+      test_coverage: [tool: ExCoveralls],
+      dialyzer: [
+        plt_add_deps: :transitive,
+        plt_apps: [:erts, :kernel, :stdlib],
+        flags: [
+          "-Wunmatched_returns",
+          "-Werror_handling",
+          "-Wrace_conditions",
+          "-Wunderspecs",
+          "-Wno_opaque"
+        ]
+      ],
       deps: deps()
     ]
   end
 
   def application do
     [
-      extra_applications: [:sasl, :logger, :runtime_tools],
-      mod: {RpAttestation.Application, []}
-    ]
-  end
-
-  defp aliases do
-    [
-      dialyzer: "dialyzer --halt-exit-status"
+      mod: {RpAttestation.Application, []},
+      env: [],
+      registered: [RpServer.Attestation]
+      extra_applications: [
+        :sasl,
+        :logger,
+        :runtime_tools,
+        :observer,
+        :wx
+      ]
     ]
   end
 
   defp deps do
     [
-      {:dialyxir, "~> 1.0.0-rc.3", only: [:dev], runtime: false},
+      {:toml, "~> 0.5"},
+      {:prometheus, "~> 4.2", override: true},
+      {:prometheus_ex, "~> 3.0"},
+      {:prometheus_plugs, "~> 1.1"},
+      {:prometheus_httpd, "~> 2.1"}
       
       {:rp_http, in_umbrella: true}
     ]
