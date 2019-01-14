@@ -2,7 +2,6 @@ defmodule RpCore.Model.Document do
   @moduledoc false
   
   use RpCore.Model
-  use Timex
 
   alias RpCore.Mapper
 
@@ -20,7 +19,7 @@ defmodule RpCore.Model.Document do
     field :country, :string
     field :status, :string
     field :reason, :string
-    field :verified_at, Timex.Ecto.DateTime, usec: false
+    field :verified_at, :naive_datetime
     
     has_many :photos, Photo, foreign_key: :document_id, on_delete: :delete_all
     belongs_to :attestator, Attestator
@@ -200,7 +199,7 @@ defmodule RpCore.Model.Document do
       country: country,
       status: "approved",
       reason: nil,
-      verified_at: Timex.now()
+      verified_at: NaiveDateTime.utc_now()
     }
   
     document
@@ -211,7 +210,7 @@ defmodule RpCore.Model.Document do
     params = %{
       status: status,
       reason: reason,
-      verified_at: Timex.now()
+      verified_at: NaiveDateTime.utc_now()
     }
 
     document
@@ -222,7 +221,7 @@ defmodule RpCore.Model.Document do
     params = %{
       status: "approved",
       reason: nil,
-      verified_at: Timex.now()
+      verified_at: NaiveDateTime.utc_now()
     }
 
     document

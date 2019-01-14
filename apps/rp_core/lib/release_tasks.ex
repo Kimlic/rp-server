@@ -17,7 +17,7 @@ defmodule RpCore.ReleaseTasks do
 
     def seeds do
         IO.puts("Starting dependencies...")
-        Enum.each([:postgrex, :ecto, :timex, :rp_core], &Application.ensure_all_started/1)
+        Enum.each([:postgrex, :ecto, :rp_core], &Application.ensure_all_started/1)
     
         IO.puts("Starting repos...")
         Enum.each([RpCore.Repo], & &1.start_link(pool_size: 1))

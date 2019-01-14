@@ -47,7 +47,6 @@ defmodule RpCore.MixProject do
   defp deps do
     [
       {:postgrex, "~> 0.14"},
-      {:timex, "~> 3.4"},
       {:uuid, "~> 1.1"},
       {:jason, "~> 1.1"},
       {:arc, github: "PharosProduction/arc", override: true},
@@ -57,8 +56,6 @@ defmodule RpCore.MixProject do
       {:hackney, "~> 1.14", override: true},
       {:ex_azure, "~> 0.1"},
       {:ecto_sql, "~> 3.0"},
-      {:timex, "~> 3.4"},
-      {:timex_ecto, github: "PharosProduction/timex_ecto", override: true},
       {:toml, "~> 0.5"},
       {:prometheus, "~> 4.2", override: true},
       {:prometheus_ex, "~> 3.0"},
