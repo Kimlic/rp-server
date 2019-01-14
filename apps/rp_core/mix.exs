@@ -56,7 +56,7 @@ defmodule RpCore.MixProject do
       {:httpoison, "~> 1.4", override: true},
       {:hackney, "~> 1.14", override: true},
       {:ex_azure, "~> 0.1"},
-      {:ecto_sql, "~> 3.0", override: true},
+      {:ecto_sql, "~> 3.0"},
       {:timex, "~> 3.4"},
       {:timex_ecto, github: "PharosProduction/timex_ecto", override: true},
       {:toml, "~> 0.5"},
