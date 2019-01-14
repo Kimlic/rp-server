@@ -9,7 +9,6 @@ config :rp_core, RpCore.Repo,
   database: "rp_server",
   port: "5432",
   timeout: 15_000,
-  pool_timeout: 15_000,
   ownership_timeout: 15_000,
   parameters: [application_name: "RpCore", statement_timeout: "5000"]
 

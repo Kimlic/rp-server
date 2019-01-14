@@ -10,7 +10,6 @@ config :rp_uaf, RpUaf.Repo,
   database: "rp_server",
   port: "5432",
   timeout: 60_000,
-  pool_timeout: 60_000,
   ownership_timeout: 60_000,
   parameters: [application_name: "RpUaf", statement_timeout: "5000"]
 

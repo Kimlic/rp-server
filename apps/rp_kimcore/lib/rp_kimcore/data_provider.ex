@@ -12,7 +12,9 @@ defmodule RpKimcore.DataProvider do
     kim_config()
     |> get
     |> case do
-      {:error, reason} -> {:error, reason}
+      {:error, reason} -> 
+        IO.puts "ERR: #{inspect reason}"
+        {:error, reason}
       {:ok, %{} = res} -> parseConfigRes(res)
     end
   end
@@ -21,6 +23,7 @@ defmodule RpKimcore.DataProvider do
 
   @spec get(binary()) :: {:error, binary()} | {:ok, map()}
   defp get(endpoint) do
+    IO.puts "ENDPOINT: #{inspect(kim_endpoint()<>endpoint)}"
     kim_endpoint()
     |> Kernel.<>(endpoint)
     |> RpHttp.get(@pool)
