@@ -49,7 +49,6 @@ defmodule RpDashboard.Mixfile do
       {:absinthe, "~> 1.4"},
       {:absinthe_plug, "~> 1.4"},
       {:corsica, "~> 1.1"},
-      {:poison, "~> 4.0"},
       {:prometheus_ex, "~> 3.0"},
       {:prometheus_plugs, "~> 1.1"},
       

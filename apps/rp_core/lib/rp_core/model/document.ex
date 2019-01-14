@@ -123,13 +123,8 @@ defmodule RpCore.Model.Document do
     "
     res = Ecto.Adapters.SQL.query!(Repo, query, [])
     count = Enum.map(res.rows, fn(row) ->
-      date = row
-      |> Enum.at(0)
-      |> Date.from_erl
-      |> elem(1)
-
       %{
-        date_at: date, 
+        date_at: Enum.at(row, 0), 
         verified: Enum.at(row, 1), 
         unverified: Enum.at(row, 2)
       }

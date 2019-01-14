@@ -9,7 +9,6 @@ defmodule RpDashboardWeb.Endpoint do
 
   plug Plug.RequestId
   plug Plug.Logger, level: Logger.level()
-
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
     pass: ["*/*"],

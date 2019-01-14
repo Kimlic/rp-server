@@ -41,7 +41,7 @@ defmodule RpServer.MixProject do
     [
       {:distillery, github: "PharosProduction/distillery", runtime: false},
       {:ex_doc, "~> 0.19", only: [:dev], runtime: false},
-      {:poison, "~> 4.0", only: [:test], override: true},
+      # {:poison, "~> 4.0", only: [:test], override: true},
       {:excoveralls, "~> 0.10", only: [:test]},
       {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false}
