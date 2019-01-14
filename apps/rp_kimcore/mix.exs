@@ -31,7 +31,7 @@ defmodule RpKimcore.MixProject do
   def application do
     [
       mod: {RpKimcore.Application, []},
-      registered: [RpServer.Core],
+      registered: [RpKimcore.Server],
       env: [],
       extra_applications: [
         :sasl,

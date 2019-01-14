@@ -32,7 +32,7 @@ defmodule RpUaf.Mixfile do
   def application do
     [
       mod: {RpUaf.Application, []},
-      registered: [RpServer.UAF],
+      registered: [RpUaf.Server],
       env: [],
       extra_applications: [
         :sasl,

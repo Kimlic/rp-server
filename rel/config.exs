@@ -19,8 +19,14 @@ release :rp_server do
     :logger,
     :observer,
     :wx,
-    core: :permanent,
-    api_mobile: :permanent
+    rp_attestation: :permanent,
+    rp_core: :permanent,
+    rp_dashboard: :permanent,
+    rp_http: :permanent,
+    rp_kimcore: :permanent,
+    rp_mobile: :permanent,
+    rp_quorum: :permanent,
+    rp_uaf: :permanent
   ]
 end
 

@@ -31,7 +31,7 @@ defmodule RpExplorer.MixProject do
   def application do
     [
       mod: {RpExplorer.Application, []},
-      registered: [RpServer.Explorer],
+      registered: [RpExplorer.Server],
       env: [],
       extra_applications: [
         :sasl,

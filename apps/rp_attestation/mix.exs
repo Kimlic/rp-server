@@ -31,7 +31,7 @@ defmodule RpAttestation.MixProject do
   def application do
     [
       mod: {RpAttestation.Application, []},
-      registered: [RpServer.Attestation],
+      registered: [RpAttestation.Server],
       env: [],
       extra_applications: [
         :sasl,

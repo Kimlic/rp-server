@@ -32,7 +32,7 @@ defmodule RpCore.MixProject do
   def application do
     [
       mod: {RpCore.Application, []},
-      registered: [RpServer.Core],
+      registered: [RpCore.Server],
       env: [],
       extra_applications: [
         :sasl,

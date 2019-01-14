@@ -22,7 +22,7 @@ defmodule RpDashboard.Mixfile do
   def application do
     [
       mod: {RpDashboard.Application, []},
-      registered: [RpServer.Dashboard],
+      registered: [RpDashboard.Server],
       env: [],
       extra_applications: [
         :sasl,

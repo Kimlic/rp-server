@@ -31,7 +31,7 @@ defmodule RpHttp.MixProject do
   def application do
     [
       mod: {RpHttp.Application, []},
-      registered: [RpServer.HTTP],
+      registered: [RpHttp.Server],
       env: [],
       extra_applications: [
         :sasl,
