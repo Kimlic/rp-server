@@ -1,8 +1,8 @@
 use Mix.Config
 
 
-backends = [
-  :console
+# backends = [
+  # :console
   # {Uberlog.File, :ecto},
   # {Uberlog.File, :error},
   # {Uberlog.File, :request},
@@ -14,12 +14,12 @@ backends = [
   # {Uberlog.Telegram, :telegram_error},
   # {Uberlog.Slack.Logger, [:warn, :error]},
   # Uberlog.Graylog.Tcp
-]
+# ]
 
 config :logger,
   format: "[$date] [$time] [$level] $metadata $message\n",
-  utc_log: true,
-  backends: backends
+  utc_log: true
+  # backends: backends
 
 config :logger, :console,
   level: :debug,

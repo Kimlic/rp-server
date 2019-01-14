@@ -1,13 +1,13 @@
 use Mix.Config
 
-backends = [
-  :console,
-]
+# backends = [
+#   :console,
+# ]
 
 config :logger,
   format: "[$date] [$time] [$level] $metadata $message\n",
-  utc_log: true,
-  backends: backends
+  utc_log: true
+  # backends: backends
 
 # config :logger, :console,
 #   level: :debug,
